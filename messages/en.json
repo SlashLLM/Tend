@@ -1,0 +1,99 @@
+{
+  "app": {
+    "name": "Tend",
+    "tagline": "Growth, not grading"
+  },
+  "level": {
+    "short": "L{level}",
+    "name": "Level {level}",
+    "seenAt": "Seen at Level {level}",
+    "seenAtNext": "Seen at Level {level} · next: try Level {next}",
+    "seenAtTop": "Seen at Level 3 · keep growing it",
+    "notYetObserved": "Not yet observed",
+    "target": "Target: Level {level}",
+    "stones": "Level stones",
+    "descriptions": {
+      "1": "Basic positive practice",
+      "2": "More responsive and intentional",
+      "3": "Advanced, child-led"
+    }
+  },
+  "tag": {
+    "possible": "possible",
+    "confidence": "{pct}% confident",
+    "domain": {
+      "1": "Relationships",
+      "2": "Well-being",
+      "3": "Learning",
+      "IT": "Infant & toddler",
+      "TRUE": "Agape values"
+    }
+  },
+  "evidence": {
+    "play": "Play evidence at {time}",
+    "photo": "Photo evidence"
+  },
+  "feedback": {
+    "glow": "Glow",
+    "grow": "Grow",
+    "next": "Next step",
+    "glowHint": "What went well",
+    "growHint": "An opportunity to grow",
+    "nextHint": "One step you own",
+    "aiLabel": "Drafted with AI · reviewed by {name}",
+    "aiDraft": "AI draft · waiting for review"
+  },
+  "empty": {
+    "observations": "No observations yet.",
+    "observationsAction": "Schedule the first one",
+    "goals": "No goals yet. Your needs analysis suggests them.",
+    "goalsAction": "Start my needs analysis",
+    "reviews": "Nothing to review. You’re all caught up.",
+    "reviewsAction": "Go to Observe"
+  },
+  "nav": {
+    "educator": {
+      "home": "Home",
+      "growth": "My Growth",
+      "reflect": "Reflect",
+      "coach": "Coach",
+      "learn": "Learn"
+    },
+    "leader": {
+      "today": "Today",
+      "observe": "Observe",
+      "reviews": "Reviews",
+      "educators": "Educators",
+      "insights": "Centre Insights",
+      "metrics": "Metrics",
+      "settings": "Settings"
+    },
+    "hq": {
+      "network": "Network",
+      "registry": "Framework Registry",
+      "programmes": "Programmes",
+      "admin": "Admin"
+    },
+    "main": "Main navigation",
+    "more": "More",
+    "preferences": "Preferences"
+  },
+  "auth": {
+    "title": "Sign in to Tend",
+    "email": "Work email",
+    "send": "Email me a sign-in link",
+    "sent": "Check your email for a sign-in link.",
+    "error": "We couldn’t send the link. Please try again.",
+    "demo": "Demo: sign in as",
+    "signOut": "Sign out"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong. Please try again.",
+    "retry": "Try again",
+    "undo": "Undo",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
+  }
+}

@@ -1,26 +1,184 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/*
+ * Tend design tokens (PRD §9). Warm, calm, professional — a coaching notebook,
+ * not a grading system. shadcn/ui variable names are mapped onto Tend roles.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body), "Noto Sans SC", "Noto Sans Tamil", system-ui, sans-serif;
+  --font-heading: var(--font-figtree), var(--font-body), system-ui, sans-serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* Tend roles */
+  --color-paper: var(--paper);
+  --color-amber: var(--amber);
+  --color-amber-foreground: var(--amber-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-d1-fill: var(--d1-fill);
+  --color-d1-text: var(--d1-text);
+  --color-d2-fill: var(--d2-fill);
+  --color-d2-text: var(--d2-text);
+  --color-d3-fill: var(--d3-fill);
+  --color-d3-text: var(--d3-text);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: calc(var(--radius) - 2px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 12px; /* card radius 12 */
+  --paper: #faf8f5; /* warm paper background */
+  --background: #faf8f5;
+  --foreground: #1d2420;
+  --card: #ffffff;
+  --card-foreground: #1d2420;
+  --popover: #ffffff;
+  --popover-foreground: #1d2420;
+  --primary: #1f5e55; /* deep teal-green */
+  --primary-foreground: #ffffff;
+  --secondary: #eef3f1;
+  --secondary-foreground: #1d2420;
+  --muted: #f1eee9;
+  --muted-foreground: #58615b;
+  --accent: #f3ece4;
+  --accent-foreground: #1d2420;
+  --amber: #b4540f; /* highlights, ★ moments */
+  --amber-foreground: #ffffff;
+  --success: #2f7d4a; /* tried it, approved */
+  --success-foreground: #ffffff;
+  --destructive: #b42318; /* destructive actions only */
+  --border: #e4dfd8;
+  --input: #d9d3cb;
+  --ring: #1f5e55;
+  --d1-fill: #fbe3dc; --d1-text: #9a3412; /* Relationships */
+  --d2-fill: #ddf0e6; --d2-text: #1e6b45; /* Well-being */
+  --d3-fill: #e2e6fa; --d3-text: #3840a0; /* Learning */
+  --text-scale: 100;
+}
+
+.dark {
+  --paper: #141816;
+  --background: #141816;
+  --foreground: #ecefed;
+  --card: #1c2220;
+  --card-foreground: #ecefed;
+  --popover: #1c2220;
+  --popover-foreground: #ecefed;
+  --primary: #5fb3a6;
+  --primary-foreground: #0c1513;
+  --secondary: #24302c;
+  --secondary-foreground: #ecefed;
+  --muted: #232926;
+  --muted-foreground: #a7b0aa;
+  --accent: #2a2620;
+  --accent-foreground: #ecefed;
+  --amber: #f0a060;
+  --amber-foreground: #1a1006;
+  --success: #6cc08b;
+  --success-foreground: #0b170f;
+  --destructive: #f2867b;
+  --border: #2e3633;
+  --input: #3a433f;
+  --ring: #5fb3a6;
+  --d1-fill: #3a221a; --d1-text: #f3b49c;
+  --d2-fill: #183226; --d2-text: #93d6b1;
+  --d3-fill: #20254a; --d3-text: #b5bcf5;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    /* Text size up to 130% (M1.3). Spacing in rem scales with it. */
+    font-size: calc(var(--text-scale) * 1%);
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    line-height: 1.5;
+  }
+  @media (max-width: 639px) {
+    body { font-size: 1.0625rem; } /* 17px mobile body text */
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  /* Grid items must be allowed to shrink below their content, or long option text widens phones. */
+  .grid > * { min-width: 0; }
+  select { max-width: 100%; min-width: 0; text-overflow: ellipsis; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Composition (Inspo study: Amie · Capacities · Todoist) ── */
+@layer components {
+  /* Soft layered "object card" shadow instead of hard borders. */
+  .tend-card {
+    @apply rounded-xl border border-border/70 bg-card;
+    box-shadow: 0 1px 2px rgb(29 36 32 / 0.04), 0 6px 20px -10px rgb(29 36 32 / 0.12);
+  }
+  /* Highlighter-pen emphasis for one phrase per screen (e.g. the next step). */
+  .tend-mark {
+    background: linear-gradient(transparent 55%, color-mix(in oklab, var(--amber) 28%, transparent) 55%);
+    padding: 0 0.1em;
+    border-radius: 2px;
+  }
+  /* Muted dateline above page titles. */
+  .tend-dateline {
+    @apply text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground;
+  }
+  .tend-page-title {
+    @apply font-heading text-3xl font-semibold tracking-tight md:text-4xl;
+  }
+  /* Todoist-style list row. */
+  .tend-row {
+    @apply flex min-h-14 items-center gap-3 px-4 py-3 transition-colors duration-150 hover:bg-muted/60;
+  }
+}
+
+:root { --rail: #f3efe9; }
+.dark { --rail: #181d1b; }
+
+@keyframes tend-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--destructive) 45%, transparent); }
+  70% { box-shadow: 0 0 0 18px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.tend-pulse { animation: tend-pulse 1.6s ease-out infinite; }
+
+/* Heatmap pattern: colour is never the only signal (WCAG) */
+.tend-stripes {
+  background-image: repeating-linear-gradient(135deg, color-mix(in oklab, var(--amber) 35%, transparent) 0 2px, transparent 2px 7px);
 }

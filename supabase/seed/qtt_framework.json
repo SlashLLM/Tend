@@ -1,0 +1,220 @@
+{
+  "framework": {
+    "code": "QTT",
+    "name": "Quality Teaching Tool",
+    "version": "2024.1",
+    "age_band": "2-6",
+    "source": "Indicator codes and names: ECDA QTT Guidebook (Appendix A of the Tend PRD). Level descriptors and look-fors are Tend DRAFTS in our own words, pending Agape curriculum review and ECDA permission (PRD risk: QTT licensing)."
+  },
+  "levels": {
+    "1": "Basic positive practice",
+    "2": "More responsive and intentional",
+    "3": "Advanced facilitation, child-led, more peer involvement"
+  },
+  "domains": [
+    {
+      "code": "1",
+      "name": "Building Trusting Relationships",
+      "subdomains": [
+        {
+          "code": "1.1",
+          "name": "Engaging in Positive Interactions",
+          "indicators": [
+            { "code": "1.1.1", "name": "Creating a Warm, Safe and Motivating Environment",
+              "levels": { "1": "Greets children warmly and keeps the space safe and calm.", "2": "Adjusts tone, space and routines so each child feels welcome and wants to take part.", "3": "Children help shape a caring space and look out for each other's comfort and safety." },
+              "look_fors": ["Greets children by name with warmth", "Calm, friendly tone of voice", "Children move about confidently and seek out the educator"] },
+            { "code": "1.1.2", "name": "Facilitating Responsive Interactions",
+              "levels": { "1": "Notices and acknowledges children's bids for attention.", "2": "Responds promptly and in tune with each child's cues and mood.", "3": "Follows children's lead and builds long, back-and-forth exchanges from their interests." },
+              "look_fors": ["Gets down to child's eye level", "Responds to a child's bid within moments", "Builds on what the child says or shows"] },
+            { "code": "1.1.3", "name": "Facilitating Reciprocal Interactions",
+              "levels": { "1": "Takes turns in simple exchanges with children.", "2": "Keeps conversations going with pauses that invite children to contribute.", "3": "Children sustain multi-turn conversations with the educator and with each other." },
+              "look_fors": ["Waits for children to reply", "Several turns on one topic", "Invites a second child to join the exchange"] },
+            { "code": "1.1.4", "name": "Supporting Children Through Challenges",
+              "levels": { "1": "Comforts children who are upset and keeps them safe.", "2": "Names the difficulty and offers a strategy to try.", "3": "Coaches children to work through challenges themselves and support peers." },
+              "look_fors": ["Acknowledges the child's feeling before redirecting", "Offers a choice or strategy", "Lets the child try again with support"] },
+            { "code": "1.1.5", "name": "Engaging in Inclusive and Respectful Interactions",
+              "levels": { "1": "Speaks respectfully to every child and avoids favouritism.", "2": "Adapts interactions so every child, including quieter ones, is included.", "3": "Children show respect and include one another without prompting." },
+              "look_fors": ["Uses each child's name and preferred language", "Draws quieter children into the activity", "Responds to all children with equal warmth"] }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "2",
+      "name": "Nurturing Child Well-being",
+      "subdomains": [
+        {
+          "code": "2.1",
+          "name": "Supporting Values Development",
+          "indicators": [
+            { "code": "2.1.1", "name": "Developing Values",
+              "levels": { "1": "Names values such as kindness or honesty during routines.", "2": "Plans moments that let children explore what a value looks like.", "3": "Children discuss values and apply them to real situations in class." },
+              "look_fors": ["Talks about a value in context", "Uses stories or role play to explore values", "Asks children what a kind choice would be"] },
+            { "code": "2.1.2", "name": "Reinforcing Values",
+              "levels": { "1": "Praises behaviour that shows a value.", "2": "Gives specific feedback linking the action to the value.", "3": "Children recognise and affirm values in each other's actions." },
+              "look_fors": ["Specific praise naming the value", "Links behaviour to its effect on others", "Children notice kind acts by peers"] },
+            { "code": "2.1.3", "name": "Encouraging Awareness, Respect and Celebration of Diversity",
+              "levels": { "1": "Uses materials that show different cultures and families.", "2": "Invites children to share and compare their own traditions.", "3": "Children explore differences with curiosity and celebrate them together." },
+              "look_fors": ["Books and materials reflect diverse families", "Invites children to share home languages or customs", "Responds positively to questions about difference"] }
+          ]
+        },
+        {
+          "code": "2.2",
+          "name": "Social and Emotional Competencies",
+          "indicators": [
+            { "code": "2.2.1", "name": "Helping Children Build Positive Self-Concept",
+              "levels": { "1": "Acknowledges children's efforts and achievements.", "2": "Highlights each child's strengths and growth over time.", "3": "Children describe their own strengths and set small goals." },
+              "look_fors": ["Praises effort, not only results", "Displays children's work with their words", "Asks children what they are proud of"] },
+            { "code": "2.2.2", "name": "Helping Children Identify Emotions",
+              "levels": { "1": "Names emotions children show.", "2": "Helps children notice body cues and name a wider range of feelings.", "3": "Children name their own and others' feelings in daily situations." },
+              "look_fors": ["Labels feelings as they happen", "Uses emotion pictures or books", "Asks 'how do you think he feels?'"] },
+            { "code": "2.2.3", "name": "Helping Children Express Emotions",
+              "levels": { "1": "Accepts children's feelings without dismissing them.", "2": "Offers safe ways to express feelings through words, art or movement.", "3": "Children choose appropriate ways to express feelings on their own." },
+              "look_fors": ["Validates feelings ('it's OK to feel sad')", "Provides a calm corner or expression tools", "Models expressing own feelings"] },
+            { "code": "2.2.4", "name": "Helping Children Self-Manage and Regulate Emotions",
+              "levels": { "1": "Calms children who are upset.", "2": "Teaches simple calming strategies and prompts their use.", "3": "Children use calming strategies independently and help peers." },
+              "look_fors": ["Teaches breathing or counting strategies", "Prompts a strategy before stepping in", "Children self-select calming activities"] },
+            { "code": "2.2.5", "name": "Helping Children Identify and Respond to Emotions and Perspectives of Others",
+              "levels": { "1": "Points out how others might feel.", "2": "Asks children to consider another's view and how to respond.", "3": "Children show empathy and respond to peers' feelings unprompted." },
+              "look_fors": ["Asks 'how would you feel if…?'", "Guides children to comfort a peer", "Discusses characters' feelings in stories"] },
+            { "code": "2.2.6", "name": "Encouraging Prosocial Behaviour",
+              "levels": { "1": "Encourages sharing and taking turns.", "2": "Sets up activities that need cooperation and helping.", "3": "Children cooperate, share and help without adult prompting." },
+              "look_fors": ["Plans partner or group tasks", "Acknowledges helping behaviour", "Children negotiate turns themselves"] },
+            { "code": "2.2.7", "name": "Promoting Social Awareness",
+              "levels": { "1": "Talks about people and roles in the community.", "2": "Connects classroom life to families and the wider community.", "3": "Children take part in projects that contribute to their community." },
+              "look_fors": ["Discusses community helpers", "Invites family or community visitors", "Children plan a way to help others"] }
+          ]
+        },
+        {
+          "code": "2.3",
+          "name": "Fostering Learning Dispositions",
+          "indicators": [
+            { "code": "2.3.1", "name": "Developing Perseverance",
+              "levels": { "1": "Encourages children to keep trying.", "2": "Breaks tasks into steps and celebrates persistence.", "3": "Children take on challenges and keep going through setbacks." },
+              "look_fors": ["Says 'try another way' rather than solving it", "Names persistence when it happens", "Offers appropriately challenging tasks"] },
+            { "code": "2.3.2", "name": "Fostering Reflectiveness",
+              "levels": { "1": "Asks children what they did.", "2": "Asks children how they did it and what they might change.", "3": "Children review their own work and plan improvements." },
+              "look_fors": ["Asks 'what would you do differently?'", "Holds short review times", "Children revisit and revise their work"] },
+            { "code": "2.3.3", "name": "Helping Children Appreciate Perspectives and Contributions of Others",
+              "levels": { "1": "Lets children share ideas in turn.", "2": "Highlights how different ideas help the group.", "3": "Children build on each other's ideas and credit peers." },
+              "look_fors": ["Invites several children to share ideas", "Connects one child's idea to another's", "Children say 'I like your idea because…'"] },
+            { "code": "2.3.4", "name": "Encouraging Inventiveness",
+              "levels": { "1": "Provides open-ended materials.", "2": "Invites children to try new ways of using materials and ideas.", "3": "Children design, invent and test their own creations." },
+              "look_fors": ["Open-ended materials available", "Asks 'what else could this be?'", "Children explain their inventions"] },
+            { "code": "2.3.5", "name": "Promoting Sense of Curiosity",
+              "levels": { "1": "Responds positively to children's questions.", "2": "Sets up provocations that spark wondering.", "3": "Children pose their own questions and investigate them." },
+              "look_fors": ["Welcomes children's questions", "Introduces intriguing objects or problems", "Children ask 'why' and 'what if'"] },
+            { "code": "2.3.6", "name": "Promoting Engagement and Interest",
+              "levels": { "1": "Gets children's attention for activities.", "2": "Builds activities around children's interests to sustain engagement.", "3": "Children stay deeply involved and extend activities themselves." },
+              "look_fors": ["Uses children's interests in planning", "Children stay on task for sustained periods", "Children suggest next steps"] }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "3",
+      "name": "Facilitating Learning and Development",
+      "subdomains": [
+        {
+          "code": "3.1",
+          "name": "Planning Learning Environments and Experiences",
+          "indicators": [
+            { "code": "3.1.1", "name": "Making Connections Through an Integrated Approach",
+              "levels": { "1": "Links an activity to one other learning area.", "2": "Plans experiences that connect several learning areas around a theme.", "3": "Children make their own connections across learning areas and to real life." },
+              "look_fors": ["Activity links two or more learning areas", "Refers back to earlier learning", "Children connect ideas to home or community"] },
+            { "code": "3.1.2", "name": "Catering to Diverse Learners",
+              "levels": { "1": "Notices that children learn differently.", "2": "Plans different entry points and supports for different learners.", "3": "Children choose ways of learning that suit them." },
+              "look_fors": ["Offers materials at different levels", "Adjusts support for individual children", "Includes visual, verbal and hands-on options"] },
+            { "code": "3.1.3", "name": "Managing and Maximising Learning Opportunities",
+              "levels": { "1": "Keeps routines running with little waiting time.", "2": "Uses transitions and routines as chances to learn.", "3": "Children manage routines themselves, freeing time for deeper learning." },
+              "look_fors": ["Minimal waiting during transitions", "Learning talk during routines", "Children know what to do next"] },
+            { "code": "3.1.4", "name": "Providing Various Types of Learning Experiences",
+              "levels": { "1": "Offers a mix of group and individual activities.", "2": "Balances adult-guided and child-initiated experiences on purpose.", "3": "Children move between experiences of their choice with purpose." },
+              "look_fors": ["Mix of whole-group, small-group and individual time", "Indoor and outdoor experiences", "Child-initiated play is planned for"] },
+            { "code": "3.1.5", "name": "Establishing Clear Expectations and Guiding Proactively",
+              "levels": { "1": "States rules simply and reminds children of them.", "2": "Sets expectations with reasons and guides before problems arise.", "3": "Children help set expectations and remind each other." },
+              "look_fors": ["Explains the reason behind a rule", "Prepares children before transitions", "Children co-create class agreements"] },
+            { "code": "3.1.6", "name": "Modifying Instruction to Meet Children's Needs",
+              "levels": { "1": "Repeats or simplifies when children are unsure.", "2": "Changes pace, materials or grouping in the moment based on responses.", "3": "Children's responses and ideas visibly change the direction of the lesson." },
+              "look_fors": ["Checks understanding during the activity", "Changes approach when children lose interest", "Follows a child's idea into the next step"] }
+          ]
+        },
+        {
+          "code": "3.2",
+          "name": "Child-Centric Practices and Play",
+          "indicators": [
+            { "code": "3.2.1", "name": "Exercising Flexibility in Catering to Children's Needs and Interests",
+              "levels": { "1": "Allows small changes to plans when children ask.", "2": "Adapts plans around children's emerging interests.", "3": "Children's interests drive extended projects." },
+              "look_fors": ["Adjusts the plan to an emerging interest", "Extends time when engagement is high", "Children's ideas appear in planning"] },
+            { "code": "3.2.2", "name": "Empowering Children's Independence",
+              "levels": { "1": "Lets children do simple tasks for themselves.", "2": "Sets up the space and routines so children can manage on their own.", "3": "Children take charge of tasks and support others' independence." },
+              "look_fors": ["Materials within children's reach", "Waits before stepping in to help", "Children self-serve and tidy up"] },
+            { "code": "3.2.3", "name": "Encouraging Children to Make Choices and Decisions",
+              "levels": { "1": "Offers simple choices between two options.", "2": "Gives meaningful choices and talks through decisions.", "3": "Children make and justify group and individual decisions." },
+              "look_fors": ["Offers real choices", "Asks children to explain their choice", "Children vote or agree on group decisions"] },
+            { "code": "3.2.4", "name": "Providing Children Opportunities to Lead and Take on Roles",
+              "levels": { "1": "Assigns simple helper roles.", "2": "Rotates leadership roles and coaches children in them.", "3": "Children lead activities and take on roles they design." },
+              "look_fors": ["Rotating class helper roles", "Children lead a part of an activity", "Children teach or show peers"] },
+            { "code": "3.2.5", "name": "Engaging Children Through a Variety of Play",
+              "levels": { "1": "Provides time and materials for play.", "2": "Joins play to extend it without taking over.", "3": "Children sustain complex play with rich roles and ideas." },
+              "look_fors": ["Variety of play types (pretend, construction, physical)", "Educator joins play as a co-player", "Extended, complex play scenarios"] },
+            { "code": "3.2.6", "name": "Catering to Children's Level of Engagement",
+              "levels": { "1": "Notices when children are disengaged.", "2": "Adjusts challenge or support to re-engage individual children.", "3": "Children self-regulate their engagement and choose challenges." },
+              "look_fors": ["Notices and responds to disengagement", "Offers extensions for children who finish early", "Children choose harder levels themselves"] }
+          ]
+        },
+        {
+          "code": "3.3",
+          "name": "Extending Thinking, Language and Learning",
+          "indicators": [
+            { "code": "3.3.1", "name": "Encouraging the Use of Language",
+              "levels": { "1": "Talks with children throughout the day.", "2": "Models and introduces new words in context.", "3": "Children use rich and new vocabulary in their own talk." },
+              "look_fors": ["Describes actions aloud", "Introduces new words with meaning", "Children use new words"] },
+            { "code": "3.3.2", "name": "Extending the Use of Language Through Print",
+              "levels": { "1": "Points out print in the environment.", "2": "Uses print purposefully with children, such as labels, lists and stories.", "3": "Children create and use print for their own purposes." },
+              "look_fors": ["Labels and print at child height", "Writes children's words down", "Children make signs, lists or books"] },
+            { "code": "3.3.3", "name": "Encouraging Communication and Conversations",
+              "levels": { "1": "Invites children to talk about their experiences.", "2": "Sets up pair and small-group talk.", "3": "Children hold sustained conversations with peers." },
+              "look_fors": ["Uses 'turn and talk'", "Small-group conversations", "Children respond to each other, not only the adult"] },
+            { "code": "3.3.4", "name": "Extending Thinking Through Questioning",
+              "levels": { "1": "Asks questions, mostly closed or recall questions.", "2": "Asks open questions and waits for children to think.", "3": "Uses follow-up questions to deepen thinking, and children ask each other questions." },
+              "look_fors": ["Asks open 'why' and 'how' questions", "Waits at least 3 seconds after asking", "Follows up with 'what makes you think that?'"] },
+            { "code": "3.3.5", "name": "Providing Support to Deepen Thinking",
+              "levels": { "1": "Gives hints when children are stuck.", "2": "Scaffolds with prompts, models and materials.", "3": "Children reason aloud and test ideas with light support." },
+              "look_fors": ["Scaffolds instead of giving the answer", "Models thinking aloud", "Children explain their reasoning"] },
+            { "code": "3.3.6", "name": "Providing Feedback That Extends Understanding and Deepens Thinking",
+              "levels": { "1": "Gives general praise such as 'good job'.", "2": "Gives specific feedback about what the child did.", "3": "Gives feedback that prompts the child to think further and improve." },
+              "look_fors": ["Specific, descriptive feedback", "Feedback ends with a question or next step", "Children act on the feedback"] },
+            { "code": "3.3.7", "name": "Providing Problem Solving Opportunities",
+              "levels": { "1": "Presents simple problems with one answer.", "2": "Sets open problems with more than one solution.", "3": "Children identify problems themselves and plan solutions." },
+              "look_fors": ["Poses real, open problems", "Accepts more than one solution", "Children identify problems to solve"] },
+            { "code": "3.3.8", "name": "Engaging Children in Problem Solving",
+              "levels": { "1": "Solves problems with children step by step.", "2": "Guides children to try, check and change their approach.", "3": "Children solve problems together and explain their strategies." },
+              "look_fors": ["Asks children to predict and test", "Encourages trying a different strategy", "Children work together on a solution"] }
+          ]
+        },
+        {
+          "code": "3.4",
+          "name": "Self-Regulation and Executive Function",
+          "indicators": [
+            { "code": "3.4.1", "name": "Facilitating Self-Management Skills",
+              "levels": { "1": "Reminds children of routines and steps.", "2": "Uses visual schedules and checklists children can follow.", "3": "Children manage their own belongings, time and tasks." },
+              "look_fors": ["Visual schedule in use", "Children follow steps without reminders", "Children manage their own materials"] },
+            { "code": "3.4.2", "name": "Facilitating Self-Regulation Skills",
+              "levels": { "1": "Tells children to wait or stop.", "2": "Uses games and strategies that practise waiting and impulse control.", "3": "Children regulate their behaviour and help peers do so." },
+              "look_fors": ["Uses stop–go or turn-taking games", "Gives a strategy before a waiting time", "Children remind each other of agreements"] },
+            { "code": "3.4.3", "name": "Facilitating Working Memory",
+              "levels": { "1": "Gives one instruction at a time.", "2": "Plays games that ask children to remember and use information.", "3": "Children hold multi-step plans in mind and carry them out." },
+              "look_fors": ["Memory games or recall activities", "Multi-step instructions with support", "Children retell sequences"] },
+            { "code": "3.4.4", "name": "Developing Cognitive Flexibility",
+              "levels": { "1": "Shows that there can be more than one way.", "2": "Asks children to switch rules or think of alternatives.", "3": "Children shift strategies and see others' viewpoints easily." },
+              "look_fors": ["Games with changing rules", "Asks 'what's another way?'", "Children adapt when plans change"] },
+            { "code": "3.4.5", "name": "Guiding Children in Planning and Organising to Achieve a Goal",
+              "levels": { "1": "Tells children the plan for an activity.", "2": "Helps children make a simple plan and check progress.", "3": "Children set goals, plan steps and review their own progress." },
+              "look_fors": ["Plan–do–review routine", "Children draw or say their plan", "Children check progress against their plan"] }
+          ]
+        }
+      ]
+    }
+  ]
+}

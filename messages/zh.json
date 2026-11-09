@@ -1,0 +1,99 @@
+{
+  "app": {
+    "name": "Tend",
+    "tagline": "重成长，不重评分"
+  },
+  "level": {
+    "short": "L{level}",
+    "name": "第{level}级",
+    "seenAt": "观察到第{level}级",
+    "seenAtNext": "观察到第{level}级 · 下一步：尝试第{next}级",
+    "seenAtTop": "观察到第3级 · 继续保持",
+    "notYetObserved": "尚未观察",
+    "target": "目标：第{level}级",
+    "stones": "级别台阶",
+    "descriptions": {
+      "1": "基本的积极做法",
+      "2": "更具回应性和目的性",
+      "3": "进阶，由儿童主导"
+    }
+  },
+  "tag": {
+    "possible": "可能",
+    "confidence": "把握度 {pct}%",
+    "domain": {
+      "1": "关系",
+      "2": "身心健康",
+      "3": "学习",
+      "IT": "婴幼儿",
+      "TRUE": "Agape 价值观"
+    }
+  },
+  "evidence": {
+    "play": "播放 {time} 的证据",
+    "photo": "照片证据"
+  },
+  "feedback": {
+    "glow": "亮点",
+    "grow": "成长点",
+    "next": "下一步",
+    "glowHint": "做得好的地方",
+    "growHint": "成长的机会",
+    "nextHint": "由你负责的一步",
+    "aiLabel": "AI 起草 · 由 {name} 审核",
+    "aiDraft": "AI 草稿 · 等待审核"
+  },
+  "empty": {
+    "observations": "还没有观察记录。",
+    "observationsAction": "安排第一次观察",
+    "goals": "还没有目标。需求分析会为你建议目标。",
+    "goalsAction": "开始我的需求分析",
+    "reviews": "没有需要审核的内容。都完成了。",
+    "reviewsAction": "前往观察"
+  },
+  "nav": {
+    "educator": {
+      "home": "首页",
+      "growth": "我的成长",
+      "reflect": "反思",
+      "coach": "教练",
+      "learn": "学习"
+    },
+    "leader": {
+      "today": "今天",
+      "observe": "观察",
+      "reviews": "审核",
+      "educators": "教师",
+      "insights": "中心洞察",
+      "metrics": "指标",
+      "settings": "设置"
+    },
+    "hq": {
+      "network": "网络",
+      "registry": "框架库",
+      "programmes": "课程项目",
+      "admin": "管理"
+    },
+    "main": "主导航",
+    "more": "更多",
+    "preferences": "偏好设置"
+  },
+  "auth": {
+    "title": "登录 Tend",
+    "email": "工作邮箱",
+    "send": "发送登录链接到我的邮箱",
+    "sent": "请查看邮箱中的登录链接。",
+    "error": "无法发送链接，请重试。",
+    "demo": "演示：登录为",
+    "signOut": "退出登录"
+  },
+  "common": {
+    "loading": "加载中…",
+    "error": "出了点问题，请重试。",
+    "retry": "重试",
+    "undo": "撤销",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭"
+  }
+}
