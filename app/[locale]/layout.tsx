@@ -6,7 +6,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/auth/session';
-import { isLocale } from '@/i18n/routing';
+import { isLocale, LOCALE_META } from '@/i18n/routing';
 import '../globals.css';
 
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-figtree', display: 'swap' });
@@ -35,7 +35,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const textScale = Math.min(130, Math.max(100, session?.profile.text_scale ?? 100));
 
   return (
-    <html lang={locale === 'zh' ? 'zh-Hans' : 'en-SG'} style={{ ['--text-scale' as string]: String(textScale) }} suppressHydrationWarning>
+    <html lang={LOCALE_META[locale].htmlLang} style={{ ['--text-scale' as string]: String(textScale) }} suppressHydrationWarning>
       <body className={`${figtree.variable} ${notoSans.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Singapore">
           <TooltipProvider>{children}</TooltipProvider>

@@ -81,11 +81,30 @@
   "auth": {
     "title": "Sign in to Tend",
     "email": "Work email",
-    "send": "Email me a sign-in link",
-    "sent": "Check your email for a sign-in link.",
-    "error": "We couldn’t send the link. Please try again.",
+    "password": "Password",
+    "signIn": "Sign in",
+    "invalid": "That email and password don’t match. Please try again.",
+    "forgot": "Forgot your password? Ask your organisation’s Tend admin to reset it.",
     "demo": "Demo: sign in as",
     "signOut": "Sign out"
+  },
+  "password": {
+    "title": "Change password",
+    "titleFirst": "Choose your password",
+    "introFirst": "You signed in with a temporary password. Choose your own to continue.",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Type the new password again",
+    "hint": "At least {min} characters. A short phrase is easy to remember.",
+    "save": "Save password",
+    "problem": {
+      "too_short": "Use at least {min} characters.",
+      "too_long": "That password is too long.",
+      "mismatch": "The two new passwords don’t match.",
+      "wrong_current": "Your current password isn’t right.",
+      "same": "Choose a password different from your current one.",
+      "failed": "We couldn’t change your password. Please try again."
+    }
   },
   "common": {
     "loading": "Loading…",

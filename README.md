@@ -25,6 +25,12 @@ pnpm dev                 # http://localhost:3000
 | Daniel Koh | HQ L&D | Network |
 | Agape IT Admin | Admin | Admin |
 
+### Sign-in: email + password
+
+No email is ever sent. An admin creates each account on the Admin page and gets a one-time **temporary password** to pass on in person; the person must choose their own (≥ 10 characters) at first sign-in. A forgotten password is reset the same way (Admin → People → Reset password). Anyone can change their own under Preferences.
+
+To give the very first admin a password (e.g. a fresh production project): `pnpm user:reset-password admin@your-org.sg`. On a hosted project, set **Auth → Providers → Email → minimum password length** to 10 and keep **sign-ups disabled**.
+
 ### AI: GPT-6 Luna
 
 Set `OPENAI_API_KEY` in `.env.local` and restart. Every AI step routes through `lib/ai/gateway.ts` (model per task in `lib/ai/models.ts`; override one task with e.g. `AI_MODEL_FEEDBACK_WRITE=gpt-6-sol`). Every call is logged to `ai_run` with tokens, cost and region. Check the key with `pnpm ai:smoke`.
@@ -55,7 +61,7 @@ pnpm e2e        # Playwright against local Supabase: desktop, then phone (resets
 
 ## Architecture
 
-Next.js 15 · TypeScript · Tailwind v4 · shadcn/ui · next-intl (en, 中文) · Supabase (Postgres + RLS + pgvector + Storage) · Vercel AI SDK.
+Next.js 15 · TypeScript · Tailwind v4 · shadcn/ui · next-intl (en, 中文, Bahasa Melayu) · Supabase (Postgres + RLS + pgvector + Storage) · Vercel AI SDK.
 
 - `supabase/migrations` — schema, RLS, approval gate & feature functions (all state changes via `SECURITY DEFINER` functions).
 - `supabase/seed` — QTT framework (46 indicators), registry, deterministic synthetic world.

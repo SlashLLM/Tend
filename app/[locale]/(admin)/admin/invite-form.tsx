@@ -6,18 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { inviteUser } from '@/app/actions/admin';
+import { TempPassword } from './temp-password';
 
 export function InviteForm({ centres }: { centres: { id: string; name: string }[] }) {
   const [pending, start] = useTransition();
   const [f, setF] = useState({ name: '', email: '', role: 'educator', centreId: centres[0]?.id ?? '' });
+  const [issued, setIssued] = useState<{ who: string; password: string } | null>(null);
   const orgWide = f.role === 'hq' || f.role === 'admin';
+  if (issued) return <TempPassword who={issued.who} password={issued.password} onDone={() => setIssued(null)} />;
   return (
     <form className="tend-card grid gap-3 p-5" onSubmit={(e) => {
       e.preventDefault();
       start(async () => {
         try {
-          await inviteUser({ ...f, centreId: orgWide ? null : f.centreId });
+          const { tempPassword } = await inviteUser({ ...f, centreId: orgWide ? null : f.centreId });
           toast.success(`Invited ${f.email}`);
+          setIssued({ who: `${f.name} (${f.email})`, password: tempPassword });
           setF({ ...f, name: '', email: '' });
         } catch (err) {
           toast.error(err instanceof Error ? err.message : 'Could not invite');
@@ -38,7 +42,7 @@ export function InviteForm({ centres }: { centres: { id: string; name: string }[
           </select>
         </div>
       )}
-      <Button type="submit" className="min-h-11" disabled={pending}>{pending && <Loader2 className="animate-spin" aria-hidden />} Send invite</Button>
+      <Button type="submit" className="min-h-11" disabled={pending}>{pending && <Loader2 className="animate-spin" aria-hidden />} Create account</Button>
     </form>
   );
 }

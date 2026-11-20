@@ -1,7 +1,7 @@
 /**
  * Loads the synthetic demo world into the Supabase database.
  *   pnpm db:reset   → re-applies migrations (empty DB) and then runs this script
- * 1) creates every demo user through the Auth admin API (so magic links / sign-in work)
+ * 1) creates every demo user through the Auth admin API (demo persona sign-in; real accounts get a password via pnpm user:reset-password)
  * 2) inserts the public data with the same ids
  */
 import { createClient } from '@supabase/supabase-js';
@@ -26,9 +26,17 @@ async function main() {
 
   let created = 0;
   for (const u of world.authUsers) {
-    const { error } = await admin.auth.admin.createUser({ id: u.id, email: u.email, email_confirm: true });
-    if (error && !/already/i.test(error.message)) throw new Error(`createUser ${u.email}: ${error.message}`);
-    if (!error) created++;
+    // retry transient network failures (hosted projects)
+    for (let attempt = 1; ; attempt++) {
+      const { error } = await admin.auth.admin.createUser({ id: u.id, email: u.email, email_confirm: true });
+      if (!error) { created++; break; }
+      if (/already/i.test(error.message)) break;
+      if (attempt < 4 && /fetch failed|ECONNRESET|ETIMEDOUT|5\d\d|rate limit/i.test(`${error.message} ${error.status ?? ''}`)) {
+        await new Promise((r) => setTimeout(r, 1000 * attempt));
+        continue;
+      }
+      throw new Error(`createUser ${u.email}: ${error.message}`);
+    }
   }
   await sql.unsafe(toSql(world, { includeAuthUsers: false }));
   const counts = await sql<{ t: string; n: number }[]>`

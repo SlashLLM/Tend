@@ -12,7 +12,7 @@ export const PERSONA = {
 } as const;
 
 /** Demo persona sign-in (DEMO_MODE only). Starts from a clean session. */
-export async function signInAs(page: Page, who: keyof typeof PERSONA, locale: '' | 'zh' = '') {
+export async function signInAs(page: Page, who: keyof typeof PERSONA, locale: '' | 'zh' | 'ms' = '') {
   await page.context().clearCookies();
   await page.goto(locale ? `/${locale}/login` : '/login');
   await page.getByRole('button', { name: new RegExp(PERSONA[who]) }).click();

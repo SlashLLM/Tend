@@ -1,6 +1,8 @@
+import { LOCALE_META, toLocale } from '@/i18n/routing';
+
 /** Dateline like "FRIDAY · 6 NOVEMBER" in Singapore time. */
 export function dateline(d: Date, locale: string) {
-  const loc = locale === 'zh' ? 'zh-CN' : 'en-SG';
+  const loc = LOCALE_META[toLocale(locale)].intl;
   const tz = 'Asia/Singapore';
   const weekday = d.toLocaleDateString(loc, { weekday: 'long', timeZone: tz });
   const date = d.toLocaleDateString(loc, { day: 'numeric', month: 'long', timeZone: tz });

@@ -3,6 +3,7 @@
  * constrained to the per-unit shortlist; the citation filter and Tone Guard run afterwards in code.
  */
 import { z } from 'zod';
+import { LOCALE_META, toLocale } from '@/i18n/routing';
 import type { Gateway } from '../ai/gateway';
 import type { Retrieved } from './retrieve';
 import type { CardDraft, EvidenceUnit, IndicatorDoc, NarrativeContent, PipelineContext, TagDraft } from './types';
@@ -94,7 +95,7 @@ export async function draftLuna(
     ctx: { orgId: ctx.orgId, observationId: ctx.observationId },
     temperature: 0.4,
     system: `${COMMON}
-Write growth notes for the educator in ${ctx.locale === 'zh' ? 'Simplified Chinese' : 'English'}, second person.
+Write growth notes for the educator in ${LOCALE_META[toLocale(ctx.locale)].aiLanguage}, second person.
 Rules: Glows first (up to 3). Up to 2 Grows, each framed as an opportunity and saying why it matters for children. Exactly 1 concrete Next step linked to a goal id when one fits. EVERY sentence must cite evidence_ids from the list provided — uncited sentences are deleted. At most 220 words in total. Never use: failed, poor, weak, lacks, unable, should have, wrong, never, always, careless, inadequate, below standard.`,
     prompt: `Evidence units (id: text):\n${units.map((u) => `${u.id}: ${u.text}`).join('\n')}
 Accepted tags:\n${tags.map((t) => `${t.unitId} → ${t.indicator} ${t.name} · L${t.level} · ${t.valence}`).join('\n')}

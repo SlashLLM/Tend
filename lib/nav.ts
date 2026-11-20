@@ -1,3 +1,4 @@
+import { LOCALE_PREFIX_RE } from '@/i18n/routing';
 import type { Area } from './auth/roles';
 
 export type NavItem = { href: string; label: string; icon: string; primary?: boolean };
@@ -37,6 +38,6 @@ export function splitForMobile(items: NavItem[], max = 5) {
 }
 
 export function isActive(pathname: string, href: string) {
-  const p = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
+  const p = pathname.replace(LOCALE_PREFIX_RE, '') || '/';
   return p === href || p.startsWith(`${href}/`);
 }

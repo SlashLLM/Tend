@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { savePreferences } from '@/app/actions/admin';
 import { cn } from '@/lib/utils';
+import { Link } from '@/i18n/navigation';
+import { LOCALE_META, LOCALE_PREFIX_RE, LOCALES, type Locale } from '@/i18n/routing';
 
-export function PreferencesForm({ locale, textScale, peerMatch }: { locale: 'en' | 'zh'; textScale: number; peerMatch: boolean | null }) {
+export function PreferencesForm({ locale, textScale, peerMatch }: { locale: Locale; textScale: number; peerMatch: boolean | null }) {
   const [l, setL] = useState(locale);
   const [s, setS] = useState(textScale);
   const [p, setP] = useState(peerMatch ?? false);
@@ -18,18 +20,20 @@ export function PreferencesForm({ locale, textScale, peerMatch }: { locale: 'en'
       start(async () => {
         await savePreferences({ locale: l, textScale: s, ...(peerMatch !== null ? { peerMatch: p } : {}) });
         toast.success('Saved');
-        if (l !== locale) window.location.assign(l === 'en' ? window.location.pathname.replace(/^\/zh/, '') || '/' : `/zh${window.location.pathname.replace(/^\/zh/, '')}`);
-        else window.location.reload();
+        if (l !== locale) {
+          const path = window.location.pathname.replace(LOCALE_PREFIX_RE, '') || '/';
+          window.location.assign(l === 'en' ? path : `/${l}${path === '/' ? '' : path}`);
+        } else window.location.reload();
       });
     }}>
       <fieldset className="grid gap-2">
-        <legend className="mb-1 font-medium">Language · 语言</legend>
-        <div className="flex gap-2">
-          {([['en', 'English'], ['zh', '中文']] as const).map(([v, label]) => (
+        <legend className="mb-1 font-medium">Language · 语言 · Bahasa</legend>
+        <div className="flex flex-wrap gap-2">
+          {LOCALES.map((v) => [v, LOCALE_META[v].label] as const).map(([v, label]) => (
             <button key={v} type="button" aria-pressed={l === v} onClick={() => setL(v)} className={cn('min-h-11 rounded-full border px-4', l === v && 'border-primary bg-primary text-primary-foreground')}>{label}</button>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">Bahasa Melayu and தமிழ் arrive in the pilot.</p>
+        <p className="text-xs text-muted-foreground">தமிழ் arrives in the pilot.</p>
       </fieldset>
       <fieldset className="grid gap-2">
         <legend className="mb-1 font-medium">Text size</legend>
@@ -46,6 +50,9 @@ export function PreferencesForm({ locale, textScale, peerMatch }: { locale: 'en'
         </label>
       )}
       <Button type="submit" className="min-h-11 justify-self-start" disabled={pending}>{pending && <Loader2 className="animate-spin" aria-hidden />} Save preferences</Button>
+      <p className="border-t pt-4 text-sm">
+        <Link href="/change-password" className="text-primary underline">Change password</Link>
+      </p>
     </form>
   );
 }

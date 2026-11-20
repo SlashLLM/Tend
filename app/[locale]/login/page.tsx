@@ -17,7 +17,8 @@ export default async function LoginPage({ params, searchParams }: { params: Prom
   // Only offer personas that exist (after `pnpm db:reset:blank` only the admin is left).
   let personas: readonly (typeof DEMO_PERSONAS)[number][] = [];
   if (demo) {
-    const { data } = await createAdminClient().from('app_user').select('email').in('email', DEMO_PERSONAS.map((p) => p.email));
+    const { data, error } = await createAdminClient().from('app_user').select('email').in('email', DEMO_PERSONAS.map((p) => p.email));
+    if (error) console.error('demo personas: lookup failed:', error.message);
     const existing = new Set((data ?? []).map((u) => u.email));
     personas = DEMO_PERSONAS.filter((p) => existing.has(p.email));
   }

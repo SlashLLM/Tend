@@ -1,6 +1,7 @@
 import { PageHeader } from '@/components/tend/page-header';
 import { PreferencesForm } from '@/components/shell/preferences-form';
 import { getSession } from '@/lib/auth/session';
+import { toLocale } from '@/i18n/routing';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata = { title: 'Preferences' };
@@ -13,7 +14,7 @@ export default async function PreferencesPage() {
   return (
     <>
       <PageHeader dateline="Preferences" title="Your settings" />
-      <PreferencesForm locale={s.profile.locale === 'zh' ? 'zh' : 'en'} textScale={s.profile.text_scale} peerMatch={data?.peer_match_opt_in ?? false} />
+      <PreferencesForm locale={toLocale(s.profile.locale)} textScale={s.profile.text_scale} peerMatch={data?.peer_match_opt_in ?? false} />
       <section className="tend-card mt-6 max-w-xl p-5" aria-labelledby="access">
         <h2 id="access" className="mb-2 font-semibold">Who accessed your records</h2>
         <ol className="grid gap-1 text-sm">

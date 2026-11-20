@@ -81,11 +81,30 @@
   "auth": {
     "title": "登录 Tend",
     "email": "工作邮箱",
-    "send": "发送登录链接到我的邮箱",
-    "sent": "请查看邮箱中的登录链接。",
-    "error": "无法发送链接，请重试。",
+    "password": "密码",
+    "signIn": "登录",
+    "invalid": "电子邮件或密码不正确，请重试。",
+    "forgot": "忘记密码？请联系您机构的 Tend 管理员重设。",
     "demo": "演示：登录为",
     "signOut": "退出登录"
+  },
+  "password": {
+    "title": "更改密码",
+    "titleFirst": "设置您的密码",
+    "introFirst": "您使用临时密码登录。请设置您自己的密码以继续。",
+    "current": "当前密码",
+    "new": "新密码",
+    "confirm": "再次输入新密码",
+    "hint": "至少 {min} 个字符。一个简短的句子容易记住。",
+    "save": "保存密码",
+    "problem": {
+      "too_short": "请至少使用 {min} 个字符。",
+      "too_long": "密码太长。",
+      "mismatch": "两次输入的新密码不一致。",
+      "wrong_current": "当前密码不正确。",
+      "same": "新密码不能与当前密码相同。",
+      "failed": "无法更改密码，请重试。"
+    }
   },
   "common": {
     "loading": "加载中…",

@@ -20,6 +20,8 @@
     "db:seed": "tsx --env-file=.env.local scripts/db-seed.ts",
     "db:reset": "supabase db reset && pnpm db:seed",
     "db:reset:blank": "supabase db reset && tsx --env-file=.env.local scripts/db-seed.ts --blank",
+    "db:remote": "tsx --env-file=.env.local scripts/db-remote.ts",
+    "user:reset-password": "tsx --env-file=.env.local scripts/reset-password.ts",
     "e2e": "playwright test --project=desktop && playwright test --project=mobile"
   },
   "dependencies": {

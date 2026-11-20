@@ -1,5 +1,5 @@
 'use client';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Scatter, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type Props = { points: { at: string; level: number }[]; selfRating?: number | null; target?: number | null };
 
@@ -16,10 +16,9 @@ export function TrajectoryChart({ points, selfRating, target }: Props) {
             <CartesianGrid stroke="var(--border)" vertical={false} />
             <XAxis dataKey="t" type="number" domain={['dataMin', 'dataMax']} tickFormatter={fmt} stroke="var(--muted-foreground)" fontSize={12} />
             <YAxis domain={[0.5, 3.5]} ticks={[1, 2, 3]} tickFormatter={(v) => `L${v}`} stroke="var(--muted-foreground)" fontSize={12} />
-            <Tooltip labelFormatter={(v) => fmt(Number(v))} formatter={(v) => [`Level ${v}`, 'Seen at']} />
-            <Line type="stepAfter" dataKey="level" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 4, fill: 'var(--primary)' }} isAnimationActive={false} />
-            {selfRating != null && <Line dataKey="self" stroke="var(--amber)" strokeDasharray="4 4" dot={false} isAnimationActive={false} />}
-            <Scatter dataKey="level" />
+            <Tooltip labelFormatter={(v) => fmt(Number(v))} formatter={(v, name) => [`Level ${v}`, name]} />
+            <Line name="Seen at" type="stepAfter" dataKey="level" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 4, fill: 'var(--primary)' }} isAnimationActive={false} />
+            {selfRating != null && <Line name="Your self-rating" dataKey="self" stroke="var(--amber)" strokeDasharray="4 4" dot={false} isAnimationActive={false} />}
           </LineChart>
         </ResponsiveContainer>
       </div>

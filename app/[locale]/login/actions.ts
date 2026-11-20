@@ -1,38 +1,40 @@
 'use server';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { toLocale } from '@/i18n/routing';
+import { mustChangePassword, PASSWORD_MAX } from '@/lib/auth/password';
 import { demoSignInAllowed, safeNext } from '@/lib/auth/roles';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
-export type LoginState = { status: 'idle' | 'sent' | 'error'; message?: string };
+export type LoginState = { status: 'idle' | 'error'; email?: string };
 
-const Email = z.string().trim().toLowerCase().email().max(254);
+const Creds = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  password: z.string().min(1).max(PASSWORD_MAX * 4),
+});
 
-async function origin() {
-  const h = await headers();
-  const proto = h.get('x-forwarded-proto') ?? 'http';
-  const host = h.get('x-forwarded-host') ?? h.get('host');
-  return process.env.NEXT_PUBLIC_SITE_URL ?? `${proto}://${host}`;
+function home(locale: string) {
+  const l = toLocale(locale);
+  return l === 'en' ? '/' : `/${l}`;
 }
 
-/** Email magic link. Only existing (invited) users can sign in — no self sign-up. */
-export async function sendMagicLink(_prev: LoginState, form: FormData): Promise<LoginState> {
-  const parsed = Email.safeParse(form.get('email'));
-  if (!parsed.success) return { status: 'error', message: 'invalid_email' };
-  const next = safeNext(String(form.get('next') ?? ''), '/');
+/** Email + password. Accounts are created by an admin (sign-ups are off). */
+export async function signIn(_prev: LoginState, form: FormData): Promise<LoginState> {
+  const parsed = Creds.safeParse({ email: form.get('email'), password: form.get('password') });
+  const email = String(form.get('email') ?? '');
+  // One message for every failure: wrong password, unknown email and bad input look the same (no user enumeration).
+  if (!parsed.success) return { status: 'error', email };
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email: parsed.data,
-    options: { shouldCreateUser: false, emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(next)}` },
-  });
-  // Same answer whether or not the account exists (no user enumeration).
-  if (error && !/not found|signups not allowed/i.test(error.message)) return { status: 'error', message: 'send_failed' };
-  return { status: 'sent' };
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+  if (error || !data.user) return { status: 'error', email };
+  const locale = String(form.get('locale') ?? 'en');
+  // First sign-in with a temporary password: choose your own before anything else.
+  if (mustChangePassword(data.user)) redirect(`${home(locale).replace(/\/$/, '')}/change-password`);
+  redirect(safeNext(String(form.get('next') ?? ''), home(locale)));
 }
 
-/** DEMO_MODE only: sign in instantly as a synthetic demo persona. */
+/** DEMO_MODE only: sign in instantly as a synthetic demo persona (no password, no email sent). */
 export async function demoSignIn(form: FormData) {
   const email = String(form.get('email') ?? '').toLowerCase();
   const locale = String(form.get('locale') ?? 'en');
@@ -43,5 +45,5 @@ export async function demoSignIn(form: FormData) {
   const supabase = await createClient();
   const { error: vErr } = await supabase.auth.verifyOtp({ type: 'magiclink', token_hash: data.properties.hashed_token });
   if (vErr) throw new Error(`Demo sign-in failed: ${vErr.message}`);
-  redirect(locale === 'en' ? '/' : `/${locale}`);
+  redirect(home(locale));
 }

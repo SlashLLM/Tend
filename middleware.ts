@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
-import { routing } from './i18n/routing';
+import { LOCALE_PREFIX_RE, routing } from './i18n/routing';
+import { mustChangePassword } from './lib/auth/password';
 
 const intl = createIntlMiddleware(routing);
 
@@ -9,8 +10,7 @@ const intl = createIntlMiddleware(routing);
 const PUBLIC = [/^\/login(\/|$)/, /^\/no-access(\/|$)/];
 
 function stripLocale(pathname: string) {
-  const m = pathname.match(/^\/(en|zh)(\/.*|$)/);
-  return m ? m[2] || '/' : pathname;
+  return pathname.replace(LOCALE_PREFIX_RE, '') || '/';
 }
 
 export async function middleware(req: NextRequest) {
@@ -36,10 +36,19 @@ export async function middleware(req: NextRequest) {
   const path = stripLocale(req.nextUrl.pathname);
   if (!user && !PUBLIC.some((r) => r.test(path))) {
     const login = req.nextUrl.clone();
-    const prefix = req.nextUrl.pathname.startsWith('/zh') ? '/zh' : '';
+    const prefix = req.nextUrl.pathname.match(LOCALE_PREFIX_RE)?.[0] ?? '';
     login.pathname = `${prefix}/login`;
     login.search = `?next=${encodeURIComponent(req.nextUrl.pathname + req.nextUrl.search)}`;
     const redirect = NextResponse.redirect(login);
+    res.cookies.getAll().forEach((c) => redirect.cookies.set(c));
+    return redirect;
+  }
+  // Signed in with a temporary password: choose your own before using the app.
+  if (user && mustChangePassword(user) && !/^\/change-password(\/|$)/.test(path)) {
+    const change = req.nextUrl.clone();
+    change.pathname = `${req.nextUrl.pathname.match(LOCALE_PREFIX_RE)?.[0] ?? ''}/change-password`;
+    change.search = '';
+    const redirect = NextResponse.redirect(change);
     res.cookies.getAll().forEach((c) => redirect.cookies.set(c));
     return redirect;
   }
@@ -47,6 +56,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Everything except API routes, auth callback, Next internals and static files.
+  // Everything except API routes, /auth (sign-out), Next internals and static files.
   matcher: ['/((?!api|auth|_next|_vercel|.*\\..*).*)'],
 };

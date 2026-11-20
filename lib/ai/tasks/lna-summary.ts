@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LOCALE_META, toLocale } from '@/i18n/routing';
 import { SUBDOMAIN_NAMES } from '@/lib/lna/content';
 import type { Snapshot } from '@/lib/lna/score';
 import type { Gateway } from '../gateway';
@@ -29,7 +30,7 @@ export async function lnaSummary(s: Snapshot, opts: { gateway?: Gateway | null; 
       ctx: { orgId: opts.orgId },
       system:
         'You write a warm, plain-words summary of a preschool educator’s self-assessment. Growth, not grading: never use scores, numbers, ranks or words like weak, poor, failed. About a 12-year-old reading level, at most 60 words, second person.',
-      prompt: `Language: ${opts.locale === 'zh' ? 'Simplified Chinese' : 'English'}.
+      prompt: `Language: ${LOCALE_META[toLocale(opts.locale)].aiLanguage}.
 Strengths: ${s.strengths.map((x) => SUBDOMAIN_NAMES[x.subdomain]).join('; ')}
 Growth areas: ${s.growth_areas.map((x) => SUBDOMAIN_NAMES[x.subdomain]).join('; ')}
 Return JSON {"summary": "..."}.`,

@@ -1,0 +1,118 @@
+{
+  "app": {
+    "name": "Tend",
+    "tagline": "Berkembang, bukan dinilai"
+  },
+  "level": {
+    "short": "L{level}",
+    "name": "Tahap {level}",
+    "seenAt": "Dilihat pada Tahap {level}",
+    "seenAtNext": "Dilihat pada Tahap {level} · seterusnya: cuba Tahap {next}",
+    "seenAtTop": "Dilihat pada Tahap 3 · teruskan memupuknya",
+    "notYetObserved": "Belum diperhatikan",
+    "target": "Sasaran: Tahap {level}",
+    "stones": "Batu tahap",
+    "descriptions": {
+      "1": "Amalan positif asas",
+      "2": "Lebih responsif dan bertujuan",
+      "3": "Lanjutan, dipimpin kanak-kanak"
+    }
+  },
+  "tag": {
+    "possible": "mungkin",
+    "confidence": "{pct}% yakin",
+    "domain": {
+      "1": "Hubungan",
+      "2": "Kesejahteraan",
+      "3": "Pembelajaran",
+      "IT": "Bayi & kanak-kanak kecil",
+      "TRUE": "Nilai Agape"
+    }
+  },
+  "evidence": {
+    "play": "Bukti main pada {time}",
+    "photo": "Bukti foto"
+  },
+  "feedback": {
+    "glow": "Sinar",
+    "grow": "Tumbuh",
+    "next": "Langkah seterusnya",
+    "glowHint": "Apa yang berjalan dengan baik",
+    "growHint": "Peluang untuk berkembang",
+    "nextHint": "Satu langkah milik anda",
+    "aiLabel": "Didraf dengan AI · disemak oleh {name}",
+    "aiDraft": "Draf AI · menunggu semakan"
+  },
+  "empty": {
+    "observations": "Belum ada pemerhatian.",
+    "observationsAction": "Jadualkan yang pertama",
+    "goals": "Belum ada matlamat. Analisis keperluan anda akan mencadangkannya.",
+    "goalsAction": "Mulakan analisis keperluan saya",
+    "reviews": "Tiada apa untuk disemak. Semuanya sudah selesai.",
+    "reviewsAction": "Pergi ke Pemerhatian"
+  },
+  "nav": {
+    "educator": {
+      "home": "Utama",
+      "growth": "Perkembangan Saya",
+      "reflect": "Refleksi",
+      "coach": "Bimbingan",
+      "learn": "Belajar"
+    },
+    "leader": {
+      "today": "Hari Ini",
+      "observe": "Pemerhatian",
+      "reviews": "Semakan",
+      "educators": "Pendidik",
+      "insights": "Wawasan Pusat",
+      "metrics": "Metrik",
+      "settings": "Tetapan"
+    },
+    "hq": {
+      "network": "Rangkaian",
+      "registry": "Daftar Rangka Kerja",
+      "programmes": "Program",
+      "admin": "Pentadbir"
+    },
+    "main": "Navigasi utama",
+    "more": "Lagi",
+    "preferences": "Keutamaan"
+  },
+  "auth": {
+    "title": "Log masuk ke Tend",
+    "email": "E-mel kerja",
+    "password": "Kata laluan",
+    "signIn": "Log masuk",
+    "invalid": "E-mel dan kata laluan itu tidak sepadan. Sila cuba lagi.",
+    "forgot": "Lupa kata laluan? Minta pentadbir Tend organisasi anda menetapkannya semula.",
+    "demo": "Demo: log masuk sebagai",
+    "signOut": "Log keluar"
+  },
+  "password": {
+    "title": "Tukar kata laluan",
+    "titleFirst": "Pilih kata laluan anda",
+    "introFirst": "Anda log masuk dengan kata laluan sementara. Pilih kata laluan anda sendiri untuk meneruskan.",
+    "current": "Kata laluan semasa",
+    "new": "Kata laluan baharu",
+    "confirm": "Taip kata laluan baharu sekali lagi",
+    "hint": "Sekurang-kurangnya {min} aksara. Frasa pendek mudah diingati.",
+    "save": "Simpan kata laluan",
+    "problem": {
+      "too_short": "Gunakan sekurang-kurangnya {min} aksara.",
+      "too_long": "Kata laluan itu terlalu panjang.",
+      "mismatch": "Kedua-dua kata laluan baharu tidak sepadan.",
+      "wrong_current": "Kata laluan semasa anda tidak betul.",
+      "same": "Pilih kata laluan yang berbeza daripada yang semasa.",
+      "failed": "Kami tidak dapat menukar kata laluan anda. Sila cuba lagi."
+    }
+  },
+  "common": {
+    "loading": "Memuatkan…",
+    "error": "Ada masalah berlaku. Sila cuba lagi.",
+    "retry": "Cuba lagi",
+    "undo": "Buat asal",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "close": "Tutup"
+  }
+}

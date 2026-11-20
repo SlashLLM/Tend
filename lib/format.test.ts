@@ -6,6 +6,7 @@ describe('format', () => {
     // 20:00 UTC on 5 Nov is 04:00 on 6 Nov in Singapore
     expect(dateline(new Date('2026-11-05T20:00:00Z'), 'en')).toBe('Friday · 6 November');
     expect(dateline(new Date('2026-11-05T20:00:00Z'), 'zh')).toMatch(/星期五 · 11月6日/);
+    expect(dateline(new Date('2026-11-05T20:00:00Z'), 'ms')).toBe('Jumaat · 6 November');
   });
 
   it.each([

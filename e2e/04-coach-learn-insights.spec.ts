@@ -116,8 +116,10 @@ test.describe.serial('Day 5–6 · Coach, Reflect, Learn, Insights, Metrics, HQ,
     await page.getByLabel('Full name').fill('New Educator');
     await page.getByLabel('Work email').fill(`new.educator.${Date.now()}@demo.tend.sg`);
     await page.getByLabel('Centre').selectOption({ label: 'Tampines' });
-    await page.getByRole('button', { name: 'Send invite' }).click();
+    await page.getByRole('button', { name: 'Create account' }).click();
     await expect(page.getByText(/^Invited /)).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByLabel('Temporary password')).toHaveText(/^\w{4}(-\w{4}){3}$/);
+    await page.getByRole('button', { name: 'Done' }).click();
     await expect(page.getByRole('cell', { name: 'New Educator', exact: true })).toBeVisible();
   });
 
