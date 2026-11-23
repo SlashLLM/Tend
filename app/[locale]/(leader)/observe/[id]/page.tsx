@@ -77,7 +77,7 @@ export default async function ObservePage({ params }: { params: Promise<{ id: st
       <CaptureStudio
         obsId={o.id}
         initialStatus={o.status as 'scheduled' | 'capturing'}
-        startedAt={o.capture_started_at}
+        elapsedMs={o.capture_started_at ? Math.max(0, Date.now() - Date.parse(o.capture_started_at)) : null}
         demo={process.env.DEMO_MODE === '1'}
         liveTranscription={aiMode() === 'luna'}
       />

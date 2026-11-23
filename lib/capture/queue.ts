@@ -59,9 +59,18 @@ async function bump(item: QueuedItem) {
 }
 
 export type Uploaded = { key: string; transcript: string | null };
+export type Dropped = { key: string; kind: QueuedItem['kind']; error: string };
 
-/** Upload everything pending for an observation, in order. Stops at the first network failure. */
-export async function flush(obsId: string, onUploaded?: (u: Uploaded) => void): Promise<{ sent: number; left: number }> {
+/**
+ * Upload everything pending for an observation, in order. Stops at the first network failure.
+ * An item the server keeps refusing (4xx) is dropped so the queue never jams — and reported through
+ * `onDropped`, so the person is told instead of seeing "All saved".
+ */
+export async function flush(
+  obsId: string,
+  onUploaded?: (u: Uploaded) => void,
+  onDropped?: (d: Dropped) => void,
+): Promise<{ sent: number; left: number }> {
   let sent = 0;
   const items = await pending(obsId);
   for (const it of items) {
@@ -76,8 +85,11 @@ export async function flush(obsId: string, onUploaded?: (u: Uploaded) => void): 
       if (res.status >= 500 || res.status === 0) throw new Error(`server ${res.status}`);
       if (!res.ok) {
         // 4xx: permanent (e.g. capture already ended) — drop after a few tries so the queue never jams
-        if (it.attempts >= 2) await remove(it.key);
-        else await bump(it);
+        if (it.attempts >= 2) {
+          const error = await res.json().then((b: { error?: string }) => b.error ?? `HTTP ${res.status}`).catch(() => `HTTP ${res.status}`);
+          await remove(it.key);
+          onDropped?.({ key: it.key, kind: it.kind, error });
+        } else await bump(it);
         continue;
       }
       const body = (await res.json()) as { transcript?: string | null };
