@@ -1,5 +1,5 @@
 'use client';
-import { Camera, CloudOff, Loader2, Mic, PenLine, Play, Square, Star } from 'lucide-react';
+import { Camera, CheckCircle2, CloudOff, Loader2, Mic, PenLine, Play, Square, Star } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from '@/i18n/navigation';
@@ -266,8 +266,8 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
           </button>
         </div>
         <div className="mx-auto mt-3 max-w-xl">
-          <Button onClick={() => void end()} disabled={status === 'ending'} variant="secondary" className="min-h-12 w-full">
-            {status === 'ending' ? <><Loader2 className="animate-spin" aria-hidden /> Saving and drafting…</> : 'End observation'}
+          <Button onClick={() => void end()} disabled={status === 'ending'} className="min-h-12 w-full text-base font-semibold shadow-sm">
+            {status === 'ending' ? <><Loader2 className="animate-spin" aria-hidden /> Saving and drafting…</> : <><CheckCircle2 aria-hidden /> End observation</>}
           </Button>
         </div>
       </div>

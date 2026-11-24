@@ -43,3 +43,6 @@ next-env.d.ts
 seed.users.json
 test-results/
 playwright-report/
+
+# challenge brief (reference only, not part of the repo)
+Challenge Brief_*.pdf

@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tend — Demo Walkthrough</title>
+<style>
+  :root{
+    --ink:#1b1f23; --sub:#5b6472; --bg:#faf9f6; --card:#ffffff;
+    --accent:#2f6f5e; --accent-soft:#e7f1ec; --line:#e7e3da;
+    --amber:#b8792b; --amber-soft:#faf0df;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    line-height:1.55;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:48px 24px 120px}
+  header.hero{
+    padding:40px 0 28px; border-bottom:2px solid var(--line); margin-bottom:36px;
+  }
+  .eyebrow{
+    text-transform:uppercase; letter-spacing:.12em; font-size:12px; font-weight:700;
+    color:var(--accent); margin-bottom:10px;
+  }
+  h1{font-size:clamp(28px,5vw,40px); margin:0 0 12px; letter-spacing:-0.01em}
+  .tagline{font-size:18px; color:var(--sub); max-width:60ch}
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px; margin-top:20px}
+  .pill{
+    background:var(--accent-soft); color:var(--accent); border-radius:999px;
+    padding:6px 14px; font-size:13px; font-weight:600;
+  }
+  .pill.amber{background:var(--amber-soft); color:var(--amber)}
+
+  nav.toc{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 22px; margin-bottom:40px;
+  }
+  nav.toc h3{margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--sub)}
+  nav.toc ol{margin:0; padding-left:20px; columns:2; column-gap:30px}
+  nav.toc li{margin-bottom:6px; font-size:14.5px}
+  nav.toc a{color:var(--ink); text-decoration:none; border-bottom:1px solid transparent}
+  nav.toc a:hover{border-color:var(--accent); color:var(--accent)}
+
+  section{margin-bottom:44px}
+  h2{
+    font-size:23px; margin:0 0 6px; display:flex; align-items:center; gap:10px;
+  }
+  .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff;
+    font-size:14px; font-weight:700; flex:none;
+  }
+  .section-sub{color:var(--sub); font-size:14.5px; margin:0 0 16px 40px}
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px; margin:0 0 14px 40px;
+  }
+  .card + .card{margin-top:-2px}
+  .label{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--sub); font-weight:700; margin-bottom:8px}
+  .say{
+    font-size:17px; font-style:italic; color:var(--ink); border-left:3px solid var(--accent);
+    padding-left:14px; margin:0 0 14px;
+  }
+  .do-list{margin:0; padding-left:20px}
+  .do-list li{margin-bottom:6px; font-size:15px}
+  .why{
+    background:var(--accent-soft); border-radius:10px; padding:12px 16px; margin-top:14px;
+    font-size:14.5px; color:#22493e;
+  }
+  .why b{color:var(--accent)}
+  .watch{
+    background:var(--amber-soft); border-radius:10px; padding:12px 16px; margin-top:10px;
+    font-size:14.5px; color:#6b4a19;
+  }
+  .watch b{color:var(--amber)}
+  code{background:#f0eee6; padding:2px 6px; border-radius:5px; font-size:13.5px}
+
+  .divider{
+    display:flex; align-items:center; gap:12px; margin:40px 0 40px 40px; color:var(--sub);
+    font-size:13px; text-transform:uppercase; letter-spacing:.08em;
+  }
+  .divider::before, .divider::after{content:""; flex:1; height:1px; background:var(--line)}
+
+  .pareto{
+    background:linear-gradient(135deg,#1b1f23,#2f3b38); color:#f4f2ea; border-radius:var(--radius);
+    padding:28px 28px; margin-bottom:40px;
+  }
+  .pareto h2{color:#fff}
+  .pareto .section-sub{color:#c9cfc9}
+  .pareto-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:16px}
+  @media (max-width:640px){ .pareto-grid{grid-template-columns:1fr} .section-sub, .card{margin-left:0} .divider{margin-left:0} nav.toc ol{columns:1} }
+  .pareto-col h4{margin:0 0 8px; font-size:14px; letter-spacing:.04em; text-transform:uppercase}
+  .pareto-col.in h4{color:#8fd4b8}
+  .pareto-col.out h4{color:#e8a9a9}
+  .pareto-col ul{margin:0; padding-left:18px; font-size:14.5px; color:#e8e6dd}
+  .pareto-col li{margin-bottom:6px}
+
+  .persona-table{width:100%; border-collapse:collapse; margin-left:40px; width:calc(100% - 40px)}
+  .persona-table th, .persona-table td{text-align:left; padding:9px 12px; font-size:14px; border-bottom:1px solid var(--line)}
+  .persona-table th{color:var(--sub); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.06em}
+  .persona-table tr:last-child td{border-bottom:none}
+  .tagbadge{display:inline-block; background:var(--accent-soft); color:var(--accent); border-radius:6px; padding:1px 8px; font-size:12px; font-weight:600}
+
+  .closer{
+    background:var(--card); border:2px solid var(--accent); border-radius:var(--radius);
+    padding:26px 28px; margin-bottom:10px;
+  }
+  .closer h2{margin-bottom:12px}
+  .timeline{
+    display:flex; justify-content:space-between; margin:30px 0 8px 40px; position:relative;
+  }
+  .timeline::before{content:""; position:absolute; top:9px; left:0; right:0; height:2px; background:var(--line)}
+  .tstop{flex:1; text-align:center; position:relative; font-size:12.5px; color:var(--sub)}
+  .tstop .dot{width:18px; height:18px; border-radius:50%; background:var(--accent); margin:0 auto 6px; border:3px solid var(--bg); position:relative; z-index:1}
+  footer{text-align:center; color:var(--sub); font-size:13px; margin-top:60px}
+  .print-hide{}
+  @media print{ .print-hide{display:none} body{background:#fff} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Demo Walkthrough · Internal Use</div>
+    <h1>Tend — Educator Growth Studio</h1>
+    <p class="tagline">One classroom observation, followed end-to-end: from a teacher's own request for feedback, to a live-coached moment, to same-day growth and a leadership view across the centre. A single continuous story, not a feature tour.</p>
+    <div class="meta-row">
+      <span class="pill">⏱ ~6 minutes</span>
+      <span class="pill">4 personas, 1 thread</span>
+      <span class="pill amber">80/20 cut — 7 moments, ~8 screens</span>
+    </div>
+  </header>
+
+  <nav class="toc print-hide">
+    <h3>On this page</h3>
+    <ol>
+      <li><a href="#pareto">The 80/20 cut</a></li>
+      <li><a href="#personas">Who's in the story</a></li>
+      <li><a href="#setup">Before you start</a></li>
+      <li><a href="#act1">Act 1 — Ravi asks to be observed</a></li>
+      <li><a href="#act2">Act 2 — Aisha chooses her focus</a></li>
+      <li><a href="#act3">Act 3 — Sandra observes</a></li>
+      <li><a href="#act4">Act 4 — same-day feedback</a></li>
+      <li><a href="#act5">Act 5 — Aisha grows</a></li>
+      <li><a href="#act6">Act 6 — the debrief</a></li>
+      <li><a href="#act7">Act 7 — zoom out to HQ</a></li>
+      <li><a href="#closer">The line to close on</a></li>
+    </ol>
+  </nav>
+
+  <div class="pareto" id="pareto">
+    <h2>Why this path, and nothing else</h2>
+    <p class="section-sub">Tend has ~20 screens across 4 roles. These seven moments carry the entire value story — everything else is depth for people who ask follow-up questions.</p>
+    <div class="pareto-grid">
+      <div class="pareto-col in">
+        <h4>✓ Show (the vital few)</h4>
+        <ul>
+          <li>Educator <b>asks</b> to be observed, and chooses her own focus (agency, not surveillance)</li>
+          <li>Leader <b>still decides</b> when, or declines, so who gets observed stays fair</li>
+          <li>Leader observes live, with AI drafting from evidence — <b>same day</b>, not weeks later</li>
+          <li><b>Tone Guard</b> catching a harsh word in real time (trust, not just AI)</li>
+          <li>Evidence-linked feedback the teacher can <b>act on</b>, not just read</li>
+          <li>Leader's <b>Insights</b> rolling individual moments into a centre-wide pattern</li>
+        </ul>
+      </div>
+      <div class="pareto-col out">
+        <h4>✗ Skip (the trivial many)</h4>
+        <ul>
+          <li>Admin: account creation, password resets, framework upload</li>
+          <li>Full Metrics/CSV export, Registry, Programmes browsing</li>
+          <li>Settings, locale switching, accessibility toggles</li>
+          <li>Every one of the 46 QTT indicators — reference just one</li>
+          <li>Offline-vs-Luna pipeline internals, AI run logging</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <section id="personas">
+    <h2><span class="step-num">★</span> Who's in the story</h2>
+    <p class="section-sub">Four of the seven demo personas carry the whole arc. Switch between them with the persona switcher on the sign-in page (DEMO_MODE).</p>
+    <table class="persona-table">
+      <tr><th>Persona</th><th>Role</th><th>Why they're in this demo</th></tr>
+      <tr><td><b>Ravi Kumar</b></td><td>N2 Teacher, first year</td><td>Asks to be observed (Act 1), so the educator starts the loop</td></tr>
+      <tr><td><b>Aisha binte Rahman</b></td><td>K1 Preschool Teacher</td><td>The educator whose story time gets observed: picks her focus, then grows from the feedback</td></tr>
+      <tr><td><b>Sandra Tan</b></td><td>Centre Leader, Punggol</td><td>The observer/coach — runs the observation, reviews, debriefs</td></tr>
+      <tr><td><b>Daniel Koh</b></td><td>HQ L&D</td><td>The bird's-eye view — patterns across many Sandras and Aishas</td></tr>
+    </table>
+  </section>
+
+  <section id="setup">
+    <h2><span class="step-num">0</span> Before you start</h2>
+    <p class="section-sub">Two minutes of setup now saves every awkward pause later.</p>
+    <div class="card">
+      <ul class="do-list">
+        <li>Run locally: <code>pnpm db:start && pnpm db:reset && pnpm dev</code> → <code>http://localhost:3000</code>. On a hosted Supabase project instead of Docker, apply the latest migrations with <code>ALLOW_REMOTE_SEED=1 pnpm db:remote migrate</code> (Act 1 needs migration <code>0005_observation_requests</code>).</li>
+        <li>Confirm <code>DEMO_MODE=1</code> in <code>.env.local</code> so the persona switcher appears on sign-in. With <code>DEMO_MODE=0</code> the login page only shows the email and password form.</li>
+        <li><b>Start from a clean demo world.</b> Running the story changes the data: Ravi can ask only once (the request is then fulfilled), and Aisha's observation moves on after Act 3. Reset before each demo (<code>pnpm db:reset</code>, or <code>pnpm db:remote reset</code> on a hosted test project, which wipes it).</li>
+        <li>No <code>OPENAI_API_KEY</code>? That's fine — offline mode still shows drafting, tagging, Tone Guard and coaching live. Drafts are just labelled "Drafted offline." Don't apologize for this on stage — say it's "Singapore-data-residency-safe mode" if asked.</li>
+        <li>Pre-open two browser windows side by side if presenting solo: one for Sandra, one for Aisha — makes the "same day, two people" beat land without fumbling logins.</li>
+      </ul>
+      <div class="why"><b>Why this matters:</b> the single biggest demo-killer is losing 90 seconds to environment setup mid-story. Do it before anyone's watching.</div>
+    </div>
+  </section>
+
+  <div class="divider">The story begins</div>
+
+  <section id="act1">
+    <h2><span class="step-num">1</span> Ravi asks to be observed</h2>
+    <p class="section-sub">URL: <code>/login</code> → <code>/home</code> (Ravi), then <code>/today</code> → <code>/observe?request=…</code> (Sandra)</p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>On <code>/login</code>, click the row <b>"Ravi Kumar &nbsp; N2 Teacher · first year"</b>. You land on <code>/home</code>.</li>
+        <li>The top card reads <b>"Ready for feedback?"</b> with the heading <b>"Ask your leader to observe you"</b>. (It only appears when the educator has nothing scheduled, which is why Ravi is used here and not Aisha.)</li>
+        <li>Click the box <b>"Anything they should know? (optional)"</b> and type a short note, for example <i>Story time on Thursday, trying open questions</i>. A counter shows 0/300.</li>
+        <li>Click <b>"Request an observation"</b>. A toast says "Request sent to your centre leader", and the card turns into <b>"Requested · Your leader has your request"</b>, quoting the note, with a <b>"Withdraw request"</b> button.</li>
+        <li>Sign out (bottom-left of the nav), return to <code>/login</code> and click <b>"Sandra Tan &nbsp; Centre Leader · Punggol"</b>. You land on <b>Today</b>.</li>
+        <li>The first row in <b>"Needs you"</b> is <b>"Ravi Kumar · Asked to be observed · “Story time on Thursday…”"</b> with an amber hand icon and <b>"Pick a time"</b> on the right. Click it. This opens <code>/observe?request=…</code>.</li>
+        <li>On the Schedule form, an amber note reads <b>"Ravi Kumar asked to be observed"</b> and repeats the note. The Educator field is locked to Ravi. Next to the note is a <b>"Decline request"</b> button (don't click it in the main story).</li>
+        <li>Fill <b>"When (Singapore time)"</b> with any future date and time, leave the rest, and click <b>"Schedule"</b>. A toast says "Scheduled for Ravi Kumar — they’ll choose a focus", and the Upcoming list now shows <b>"Ravi Kumar · Story time · waiting for focus"</b>.</li>
+      </ol>
+      <div class="say">"Until now, only the leader could start an observation. Ravi, a first-year teacher, asks for one himself, with a note about what he's trying. Sandra still decides when, so she keeps the calendar and who gets observed stays fair. Her queue lit up the moment he asked."</div>
+      <div class="watch"><b>If asked "what if the leader is too busy?":</b> click <b>Decline request</b>. The educator is notified and can ask again later. They can also withdraw their own request.</div>
+      <div class="why"><b>Why this is one of the 20%:</b> it shows the educator starting the loop, not only receiving it, without handing over control. One extra screen, and it answers "is this just surveillance?" before anyone asks.</div>
+    </div>
+  </section>
+
+  <section id="act2">
+    <h2><span class="step-num">2</span> Aisha chooses her focus</h2>
+    <p class="section-sub">URL: <code>/login</code> → URL: <code>/home</code></p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>On <code>/login</code>, find the card titled <b>"Demo: sign in as"</b>. It's a list of buttons, each showing a name on the left and a role on the right.</li>
+        <li>Click the row that reads <b>"Aisha binte Rahman &nbsp; K1 Preschool Teacher"</b>. No password needed — this signs you in instantly and redirects to <code>/home</code>.</li>
+        <li>On the Home page, the <b>"Coming up"</b> card shows the story time Sandra already scheduled. Click its button <b>"Choose what I'd like feedback on"</b> (a <code>Target</code> icon).</li>
+        <li>This navigates to a real page, <code>/focus/[id]</code> — not a popup. Pick the indicator shown there (demo data is pre-seeded to <b>3.3.4</b>). Save your selection.</li>
+        <li>You're taken back to <code>/home</code>; the button now reads <b>"Change my focus"</b> — your proof the pick registered.</li>
+      </ol>
+      <div class="label">Say</div>
+      <p class="say">"Normally feedback happens to a teacher. Here, Aisha decides what she wants it to be about. She picks indicator 3.3.4 herself, and Sandra will see that before she walks in."</p>
+      <div class="why"><b>Why this is one of the 20%:</b> the teacher chooses what the feedback is about, which keeps the product a growth tool owned by the teacher, not a surveillance tool for leaders. Keep it to about 20 seconds.</div>
+    </div>
+  </section>
+
+  <section id="act3">
+    <h2><span class="step-num">3</span> Sandra observes, live</h2>
+    <p class="section-sub">URL: <code>/login</code> → URL: <code>/observe</code> → URL: <code>/observe/[id]</code></p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>Sign out of Aisha (or open a second browser/incognito window). On <code>/login</code>, click <b>"Sandra Tan &nbsp; Centre Leader, Punggol"</b>.</li>
+        <li>In the left nav, click <b>"Observe"</b>. Page header literally says "Observe"; subtitle: "Short, focused micro-observations. The educator chooses the focus; you capture, Tend drafts."</li>
+        <li>In the upcoming list, click the card <b>"Aisha binte Rahman · K1 story time"</b>. This opens <code>/observe/[id]</code>.</li>
+        <li>At the top of that page is a card labelled <b>"Pre‑brief"</b> — point at it: it shows Aisha's chosen indicator tagged "Chosen focus" and a "Look for" list. This is not a popup, it's always on this page.</li>
+        <li>Click the large circular <b>Play</b> button (labelled "Start observation"). Helper text under it: "Start when you're ready. Dictate quietly; type a note any time."</li>
+        <li>Click <b>"Play demo dictation (synthetic)"</b> — only visible before you've captured anything. This auto-plays scripted lines about Aisha's story time so you don't have to talk over yourself.</li>
+        <li>While it plays, click the round amber <b>★ star button</b> ("Mark a moment") once — a line "★ Moment" appears in the transcript in bold amber.</li>
+        <li>Click <b>"End observation"</b> (the green primary button with a check icon at the bottom). It shows "Saving and drafting…" for a moment, then redirects you straight to the Review screen.</li>
+      </ol>
+      <div class="say">"Sandra sees exactly what Aisha asked for before she walks in — that's the pre-brief card. She starts, flags one moment with a single star tap, and ends it. Seconds, not a form."</div>
+      <div class="watch"><b>If asked about real audio:</b> "Needs the OPENAI_API_KEY live; same flow either way" — one sentence, then move on.</div>
+    </div>
+  </section>
+
+  <section id="act4">
+    <h2><span class="step-num">4</span> From evidence to feedback — with a trust check built in</h2>
+    <p class="section-sub">URL: <code>/reviews/[id]</code> (you land here automatically after "End observation")</p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>You're on the Review workspace. Evidence items sit in a left/side column, each with a timestamp chip — click one chip to seek/play that moment.</li>
+        <li>The draft is grouped under headings <b>"Glows"</b> (up to 3), <b>"Grows"</b> (up to 2), and <b>"Next step"</b> — each line is an editable text box, not static text.</li>
+        <li>Click into any "Grows" text box and type the word <code>failed</code> anywhere in the sentence.</li>
+        <li>Watch it trigger <i>immediately as you type</i> (no save needed): a warning appears — <b>"Tone Guard: 'failed' can feel judgemental."</b> — with a button <b>"Use: '…rewritten text…'"</b>. Click that button to accept the rewrite.</li>
+        <li>Scroll to the bottom and click <b>"Approve & share with Aisha"</b>. (This button is disabled/greyed out until every line is clean, cited, and within the word limit — point that out.)</li>
+        <li>Footer line above the button reads: <i>"Nothing reaches Aisha until you approve. It will be labelled 'Drafted with AI · reviewed by Sandra Tan.'"</i> — read it aloud.</li>
+      </ol>
+      <div class="say">"The draft isn't generic praise — it's cited and evidence-linked. And if I try to write something harsh — watch — Tone Guard catches it, live, as I type."</div>
+      <div class="why"><b>Highest-leverage moment in the demo:</b> answers "is the AI making things up?" (cited), "is this punitive?" (names redacted), and "can this say something cruel?" (Tone Guard, live) in under 30 seconds.</div>
+    </div>
+  </section>
+
+  <div class="divider">Same day — the loop closes</div>
+
+  <section id="act5">
+    <h2><span class="step-num">5</span> Aisha grows — not just reads</h2>
+    <p class="section-sub">URL: <code>/home</code> → URL: <code>/feedback/[id]</code> → URL: <code>/coach</code></p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>Switch back to Aisha's session, go to <code>/home</code>. A new card now reads <b>"New growth notes · K1 story time"</b>, subtext "From Sandra Tan. Take a moment to reflect first." Click it.</li>
+        <li>You land on a gate screen, heading <b>"Before you read them: how do you think it went?"</b> — a required textarea (placeholder: "e.g. The children were quiet when I asked why…").</li>
+        <li>Type at least a few words, then click <b>"Save reflection and read my notes"</b> (stays disabled below ~3 characters — type enough to unlock it).</li>
+        <li>The feedback unlocks: Glows, then each Grow with buttons <b>"I agree"</b> and <b>"Add context"</b> (click "Add context" to reveal a textarea + Send/Cancel), then the Next step card.</li>
+        <li>At the bottom, click the 👍 ("Helpful") icon button under "Were these notes helpful?"</li>
+        <li>In the left nav, click <b>"Coach"</b> (<code>/coach</code>) and type something like "my K1s go quiet when I ask open questions" into the chat to show a live coaching reply.</li>
+      </ol>
+      <div class="say">"Same day — not next term's appraisal cycle. And notice the order: she reflects before she even sees the feedback. That's closed-loop growth, not a PDF in an inbox."</div>
+      <div class="why"><b>Why it's in the 20%:</b> this is the half every observation tool skips — what happens *after* feedback is given.</div>
+    </div>
+  </section>
+
+  <section id="act6">
+    <h2><span class="step-num">6</span> The debrief writes itself</h2>
+    <p class="section-sub">URL: <code>/reviews</code> → URL: <code>/reviews/[id]</code></p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>Back in Sandra's session, click <b>"Reviews"</b> in the nav. Header "Reviews"; the list is grouped under "Waiting for your review", "Shared · waiting for the educator", and <b>"Ready to debrief"</b>.</li>
+        <li>Click the observation under "Ready to debrief" (it moves there once Aisha has acknowledged the feedback).</li>
+        <li>You land on the <b>Debrief</b> panel — point at the numbered agenda (celebrate / questions / decision), built from Aisha's own reflection text.</li>
+        <li>Click <b>"Start 15-minute debrief"</b> — a countdown timer starts at 15:00.</li>
+      </ol>
+      <div class="say">"Sandra doesn't walk in guessing what to talk about — this agenda came from what Aisha herself reflected on."</div>
+    </div>
+  </section>
+
+  <section id="act7">
+    <h2><span class="step-num">7</span> Zoom out — one teacher becomes a pattern</h2>
+    <p class="section-sub">URL: <code>/insights</code> → URL: <code>/network</code> (as Daniel)</p>
+    <div class="card">
+      <div class="label">Click, in order</div>
+      <ol class="do-list">
+        <li>Still as Sandra, click <b>"Centre Insights"</b> in the nav. Title "Centre Insights", subtitle "Where the centre is growing together — built only from approved evidence. Levels, never scores."</li>
+        <li>Point at the heatmap section, "Heatmap · educators × subdomains" — click any cell to drill into that subdomain's view.</li>
+        <li>Sign out, go to <code>/login</code>, click <b>"Daniel Koh &nbsp; HQ L&D"</b>.</li>
+        <li>Click <b>"Network"</b> in the nav (<code>/network</code>) — show the same kind of pattern rolled up across centres.</li>
+      </ol>
+      <div class="say">"Everything you just watched happen to one teacher rolls up automatically — Sandra sees her centre's pattern, Daniel sees the whole network, with nobody filling in a spreadsheet."</div>
+      <div class="why"><b>Why it's in the 20%:</b> the only moment that proves ROI beyond one happy teacher.</div>
+    </div>
+  </section>
+
+  <div class="timeline print-hide">
+    <div class="tstop"><div class="dot"></div>Request<br>(Ravi)</div>
+    <div class="tstop"><div class="dot"></div>Focus<br>(Aisha)</div>
+    <div class="tstop"><div class="dot"></div>Observe<br>(Sandra)</div>
+    <div class="tstop"><div class="dot"></div>Trust check<br>(Tone Guard)</div>
+    <div class="tstop"><div class="dot"></div>Grow<br>(Aisha)</div>
+    <div class="tstop"><div class="dot"></div>Debrief<br>(Sandra)</div>
+    <div class="tstop"><div class="dot"></div>Scale<br>(Daniel)</div>
+  </div>
+
+  <section class="closer" id="closer">
+    <h2>The line to close on</h2>
+    <p class="say" style="margin-bottom:0;">"One observation, same day, became evidence-linked feedback the teacher could act on, a debrief that ran itself, and a pattern her leader and HQ could both see. That whole loop — ask, observe, trust, grow, scale — is Tend, and it starts with the teacher. Everything else in the product supports this loop; nothing else replaces it."</p>
+  </section>
+
+  <footer>Tend — Educator Growth Studio · Demo walkthrough · Synthetic data only, Singapore residency pending (PRD Q4)</footer>
+</div>
+</body>
+</html>

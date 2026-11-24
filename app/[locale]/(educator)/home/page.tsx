@@ -11,6 +11,7 @@ import { getSession } from '@/lib/auth/session';
 import { loadPlans } from '@/lib/data/growth';
 import { dateline, firstName } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
+import { RequestObservation } from './request-observation';
 
 export const metadata = { title: 'Home' };
 
@@ -22,8 +23,11 @@ export default async function HomePage() {
   const supabase = await createClient();
   const uid = session.userId;
 
-  const [plans, { data: upcoming }, { data: shared }, { data: reflections }, { data: cards }] = await Promise.all([
+  const [plans, { data: openRequest }, { count: inFlight }, { data: upcoming }, { data: shared }, { data: reflections }, { data: cards }] = await Promise.all([
     loadPlans(supabase, uid),
+    supabase.from('observation_request').select('id, note').eq('educator_id', uid).eq('status', 'open').maybeSingle(),
+    // Same condition request_observation() enforces: anything scheduled or being captured blocks a new request.
+    supabase.from('observation').select('id', { count: 'exact', head: true }).eq('educator_id', uid).in('status', ['scheduled', 'capturing']),
     supabase.from('observation').select('id, scheduled_at, title, focus_goal_ids, observer:observer_id(full_name)').eq('educator_id', uid).eq('status', 'scheduled').gte('scheduled_at', new Date(Date.now() - 3 * 3600_000).toISOString()).order('scheduled_at').limit(2),
     supabase.from('observation').select('id, title, shared_at, observer:observer_id(full_name)').eq('educator_id', uid).in('status', ['shared', 'acknowledged']).order('shared_at', { ascending: false }).limit(5),
     supabase.from('educator_response').select('observation_id').eq('educator_id', uid).eq('kind', 'reflection'),
@@ -71,6 +75,8 @@ export default async function HomePage() {
               </section>
             );
           })}
+
+          {(inFlight ?? 0) === 0 && <RequestObservation open={openRequest} />}
 
           <section aria-labelledby="my-goals">
             <SectionTitle id="my-goals" count={goals.length} action={<Link href="/growth" className="text-sm text-primary hover:underline">My Growth</Link>}>
