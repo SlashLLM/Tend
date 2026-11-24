@@ -9,7 +9,8 @@ import { createClient } from '@/lib/supabase/server';
 const Meta = z.object({
   kind: z.enum(['audio_chunk', 'photo', 'note', 'moment', 'video']),
   seq: z.coerce.number().int().min(0).max(100_000_000),
-  t_offset_ms: z.coerce.number().int().min(0).max(4 * 3600_000),
+  // Device and server clocks can disagree by a few seconds; a slightly negative offset means "at the start".
+  t_offset_ms: z.coerce.number().int().min(-60_000).max(4 * 3600_000).transform((n) => Math.max(0, n)),
   text: z.string().max(4000).optional(),
 });
 
@@ -63,8 +64,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const res = await transcribe({ model: openai.transcription(process.env.AI_STT_MODEL ?? 'gpt-4o-mini-transcribe'), audio: bytes });
         transcript = res.text?.trim() || null;
         if (transcript) await admin.from('capture_item').update({ transcript }).eq('id', item.id);
-      } catch {
-        transcript = null; // the leader can still type/dictate notes; nothing is lost
+      } catch (e) {
+        // the clip is stored either way and the leader can still type notes — but make failures visible in the logs
+        console.error(`capture: transcription failed for ${path}:`, e instanceof Error ? e.message : e);
+        transcript = null;
       }
     }
   }

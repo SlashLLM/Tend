@@ -49,11 +49,15 @@ export async function resolveObservationRequest(requestId: string, action: 'with
   revalidatePath('/', 'layout');
 }
 
-export async function startCapture(obsId: string) {
+/**
+ * Start capture. Returns how long ago it started (measured on this server's clock, from just before
+ * the database stamped it) — the device anchors offsets on its own clock (lib/capture/clock.ts).
+ */
+export async function startCapture(obsId: string): Promise<{ elapsedMs: number }> {
   uuid.parse(obsId);
   const supabase = await createClient();
+  const before = Date.now();
   const { error } = await supabase.rpc('start_capture', { p_obs: obsId });
   if (error) throw new Error(error.message);
-  const { data } = await supabase.from('observation').select('capture_started_at').eq('id', obsId).single();
-  return data?.capture_started_at as string;
+  return { elapsedMs: Date.now() - before };
 }

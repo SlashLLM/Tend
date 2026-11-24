@@ -7,26 +7,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { blurFaces } from '@/lib/capture/blur';
+import { deviceStart, elapsedSince } from '@/lib/capture/clock';
 import { enqueue, flush, pending } from '@/lib/capture/queue';
+import { segmentedRecorder, type RecorderLike, type SegmentedRecorder } from '@/lib/capture/recorder';
 import { DEMO_DICTATION } from '@/lib/pipeline/demo-script';
 import { startCapture } from '@/app/actions/observation';
 import { formatMs } from '@/lib/levels';
 
 type Line = { key: string; t: number; text: string; kind: 'note' | 'speech' | 'moment' | 'photo' };
 
+const KIND_LABEL: Record<string, string> = { audio_chunk: 'voice clip', photo: 'photo', note: 'note', moment: 'moment', video: 'video' };
+
 type Props = {
   obsId: string;
   initialStatus: 'scheduled' | 'capturing';
-  startedAt: string | null;
+  /** How long ago capture started, per the server when it rendered the page (null: not started). */
+  elapsedMs: number | null;
   demo: boolean;
   liveTranscription: boolean;
 };
 
 /** Live capture (PRD M4-B): eyes on the class, big thumb-zone controls, nothing lost offline. */
-export function CaptureStudio({ obsId, initialStatus, startedAt, demo, liveTranscription }: Props) {
+export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTranscription }: Props) {
   const router = useRouter();
   const [status, setStatus] = useState<'ready' | 'capturing' | 'ending'>(initialStatus === 'capturing' ? 'capturing' : 'ready');
-  const [t0, setT0] = useState<number | null>(startedAt ? new Date(startedAt).getTime() : null);
+  // capture start on THIS device's clock (see lib/capture/clock.ts)
+  const [t0, setT0] = useState<number | null>(() => (elapsedMs === null ? null : deviceStart(elapsedMs)));
   const [now, setNow] = useState(Date.now());
   const [recording, setRecording] = useState(false);
   const [lines, setLines] = useState<Line[]>([]);
@@ -34,28 +40,41 @@ export function CaptureStudio({ obsId, initialStatus, startedAt, demo, liveTrans
   const [queued, setQueued] = useState(0);
   const [online, setOnline] = useState(true);
   const [busy, setBusy] = useState(false);
-  const recRef = useRef<MediaRecorder | null>(null);
+  const recRef = useRef<SegmentedRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const lastSeq = useRef(0);
   const flushing = useRef(false);
+  const flushAgain = useRef(false);
 
-  const elapsed = () => (t0 ? Date.now() - t0 : 0);
+  const elapsed = () => elapsedSince(t0);
   const nextSeq = () => {
     const s = Math.max(lastSeq.current + 1, Math.round(elapsed()));
     lastSeq.current = s;
     return s;
   };
 
-  const sync = useCallback(async () => {
-    if (flushing.current) return;
+  const sync = useCallback(async function run(): Promise<void> {
+    // An item added while a flush is running must not wait for the 5 s retry, and the count shown
+    // must not be overwritten by that flush's stale "0 left" ("All saved" while a photo is queued).
+    if (flushing.current) {
+      flushAgain.current = true;
+      return;
+    }
     flushing.current = true;
+    flushAgain.current = false;
     try {
-      const { left } = await flush(obsId, (u) => {
-        if (u.transcript) setLines((l) => [...l, { key: u.key, t: Number(u.key.split(':')[2]), text: u.transcript!, kind: 'speech' }]);
-      });
+      const { left } = await flush(
+        obsId,
+        (u) => {
+          if (u.transcript) setLines((l) => [...l, { key: u.key, t: Number(u.key.split(':')[2]), text: u.transcript!, kind: 'speech' }]);
+        },
+        (d) => toast.error(`A ${KIND_LABEL[d.kind] ?? 'capture item'} could not be saved (${d.error}). Please add it again.`, { duration: 10_000 }),
+      );
       setQueued(left);
     } finally {
       flushing.current = false;
     }
+    if (flushAgain.current) await run();
   }, [obsId]);
 
   useEffect(() => {
@@ -81,8 +100,8 @@ export function CaptureStudio({ obsId, initialStatus, startedAt, demo, liveTrans
   async function begin() {
     setBusy(true);
     try {
-      const at = await startCapture(obsId);
-      setT0(new Date(at).getTime());
+      const { elapsedMs: since } = await startCapture(obsId);
+      setT0(deviceStart(since));
       setStatus('capturing');
       navigator.vibrate?.(30);
     } catch (e) {
@@ -92,22 +111,34 @@ export function CaptureStudio({ obsId, initialStatus, startedAt, demo, liveTrans
     }
   }
 
+  async function stopMic() {
+    const seg = recRef.current;
+    recRef.current = null;
+    await seg?.stop(); // hands over the last clip
+    streamRef.current?.getTracks().forEach((tr) => tr.stop());
+    streamRef.current = null;
+  }
+
   async function toggleMic() {
     if (recording) {
-      recRef.current?.stop();
-      recRef.current?.stream.getTracks().forEach((tr) => tr.stop());
       setRecording(false);
+      await stopMic();
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
       const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '';
-      const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-      rec.ondataavailable = (e) => {
-        if (e.data.size > 0) void add('audio_chunk', { blob: e.data });
-      };
-      rec.start(5000); // 5-second chunks → live transcript within ~2 s of each chunk
-      recRef.current = rec;
+      // 5-second, self-contained clips → live transcript within ~2 s of each clip (lib/capture/recorder.ts)
+      const seg = segmentedRecorder({
+        // MediaRecorder's handlers take a full BlobEvent; the recorder only reads `.data`
+        create: () => new MediaRecorder(stream, mime ? { mimeType: mime } : undefined) as unknown as RecorderLike,
+        segmentMs: 5000,
+        now: elapsed,
+        onClip: (blob, startMs) => void add('audio_chunk', { blob }, startMs),
+      });
+      seg.start();
+      recRef.current = seg;
+      streamRef.current = stream;
       setRecording(true);
       navigator.vibrate?.(20);
     } catch {
@@ -150,9 +181,8 @@ export function CaptureStudio({ obsId, initialStatus, startedAt, demo, liveTrans
 
   async function end() {
     setStatus('ending');
-    if (recRef.current?.state === 'recording') recRef.current.stop();
-    recRef.current?.stream.getTracks().forEach((tr) => tr.stop());
-    await new Promise((r) => setTimeout(r, 300)); // let the last chunk arrive
+    setRecording(false);
+    await stopMic(); // waits for the last clip to be queued
     for (let i = 0; i < 5; i++) {
       await sync();
       if ((await pending(obsId)).length === 0) break;
@@ -187,7 +217,7 @@ export function CaptureStudio({ obsId, initialStatus, startedAt, demo, liveTrans
   return (
     <div className="grid gap-4 pb-48">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-mono tabular-nums">{formatMs(t0 ? now - t0 : 0)}</span>
+        <span className="font-mono tabular-nums">{formatMs(elapsedSince(t0, now))}</span>
         <span className={cn('flex items-center gap-1.5', online ? 'text-muted-foreground' : 'text-amber')} aria-live="polite">
           {!online && <CloudOff className="size-4" aria-hidden />}
           {queued > 0 ? `${queued} waiting to sync` : online ? 'All saved' : 'Offline — saving on this device'}
