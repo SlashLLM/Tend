@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarClock, ClipboardCheck, Clock, MessagesSquare, PenSquare, TimerOff, UserRoundPlus } from 'lucide-react';
+import { ArrowRight, CalendarClock, ClipboardCheck, Clock, HandHelping, MessagesSquare, PenSquare, TimerOff, UserRoundPlus } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -25,9 +25,10 @@ export default async function TodayPage() {
   const centreId = session.memberships.find((m) => m.role === 'leader')?.centre_id ?? null;
   const supabase = await createClient();
 
-  const [{ data }, { data: drafts }, metrics] = await Promise.all([
+  const [{ data }, { data: drafts }, { data: requested }, metrics] = await Promise.all([
     supabase.from('observation').select('id, status, scheduled_at, title, shared_at, educator:educator_id(full_name)').in('status', ['scheduled', 'ai_draft', 'in_review', 'acknowledged']).order('scheduled_at'),
     supabase.from('idp').select('id, educator_id, educator:educator_id(full_name), leader_confirmed_at').eq('status', 'draft').is('leader_confirmed_at', null),
+    supabase.from('observation_request').select('id, note, educator:educator_id(full_name)').eq('status', 'open').order('created_at'),
     centreId ? supabase.rpc('sandbox_metrics', { p_centre: centreId }) : Promise.resolve({ data: null }),
   ]);
 
@@ -40,7 +41,8 @@ export default async function TodayPage() {
   const week = thisWeek(rows, now);
   const m = metrics.data as null | { hours_saved_this_term: number; documentation_minutes: { value: number; reduction: number } };
   const plans = (drafts ?? []) as unknown as { id: string; educator_id: string; educator: { full_name: string } }[];
-  const total = queue.length + plans.length;
+  const requests = (requested ?? []) as unknown as { id: string; note: string | null; educator: { full_name: string } }[];
+  const total = requests.length + queue.length + plans.length;
 
   return (
     <>
@@ -58,6 +60,20 @@ export default async function TodayPage() {
             <EmptyState message={t('empty.reviews')} actionLabel={t('empty.reviewsAction')} href="/observe" />
           ) : (
             <ul className="tend-card divide-y overflow-hidden">
+              {requests.map((r) => (
+                <li key={r.id}>
+                  <Link href={`/observe?request=${r.id}`} className="tend-row group">
+                    <HandHelping aria-hidden className="size-5 shrink-0 text-amber" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-medium">{r.educator.full_name}</span>
+                      <span className="block truncate text-sm text-muted-foreground">{r.note ? `Asked to be observed · “${r.note}”` : 'Asked to be observed'}</span>
+                    </span>
+                    <span className="hidden text-sm text-muted-foreground sm:inline">Pick a time</span>
+                    <span className="sr-only sm:hidden">Pick a time</span>
+                    <ArrowRight aria-hidden className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </li>
+              ))}
               {queue.map((q) => {
                 const k = KIND[q.kind];
                 const Icon = k.icon;

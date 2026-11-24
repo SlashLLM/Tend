@@ -9,16 +9,24 @@ import { ScheduleForm } from './schedule-form';
 
 export const metadata = { title: 'Observe' };
 
-export default async function ObserveIndex() {
+export default async function ObserveIndex({ searchParams }: { searchParams: Promise<{ request?: string }> }) {
+  const { request: requestId } = await searchParams;
   const locale = await getLocale();
   const session = (await getSession())!;
   const centreId = session.memberships.find((m) => m.role === 'leader')?.centre_id;
   const supabase = await createClient();
-  const [{ data: upcoming }, { data: educators }, { data: classes }] = await Promise.all([
+  const [{ data: upcoming }, { data: educators }, { data: classes }, { data: req }] = await Promise.all([
     supabase.from('observation').select('id, title, status, scheduled_at, focus_goal_ids, educator:educator_id(full_name)').in('status', ['scheduled', 'capturing']).order('scheduled_at'),
     supabase.from('educator_profile').select('user_id, user:user_id(full_name)').eq('centre_id', centreId!),
     supabase.from('class').select('id, name').eq('centre_id', centreId!).order('name'),
+    // A stale or foreign request id simply matches nothing (RLS + status filter), so the form falls back to a blank schedule.
+    requestId && /^[0-9a-f-]{36}$/i.test(requestId)
+      ? supabase.from('observation_request').select('id, note, educator_id, educator:educator_id(full_name)').eq('id', requestId).eq('status', 'open').maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
+  const prefill = req
+    ? { id: req.id, educatorId: req.educator_id, educatorName: (req.educator as unknown as { full_name: string }).full_name, note: req.note }
+    : null;
   const people = ((educators ?? []) as unknown as { user_id: string; user: { full_name: string } }[]).map((e) => ({ id: e.user_id, name: e.user.full_name })).sort((a, b) => a.name.localeCompare(b.name));
 
   return (
@@ -48,7 +56,7 @@ export default async function ObserveIndex() {
         </section>
         <section aria-labelledby="schedule">
           <SectionTitle id="schedule">Schedule an observation</SectionTitle>
-          <ScheduleForm educators={people} classes={classes ?? []} />
+          <ScheduleForm key={prefill?.id ?? 'blank'} educators={people} classes={classes ?? []} request={prefill} />
         </section>
       </div>
     </>
