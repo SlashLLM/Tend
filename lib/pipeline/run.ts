@@ -101,23 +101,37 @@ export async function runPipeline(input: PipelineInput, deps: PipelineDeps): Pro
   // 6 · contextualise (focus, goals, last levels are passed into drafting)
   await deps.setStep('contextualise');
 
-  // 7 · draft with citations
+  // 7 · draft with citations. Cards depend only on the tags, so they start right behind the draft
+  // call and run alongside it instead of after it.
   await deps.setStep('draft');
-  let narrative: NarrativeContent;
-  if (gw && mode === 'luna') {
-    try {
-      narrative = await draftLuna(
-        gw,
-        withIds.map((u) => ({ id: u.id, text: u.text })),
-        tags.map((t) => ({ ...t, unitId: unitIds.get(t.unitIdx)!, name: docMap.get(t.indicator)!.name })),
-        { ...input.ctx, ...ids, lastLevels: input.lastLevels },
-      );
-    } catch {
-      narrative = draftOffline(units, unitIds, tags, docMap, input.ctx);
+  const draftReady = (async (): Promise<NarrativeContent> => {
+    if (gw && mode === 'luna') {
+      try {
+        return await draftLuna(
+          gw,
+          withIds.map((u) => ({ id: u.id, text: u.text })),
+          tags.map((t) => ({ ...t, unitId: unitIds.get(t.unitIdx)!, name: docMap.get(t.indicator)!.name })),
+          { ...input.ctx, ...ids, lastLevels: input.lastLevels },
+        );
+      } catch {
+        /* fall through to the offline draft */
+      }
     }
-  } else {
-    narrative = draftOffline(units, unitIds, tags, docMap, input.ctx);
-  }
+    return draftOffline(units, unitIds, tags, docMap, input.ctx);
+  })();
+  const growTags = tags.filter((t) => t.valence === 'grow' && t.confidence >= 0.55);
+  const uniqueGrows = growTags.filter((t, i) => growTags.findIndex((x) => x.indicator === t.indicator) === i);
+  const cardsReady = (async (): Promise<CardDraft[]> => {
+    if (gw && mode === 'luna' && uniqueGrows.length) {
+      try {
+        return await cardsLuna(gw, uniqueGrows.slice(0, 2).map((t) => ({ indicator: docMap.get(t.indicator)!, level: t.level, evidence: units.find((u) => u.idx === t.unitIdx)!.text })), { ...input.ctx, ...ids });
+      } catch {
+        /* fall through to the offline cards */
+      }
+    }
+    return cardsOffline(uniqueGrows, docMap, input.ctx);
+  })();
+  let narrative = await draftReady;
   const enforced = enforceCitations(narrative, withIds.map((u) => u.id));
   narrative = enforced.content;
   // goal ids must belong to the educator
@@ -138,19 +152,7 @@ export async function runPipeline(input: PipelineInput, deps: PipelineDeps): Pro
 
   // 9 · coaching cards, 1–2 per Grow
   await deps.setStep('cards');
-  const growTags = tags.filter((t) => t.valence === 'grow' && t.confidence >= 0.55);
-  const uniqueGrows = growTags.filter((t, i) => growTags.findIndex((x) => x.indicator === t.indicator) === i);
-  let cards: CardDraft[] = [];
-  if (gw && mode === 'luna' && uniqueGrows.length) {
-    try {
-      cards = await cardsLuna(gw, uniqueGrows.slice(0, 2).map((t) => ({ indicator: docMap.get(t.indicator)!, level: t.level, evidence: units.find((u) => u.idx === t.unitIdx)!.text })), { ...input.ctx, ...ids });
-    } catch {
-      cards = cardsOffline(uniqueGrows, docMap, input.ctx);
-    }
-  } else {
-    cards = cardsOffline(uniqueGrows, docMap, input.ctx);
-  }
-  cards = cards.filter((c) => docMap.has(c.indicator)).map((c) => ({ ...c, title: rewrite(c.title) }));
+  const cards = (await cardsReady).filter((c) => docMap.has(c.indicator)).map((c) => ({ ...c, title: rewrite(c.title) }));
 
   await deps.setStep('save');
   return {

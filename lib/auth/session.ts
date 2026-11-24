@@ -15,7 +15,9 @@ export type Profile = {
   onboarded_at: string | null;
 };
 
-export type Session = { userId: string; profile: Profile; memberships: Membership[] };
+export type Session = { userId: string; profile: Profile; memberships: Membership[]; centreName: string | null };
+
+type MembershipRow = Membership & { centre: { name: string } | null };
 
 /** The signed-in user's profile + memberships, read AS the user (RLS applies). Cached per request. */
 export const getSession = cache(async (): Promise<Session | null> => {
@@ -27,10 +29,17 @@ export const getSession = cache(async (): Promise<Session | null> => {
   if (!user) return null;
   const [{ data: profile }, { data: memberships }] = await Promise.all([
     supabase.from('app_user').select('id, org_id, full_name, email, locale, text_scale, onboarded_at').eq('id', user.id).single(),
-    supabase.from('membership').select('role, centre_id').eq('user_id', user.id),
+    // The centre name rides along so the shell doesn't need a third, sequential round trip.
+    supabase.from('membership').select('role, centre_id, centre:centre_id(name)').eq('user_id', user.id),
   ]);
   if (!profile) return null;
-  return { userId: user.id, profile: profile as Profile, memberships: (memberships ?? []) as Membership[] };
+  const rows = (memberships ?? []) as unknown as MembershipRow[];
+  return {
+    userId: user.id,
+    profile: profile as Profile,
+    memberships: rows.map(({ role, centre_id }) => ({ role, centre_id })),
+    centreName: rows.find((m) => m.centre_id)?.centre?.name ?? null,
+  };
 });
 
 function withLocale(locale: string, path: string) {
