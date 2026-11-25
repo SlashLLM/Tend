@@ -23,19 +23,21 @@ type MembershipRow = Membership & { centre: { name: string } | null };
 export const getSession = cache(async (): Promise<Session | null> => {
   if (!supabaseConfigured()) return null;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  // Middleware already validated + refreshed the session with getUser() on this request.
+  // getClaims() verifies the JWT locally (no auth-server round trip when the project uses
+  // asymmetric signing keys; it falls back to a network check otherwise). RLS still applies.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+  if (!userId) return null;
   const [{ data: profile }, { data: memberships }] = await Promise.all([
-    supabase.from('app_user').select('id, org_id, full_name, email, locale, text_scale, onboarded_at').eq('id', user.id).single(),
+    supabase.from('app_user').select('id, org_id, full_name, email, locale, text_scale, onboarded_at').eq('id', userId).single(),
     // The centre name rides along so the shell doesn't need a third, sequential round trip.
-    supabase.from('membership').select('role, centre_id, centre:centre_id(name)').eq('user_id', user.id),
+    supabase.from('membership').select('role, centre_id, centre:centre_id(name)').eq('user_id', userId),
   ]);
   if (!profile) return null;
   const rows = (memberships ?? []) as unknown as MembershipRow[];
   return {
-    userId: user.id,
+    userId,
     profile: profile as Profile,
     memberships: rows.map(({ role, centre_id }) => ({ role, centre_id })),
     centreName: rows.find((m) => m.centre_id)?.centre?.name ?? null,
