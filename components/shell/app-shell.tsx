@@ -60,7 +60,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
         <div className="mx-3 mb-3 rounded-xl bg-card/70 px-4 py-3 text-sm">
           <p className="font-medium">{userName}</p>
           {centreName && <p className="text-muted-foreground">{centreName}</p>}
-          <Link href={area === 'educator' ? '/preferences' : area === 'leader' ? '/settings' : '/network'} className="mt-2 block min-h-9 text-muted-foreground hover:text-foreground">{t('nav.preferences')}</Link>
+          <Link href={area === 'educator' ? '/preferences' : area === 'leader' ? '/settings' : area === 'admin' ? '/admin' : '/network'} className="mt-2 block min-h-9 text-muted-foreground hover:text-foreground">{t('nav.preferences')}</Link>
           <form action="/auth/signout" method="post">
             <button className="inline-flex min-h-11 items-center gap-2 text-muted-foreground hover:text-foreground">
               <LogOut aria-hidden className="size-4" /> {t('auth.signOut')}
