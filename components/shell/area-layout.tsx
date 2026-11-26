@@ -1,7 +1,9 @@
 import { setRequestLocale } from 'next-intl/server';
 import { requireArea } from '@/lib/auth/session';
 import { primaryArea, type Area } from '@/lib/auth/roles';
+import { toLocale } from '@/i18n/routing';
 import { AppShell } from './app-shell';
+import { LocaleSync } from './locale-sync';
 
 /** Shared server layout for each role area: auth guard + shell. */
 export async function AreaLayout({ area, locale, children }: { area: Area; locale: string; children: React.ReactNode }) {
@@ -11,6 +13,7 @@ export async function AreaLayout({ area, locale, children }: { area: Area; local
   const navArea: Area = area === 'hq' && primaryArea(session.memberships) === 'admin' ? 'admin' : area;
   return (
     <AppShell area={navArea} userName={session.profile.full_name} centreName={session.centreName}>
+      <LocaleSync preferred={toLocale(session.profile.locale)} />
       {children}
     </AppShell>
   );

@@ -53,7 +53,7 @@ export function timeliness(c: Candidate, now: Date) {
   return 1 - (0.8 * (days - 30)) / 150;
 }
 
-export type Ranked = Candidate & { score: number; reasons: string[] };
+export type Ranked = Candidate & { score: number; reasons: string[]; reasonParts: ReasonPart[] };
 
 export function rankPathway(cands: Candidate[], goal: Goal, now: Date, limit = 5): Ranked[] {
   return cands
@@ -67,25 +67,43 @@ export function rankPathway(cands: Candidate[], goal: Goal, now: Date, limit = 5
       };
       const score =
         WEIGHTS.relevance * parts.relevance + WEIGHTS.levelFit * parts.levelFit + WEIGHTS.preference * parts.preference + WEIGHTS.cost * parts.cost + WEIGHTS.timeliness * parts.timeliness;
-      return { ...c, score: Math.round(score * 1000) / 1000, reasons: reasonsFor(c, goal, parts, now) };
+      const reasonParts = reasonPartsFor(c, goal, parts, now);
+      return { ...c, score: Math.round(score * 1000) / 1000, reasons: reasonParts.map(reasonText), reasonParts };
     })
     .filter((c) => relevance(c, goal) > 0)
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
     .slice(0, limit);
 }
 
-function reasonsFor(c: Candidate, g: Goal, p: Record<string, number>, now: Date): string[] {
-  const r: [number, string][] = [];
-  if (p.relevance === 1) r.push([0.4, `Matches your goal ${g.indicator}`]);
-  else if (p.relevance === 0.7) r.push([0.28, 'Builds the same skill as your goal']);
-  else if (p.relevance > 0) r.push([0.16, 'Same area as your goal']);
-  if (c.tier === 'peer') r.push([0.15, 'Free — learn from a colleague']);
-  else if (c.tier !== 'course') r.push([0.13, 'Free and in-house']);
-  else if (c.funded) r.push([0.09, 'Funding available']);
+/** A ranking reason as a message key (pathway.reason.*) + values, so the UI can show it in any language. */
+export type ReasonPart = { key: 'matches' | 'sameSkill' | 'sameArea' | 'peerFree' | 'inHouse' | 'funded' | 'thisWeek' | 'inWeeks' | 'anyTime' | 'pitched'; values?: Record<string, string | number> };
+
+const REASON_EN: Record<ReasonPart['key'], (v: Record<string, string | number>) => string> = {
+  matches: (v) => `Matches your goal ${v.indicator}`,
+  sameSkill: () => 'Builds the same skill as your goal',
+  sameArea: () => 'Same area as your goal',
+  peerFree: () => 'Free — learn from a colleague',
+  inHouse: () => 'Free and in-house',
+  funded: () => 'Funding available',
+  thisWeek: () => 'Starts this week',
+  inWeeks: (v) => `Starts in ${v.weeks} week${v.weeks === 1 ? '' : 's'}`,
+  anyTime: () => 'Available any time',
+  pitched: (v) => `Pitched at Level ${v.level}`,
+};
+export const reasonText = (r: ReasonPart) => REASON_EN[r.key](r.values ?? {});
+
+function reasonPartsFor(c: Candidate, g: Goal, p: Record<string, number>, now: Date): ReasonPart[] {
+  const r: [number, ReasonPart][] = [];
+  if (p.relevance === 1) r.push([0.4, { key: 'matches', values: { indicator: g.indicator } }]);
+  else if (p.relevance === 0.7) r.push([0.28, { key: 'sameSkill' }]);
+  else if (p.relevance > 0) r.push([0.16, { key: 'sameArea' }]);
+  if (c.tier === 'peer') r.push([0.15, { key: 'peerFree' }]);
+  else if (c.tier !== 'course') r.push([0.13, { key: 'inHouse' }]);
+  else if (c.funded) r.push([0.09, { key: 'funded' }]);
   if (c.next_run) {
     const days = Math.round((new Date(c.next_run).getTime() - now.getTime()) / 86_400_000);
-    if (days >= 0 && days <= 30) r.push([0.1, days <= 7 ? 'Starts this week' : `Starts in ${Math.round(days / 7)} week${Math.round(days / 7) === 1 ? '' : 's'}`]);
-  } else if (c.tier === 'micro') r.push([0.1, 'Available any time']);
-  if (p.levelFit === 1) r.push([0.08, `Pitched at Level ${g.target_level}`]);
-  return r.sort((a, b) => b[0] - a[0]).slice(0, 2).map(([, s]) => s);
+    if (days >= 0 && days <= 30) r.push([0.1, days <= 7 ? { key: 'thisWeek' } : { key: 'inWeeks', values: { weeks: Math.round(days / 7) } }]);
+  } else if (c.tier === 'micro') r.push([0.1, { key: 'anyTime' }]);
+  if (p.levelFit === 1) r.push([0.08, { key: 'pitched', values: { level: g.target_level } }]);
+  return r.sort((a, b) => b[0] - a[0]).slice(0, 2).map(([, x]) => x);
 }

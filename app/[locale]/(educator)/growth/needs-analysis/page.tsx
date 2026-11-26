@@ -1,4 +1,4 @@
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { LnaStepper } from '@/components/growth/lna-stepper';
 import { PageHeader } from '@/components/tend/page-header';
@@ -7,11 +7,13 @@ import type { Question } from '@/lib/lna/content';
 import type { Answers } from '@/lib/lna/score';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Needs analysis' };
+export const generateMetadata = pageTitle('needsAnalysis');
 
 export default async function NeedsAnalysisPage() {
   const locale = await getLocale();
+  const t = await getTranslations('lna');
   const supabase = await createClient();
   const session = (await getSession())!;
   // Resume an attempt in progress; if one is already finished, show its snapshot; only first-timers start a new one.
@@ -26,7 +28,7 @@ export default async function NeedsAnalysisPage() {
   const initial: Answers = Object.fromEntries((rows ?? []).map((r) => [r.question_id, r.answer as Answers[string]]));
   return (
     <>
-      <PageHeader dateline="Needs analysis" title="What would you do?" subtitle="There are no right or wrong answers — this shapes your plan, not an appraisal." />
+      <PageHeader dateline={t('dateline')} title={t('title')} subtitle={t('subtitle')} />
       <LnaStepper attemptId={attemptId} questions={questions} initial={initial} locale={locale} />
     </>
   );

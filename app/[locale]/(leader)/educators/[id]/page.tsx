@@ -1,5 +1,7 @@
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
+import { areaName, indicatorName } from '@/lib/i18n/content';
 import { Link } from '@/i18n/navigation';
 import { ActionItem } from '@/components/growth/action-item';
 import { IdpEditor } from '@/components/growth/idp-editor';
@@ -13,21 +15,25 @@ import { createClient } from '@/lib/supabase/server';
 import { Suggestions } from './suggestions';
 import { CoachDigest } from './coach-digest';
 import { ProposedActions } from './proposed-actions';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Educator 360' };
+export const generateMetadata = pageTitle('educator360');
 
-const STATUS: Record<string, string> = {
-  scheduled: 'Scheduled', capturing: 'Capturing', processing: 'Drafting', ai_draft: 'AI draft', in_review: 'In review',
-  shared: 'Shared', acknowledged: 'Read', discussed: 'Discussed', rejected: 'Set aside', cancelled: 'Cancelled',
-};
 
 export default async function Educator360({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
+  const locale = await getLocale();
+  const area = (code: string) => areaName(locale, code, SUBDOMAIN_NAMES[code] ?? code);
+  const t = await getTranslations('e360');
+  const ts = await getTranslations('obsStatus');
+  const te = await getTranslations('educators');
+  const tsnap = await getTranslations('snapshot');
+  const format = await getFormatter();
   const { data: person } = await supabase.from('app_user').select('id, full_name, profile:educator_profile(years_experience, title:occupational_title_id(name))').eq('id', id).maybeSingle();
   if (!person) notFound();
   const [plans, lna, { data: obs }, { data: indicators }, { data: tried }] = await Promise.all([
-    loadPlans(supabase, id),
+    loadPlans(supabase, id, locale),
     loadLnaState(supabase, id),
     supabase.from('observation').select('id, title, status, scheduled_at').eq('educator_id', id).order('scheduled_at', { ascending: false }).limit(12),
     supabase.from('indicator').select('code, name, framework_version!inner(status)').in('domain_code', ['1', '2', '3']).eq('framework_version.status', 'active').order('code'),
@@ -45,14 +51,14 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Link href="/educators" className="mb-4 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" aria-hidden /> Educators</Link>
-      <PageHeader dateline={`Educator 360 · ${prof?.title?.name ?? 'Educator'} · ${prof?.years_experience ?? '—'} yrs`} title={person.full_name}
-        subtitle={`${(tried ?? []).length} strategies tried · ${(obs ?? []).filter((o) => ['shared', 'acknowledged', 'discussed'].includes(o.status)).length} sets of growth notes shared`} />
+      <Link href="/educators" className="mb-4 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" aria-hidden /> {t('back')}</Link>
+      <PageHeader dateline={t('dateline', { title: prof?.title?.name ?? te('educator'), years: prof?.years_experience != null ? te('years', { n: prof.years_experience }) : '—' })} title={person.full_name}
+        subtitle={t('subtitle', { tried: (tried ?? []).length, shared: (obs ?? []).filter((o) => ['shared', 'acknowledged', 'discussed'].includes(o.status)).length })} />
 
       {mySuggestions.length > 0 && (
         <section className="mb-8" aria-labelledby="sugg">
-          <SectionTitle id="sugg" count={mySuggestions.length}><Sparkles className="mr-1.5 inline size-4 text-amber" aria-hidden />Suggested plan updates</SectionTitle>
-          <Suggestions items={mySuggestions.map((s) => ({ id: s.id, kind: s.kind, code: s.goal!.indicator.code, name: s.goal!.indicator.name, from: s.goal!.target_level, to: s.payload.target_level ?? null, level: s.payload.current_level ?? null }))} />
+          <SectionTitle id="sugg" count={mySuggestions.length}><Sparkles className="mr-1.5 inline size-4 text-amber" aria-hidden />{t('suggestions')}</SectionTitle>
+          <Suggestions items={mySuggestions.map((s) => ({ id: s.id, kind: s.kind, code: s.goal!.indicator.code, name: indicatorName(locale, s.goal!.indicator.code, s.goal!.indicator.name), from: s.goal!.target_level, to: s.payload.target_level ?? null, level: s.payload.current_level ?? null }))} />
         </section>
       )}
 
@@ -60,14 +66,14 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
         <div className="grid content-start gap-8">
           {plans.draft && (
             <section aria-labelledby="draft">
-              <SectionTitle id="draft">Draft plan · co-create with {person.full_name.split(' ')[0]}</SectionTitle>
-              <IdpEditor plan={plans.draft} viewer="leader" indicatorOptions={(indicators ?? []).map((i) => ({ code: i.code, name: i.name }))} educatorName={person.full_name} />
+              <SectionTitle id="draft">{t('draftPlan', { name: person.full_name.split(' ')[0] })}</SectionTitle>
+              <IdpEditor plan={plans.draft} viewer="leader" indicatorOptions={(indicators ?? []).map((i) => ({ code: i.code, name: indicatorName(locale, i.code, i.name) }))} educatorName={person.full_name} />
             </section>
           )}
           <section aria-labelledby="goals">
-            <SectionTitle id="goals" count={activeGoals.length}>Active goals and trajectories</SectionTitle>
+            <SectionTitle id="goals" count={activeGoals.length}>{t('activeGoals')}</SectionTitle>
             {activeGoals.length === 0 ? (
-              <p className="tend-card p-5 text-sm text-muted-foreground">No confirmed plan yet.</p>
+              <p className="tend-card p-5 text-sm text-muted-foreground">{t('noPlan')}</p>
             ) : (
               <ul className="tend-card divide-y">
                 {trajectories.map(({ g, pts }) => {
@@ -77,7 +83,7 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
                       <span className="grid gap-1">
                         <IndicatorTag code={g.indicator.code} name={g.indicator.name} className="self-start" />
                         <span className="text-xs text-muted-foreground">
-                          {pts.length} observation{pts.length === 1 ? '' : 's'}{mv ? ` · Level ${mv.from} → Level ${mv.to} in ${mv.weeks} weeks` : ''}
+                          {t('obsCount', { n: pts.length })}{mv ? t('moved', { from: mv.from, to: mv.to, weeks: mv.weeks }) : ''}
                         </span>
                       </span>
                       <LevelStones level={pts.at(-1)?.level ?? g.current_level} target={g.target_level} size="sm" />
@@ -90,7 +96,7 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
           {activeGoals.some((g) => g.actions.length) && (
             <section aria-labelledby="plan-actions">
               <SectionTitle id="plan-actions" count={activeGoals.reduce((n, g) => n + g.actions.filter((a) => a.status === 'done').length, 0)}>
-                Plan actions done
+                {t('actionsDone')}
               </SectionTitle>
               <div className="tend-card grid gap-5 p-5">
                 {activeGoals.filter((g) => g.actions.length).map((g) => (
@@ -107,22 +113,22 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
         <aside className="grid content-start gap-6">
           {lna?.result && (
             <section className="tend-card p-5" aria-labelledby="snap">
-              <SectionTitle id="snap">Needs analysis</SectionTitle>
-              <p className="text-sm"><span className="font-medium">Strengths:</span> {lna.result.strengths.map((s) => SUBDOMAIN_NAMES[s.subdomain]).join(', ')}</p>
-              <p className="mt-1 text-sm"><span className="font-medium">Growing:</span> {lna.result.growth_areas.map((s) => SUBDOMAIN_NAMES[s.subdomain]).join(', ')}</p>
-              {lna.result.agreement && <p className="mt-2 text-xs text-muted-foreground">“Reflects my growth areas”: {lna.result.agreement}</p>}
+              <SectionTitle id="snap">{t('lna')}</SectionTitle>
+              <p className="text-sm"><span className="font-medium">{t('strengths')}</span> {lna.result.strengths.map((s) => area(s.subdomain)).join(', ')}</p>
+              <p className="mt-1 text-sm"><span className="font-medium">{t('growing')}</span> {lna.result.growth_areas.map((s) => area(s.subdomain)).join(', ')}</p>
+              {lna.result.agreement && <p className="mt-2 text-xs text-muted-foreground">{t('reflects', { answer: tsnap(lna.result.agreement === 'yes' ? 'agreeYes' : lna.result.agreement === 'partly' ? 'agreePartly' : 'agreeNo') })}</p>}
             </section>
           )}
           {plans.active && <ProposedActions idpId={plans.active.id} />}
           <CoachDigest educatorId={id} />
           <section className="tend-card p-5" aria-labelledby="timeline">
-            <SectionTitle id="timeline">Observation timeline</SectionTitle>
+            <SectionTitle id="timeline">{t('timeline')}</SectionTitle>
             <ol className="grid gap-2">
               {(obs ?? []).map((o) => (
                 <li key={o.id}>
                   <Link href={['scheduled', 'capturing'].includes(o.status) ? `/observe/${o.id}` : `/reviews/${o.id}`} className="flex items-center justify-between gap-3 rounded-md px-1 py-1.5 text-sm hover:bg-muted">
-                    <span><span className="tabular-nums text-muted-foreground">{new Date(o.scheduled_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'short' })}</span> · {o.title}</span>
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">{STATUS[o.status]} <ArrowRight className="size-3" aria-hidden /></span>
+                    <span><span className="tabular-nums text-muted-foreground">{format.dateTime(new Date(o.scheduled_at), { day: 'numeric', month: 'short' })}</span> · {o.title}</span>
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">{ts.has(o.status) ? ts(o.status) : o.status} <ArrowRight className="size-3" aria-hidden /></span>
                   </Link>
                 </li>
               ))}

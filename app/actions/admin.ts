@@ -5,6 +5,7 @@ import { LOCALES, type Locale } from '@/i18n/routing';
 import { generateTempPassword, MUST_CHANGE } from '@/lib/auth/password';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
+import { setLocaleCookie } from '@/lib/i18n/locale-cookie';
 
 /** The signed-in user, if they are an admin of their organisation. */
 async function requireOrgAdmin() {
@@ -77,6 +78,7 @@ export async function savePreferences(p: { locale: Locale; textScale: number; pe
   } = await supabase.auth.getUser();
   const { error } = await supabase.from('app_user').update({ locale: v.locale, text_scale: v.textScale }).eq('id', user!.id);
   if (error) throw new Error(error.message);
+  await setLocaleCookie(v.locale);
   if (v.peerMatch !== undefined) await supabase.from('educator_profile').update({ peer_match_opt_in: v.peerMatch }).eq('user_id', user!.id);
   revalidatePath('/', 'layout');
 }

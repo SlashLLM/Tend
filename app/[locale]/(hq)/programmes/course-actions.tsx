@@ -1,5 +1,6 @@
 'use client';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { approveCourse, restoreCourse, retireCourse, setCourseTags } from '@/app/actions/catalogue';
@@ -21,36 +22,39 @@ const MAX = 4;
 export function CourseActions({ id, title, status, canApprove, current, indicators }: Props) {
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
+  const t = useTranslations('programmes');
+  const tw = useTranslations('workspace');
   const run = (fn: () => Promise<unknown>, ok: string) =>
     start(async () => {
       try {
         await fn();
         toast.success(ok);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Something went wrong');
+        console.error(err);
+        toast.error(tw('error'));
       }
     });
 
   return (
     <div className="flex flex-wrap gap-2 lg:justify-end">
-      {pending && <Loader2 className="size-4 animate-spin self-center" aria-label="Saving" />}
+      {pending && <Loader2 className="size-4 animate-spin self-center" aria-label={t('saving')} />}
       {status === 'pending_review' && canApprove && (
-        <Button type="button" size="sm" className="min-h-11" disabled={pending} onClick={() => run(() => approveCourse(id), 'Approved: now recommended in Learn')}>
-          Approve
+        <Button type="button" size="sm" className="min-h-11" disabled={pending} onClick={() => run(() => approveCourse(id), t('approvedOk'))}>
+          {t('approve')}
         </Button>
       )}
       {status !== 'retired' && (
         <Button type="button" size="sm" variant="outline" className="min-h-11" disabled={pending} onClick={() => setOpen(true)}>
-          {status === 'active' ? 'Edit skills' : 'Choose skills'}
+          {status === 'active' ? t('editSkills') : t('chooseSkills')}
         </Button>
       )}
       {status !== 'retired' ? (
-        <Button type="button" size="sm" variant="ghost" className="min-h-11" disabled={pending} onClick={() => run(() => retireCourse(id), 'Retired: hidden from educators')}>
-          {status === 'pending_review' ? 'Reject' : 'Retire'}
+        <Button type="button" size="sm" variant="ghost" className="min-h-11" disabled={pending} onClick={() => run(() => retireCourse(id), t('retiredOk'))}>
+          {status === 'pending_review' ? t('reject') : t('retire')}
         </Button>
       ) : (
-        <Button type="button" size="sm" variant="outline" className="min-h-11" disabled={pending} onClick={() => run(() => restoreCourse(id), 'Moved back to review')}>
-          Restore for review
+        <Button type="button" size="sm" variant="outline" className="min-h-11" disabled={pending} onClick={() => run(() => restoreCourse(id), t('restoredOk'))}>
+          {t('restore')}
         </Button>
       )}
       {open && (
@@ -61,7 +65,7 @@ export function CourseActions({ id, title, status, canApprove, current, indicato
           onClose={() => setOpen(false)}
           onSave={(v) => {
             setOpen(false);
-            run(() => setCourseTags(id, v), 'Saved: now recommended in Learn');
+            run(() => setCourseTags(id, v), t('savedOk'));
           }}
         />
       )}
@@ -82,6 +86,8 @@ function TagDialog({
   const [levelMin, setMin] = useState(initial.levelMin);
   const [levelMax, setMax] = useState(initial.levelMax);
   const [q, setQ] = useState('');
+  const t = useTranslations('programmes');
+  const tc = useTranslations('common');
   const shown = useMemo(() => {
     const s = q.trim().toLowerCase();
     return s ? indicators.filter((i) => i.code.startsWith(s) || i.name.toLowerCase().includes(s)) : indicators;
@@ -92,10 +98,10 @@ function TagDialog({
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[90dvh] overflow-hidden sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Framework skills</DialogTitle>
-          <DialogDescription>Which indicators does “{title}” build? Choose up to {MAX}.</DialogDescription>
+          <DialogTitle>{t('dialogTitle')}</DialogTitle>
+          <DialogDescription>{t('dialogDesc', { title, max: MAX })}</DialogDescription>
         </DialogHeader>
-        <Input placeholder="Search by code or name" value={q} onChange={(e) => setQ(e.target.value)} className="min-h-11" aria-label="Search indicators" />
+        <Input placeholder={t('search')} value={q} onChange={(e) => setQ(e.target.value)} className="min-h-11" aria-label={t('searchLabel')} />
         <ul className="grid max-h-[45dvh] gap-1 overflow-y-auto pr-1">
           {shown.map((i) => (
             <li key={i.code}>
@@ -107,19 +113,19 @@ function TagDialog({
           ))}
         </ul>
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <span className="text-muted-foreground">Suits levels</span>
-          <select aria-label="Lowest level" value={levelMin} onChange={(e) => setMin(Number(e.target.value))} className="min-h-11 rounded-md border bg-card px-2">
+          <span className="text-muted-foreground">{t('suitsLevels')}</span>
+          <select aria-label={t('lowest')} value={levelMin} onChange={(e) => setMin(Number(e.target.value))} className="min-h-11 rounded-md border bg-card px-2">
             {[1, 2, 3].map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
-          <span>to</span>
-          <select aria-label="Highest level" value={levelMax} onChange={(e) => setMax(Number(e.target.value))} className="min-h-11 rounded-md border bg-card px-2">
+          <span>{t('to')}</span>
+          <select aria-label={t('highest')} value={levelMax} onChange={(e) => setMax(Number(e.target.value))} className="min-h-11 rounded-md border bg-card px-2">
             {[1, 2, 3].map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
         </div>
         <DialogFooter>
-          <Button type="button" variant="ghost" className="min-h-11" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="ghost" className="min-h-11" onClick={onClose}>{tc('cancel')}</Button>
           <Button type="button" className="min-h-11" disabled={codes.length === 0} onClick={() => onSave({ indicatorCodes: codes, levelMin: Math.min(levelMin, levelMax), levelMax: Math.max(levelMin, levelMax) })}>
-            Save and publish
+            {t('savePublish')}
           </Button>
         </DialogFooter>
       </DialogContent>

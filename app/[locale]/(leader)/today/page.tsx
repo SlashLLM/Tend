@@ -8,13 +8,14 @@ import { getSession } from '@/lib/auth/session';
 import { dateline, firstName } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
 import { buildTodayQueue, thisWeek, type QueueObs } from '@/lib/today';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Today' };
+export const generateMetadata = pageTitle('today');
 
 const KIND = {
-  review: { icon: ClipboardCheck, label: 'Review draft', tone: 'text-primary', href: (id: string) => `/reviews/${id}` },
-  debrief: { icon: MessagesSquare, label: 'Debrief due', tone: 'text-amber', href: (id: string) => `/reviews/${id}` },
-  overdue: { icon: TimerOff, label: 'Not started', tone: 'text-muted-foreground', href: (id: string) => `/observe/${id}` },
+  review: { icon: ClipboardCheck, label: 'today.kindReview', tone: 'text-primary', href: (id: string) => `/reviews/${id}` },
+  debrief: { icon: MessagesSquare, label: 'today.kindDebrief', tone: 'text-amber', href: (id: string) => `/reviews/${id}` },
+  overdue: { icon: TimerOff, label: 'today.kindOverdue', tone: 'text-muted-foreground', href: (id: string) => `/observe/${id}` },
 } as const;
 
 export default async function TodayPage() {
@@ -48,14 +49,14 @@ export default async function TodayPage() {
     <>
       <PageHeader
         dateline={dateline(now, locale)}
-        title={`Good to see you, ${firstName(session.profile.full_name)}`}
-        subtitle={total === 0 ? 'Nothing needs you right now.' : `${total} thing${total === 1 ? '' : 's'} need${total === 1 ? 's' : ''} you today.`}
-        actions={<Button asChild className="min-h-11"><Link href="/observe"><PenSquare aria-hidden /> Schedule an observation</Link></Button>}
+        title={t('today.greeting', { name: firstName(session.profile.full_name) })}
+        subtitle={total === 0 ? t('today.nothing') : t('today.count', { n: total })}
+        actions={<Button asChild className="min-h-11"><Link href="/observe"><PenSquare aria-hidden /> {t('today.schedule')}</Link></Button>}
       />
 
       <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
         <section aria-labelledby="needs-you">
-          <SectionTitle id="needs-you" count={total}>Needs you</SectionTitle>
+          <SectionTitle id="needs-you" count={total}>{t('today.needsYou')}</SectionTitle>
           {total === 0 ? (
             <EmptyState message={t('empty.reviews')} actionLabel={t('empty.reviewsAction')} href="/observe" />
           ) : (
@@ -66,10 +67,10 @@ export default async function TodayPage() {
                     <HandHelping aria-hidden className="size-5 shrink-0 text-amber" />
                     <span className="min-w-0 flex-1">
                       <span className="block font-medium">{r.educator.full_name}</span>
-                      <span className="block truncate text-sm text-muted-foreground">{r.note ? `Asked to be observed · “${r.note}”` : 'Asked to be observed'}</span>
+                      <span className="block truncate text-sm text-muted-foreground">{r.note ? t('today.askedNote', { note: r.note }) : t('today.asked')}</span>
                     </span>
-                    <span className="hidden text-sm text-muted-foreground sm:inline">Pick a time</span>
-                    <span className="sr-only sm:hidden">Pick a time</span>
+                    <span className="hidden text-sm text-muted-foreground sm:inline">{t('today.pickTime')}</span>
+                    <span className="sr-only sm:hidden">{t('today.pickTime')}</span>
                     <ArrowRight aria-hidden className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </li>
@@ -83,10 +84,10 @@ export default async function TodayPage() {
                       <Icon aria-hidden className={`size-5 shrink-0 ${k.tone}`} />
                       <span className="min-w-0 flex-1">
                         <span className="block font-medium">{q.obs.educator_name}</span>
-                        <span className="block truncate text-sm text-muted-foreground">{q.obs.title ?? 'Observation'}</span>
+                        <span className="block truncate text-sm text-muted-foreground">{q.obs.title ?? t('common.observation')}</span>
                       </span>
-                      <span className="hidden text-sm text-muted-foreground sm:inline">{k.label}</span>
-                      <span className="sr-only sm:hidden">{k.label}</span>
+                      <span className="hidden text-sm text-muted-foreground sm:inline">{t(k.label)}</span>
+                      <span className="sr-only sm:hidden">{t(k.label)}</span>
                       <ArrowRight aria-hidden className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                     </Link>
                   </li>
@@ -98,10 +99,10 @@ export default async function TodayPage() {
                     <UserRoundPlus aria-hidden className="size-5 shrink-0 text-primary" />
                     <span className="min-w-0 flex-1">
                       <span className="block font-medium">{p.educator.full_name}</span>
-                      <span className="block text-sm text-muted-foreground">Draft plan ready to co-create</span>
+                      <span className="block text-sm text-muted-foreground">{t('today.draftPlan')}</span>
                     </span>
-                    <span className="hidden text-sm text-muted-foreground sm:inline">Shape plan</span>
-                    <span className="sr-only sm:hidden">Shape plan</span>
+                    <span className="hidden text-sm text-muted-foreground sm:inline">{t('today.shapePlan')}</span>
+                    <span className="sr-only sm:hidden">{t('today.shapePlan')}</span>
                     <ArrowRight aria-hidden className="size-4 text-muted-foreground" />
                   </Link>
                 </li>
@@ -112,14 +113,14 @@ export default async function TodayPage() {
 
         <aside className="grid content-start gap-6">
           <section className="tend-card p-5" aria-labelledby="week">
-            <SectionTitle id="week" count={week.length}><CalendarClock className="mr-1.5 inline size-4" aria-hidden />This week</SectionTitle>
+            <SectionTitle id="week" count={week.length}><CalendarClock className="mr-1.5 inline size-4" aria-hidden />{t('today.thisWeek')}</SectionTitle>
             {week.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t('empty.observations')}</p>
             ) : (
               <ul className="grid gap-3">
                 {week.map((o) => (
                   <li key={o.id} className="flex items-baseline justify-between gap-3 text-sm">
-                    <Link href={`/observe/${o.id}`} className="font-medium hover:underline">{o.educator_name}<span className="font-normal text-muted-foreground"> · {o.title ?? 'Observation'}</span></Link>
+                    <Link href={`/observe/${o.id}`} className="font-medium hover:underline">{o.educator_name}<span className="font-normal text-muted-foreground"> · {o.title ?? t('common.observation')}</span></Link>
                     <time dateTime={o.scheduled_at} className="shrink-0 tabular-nums text-muted-foreground">
                       {format.dateTime(new Date(o.scheduled_at), { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
                     </time>
@@ -131,12 +132,12 @@ export default async function TodayPage() {
 
           {m && (
             <section className="tend-card grid gap-1 p-5" aria-labelledby="saved">
-              <p id="saved" className="tend-dateline flex items-center gap-1.5"><Clock className="size-3.5" aria-hidden /> Time saved this term</p>
-              <p className="font-heading text-4xl font-semibold tabular-nums">{m.hours_saved_this_term}<span className="ml-1 text-lg font-medium text-muted-foreground">hours</span></p>
+              <p id="saved" className="tend-dateline flex items-center gap-1.5"><Clock className="size-3.5" aria-hidden /> {t('today.timeSaved')}</p>
+              <p className="font-heading text-4xl font-semibold tabular-nums">{m.hours_saved_this_term}<span className="ml-1 text-lg font-medium text-muted-foreground">{t('today.hours')}</span></p>
               <p className="text-sm text-muted-foreground">
-                About <span className="tend-mark font-medium text-foreground">{m.documentation_minutes?.value ?? '—'} min</span> per write-up, down from ~90.
+                {t.rich('today.perWriteUp', { min: m.documentation_minutes?.value ?? '—', b: (c) => <span className="tend-mark font-medium text-foreground">{c}</span> })}
               </p>
-              <Link href="/metrics" className="mt-2 text-sm text-primary hover:underline">All Sandbox metrics →</Link>
+              <Link href="/metrics" className="mt-2 text-sm text-primary hover:underline">{t('today.allMetrics')}</Link>
             </section>
           )}
         </aside>

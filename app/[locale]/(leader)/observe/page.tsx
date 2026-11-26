@@ -1,17 +1,20 @@
 import { ArrowRight, Mic } from 'lucide-react';
-import { getLocale } from 'next-intl/server';
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
 import { dateline } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
 import { ScheduleForm } from './schedule-form';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Observe' };
+export const generateMetadata = pageTitle('observe');
 
 export default async function ObserveIndex({ searchParams }: { searchParams: Promise<{ request?: string }> }) {
   const { request: requestId } = await searchParams;
   const locale = await getLocale();
+  const t = await getTranslations('observe');
+  const format = await getFormatter();
   const session = (await getSession())!;
   const centreId = session.memberships.find((m) => m.role === 'leader')?.centre_id;
   const supabase = await createClient();
@@ -31,12 +34,12 @@ export default async function ObserveIndex({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader dateline={dateline(new Date(), locale)} title="Observe" subtitle="Short, focused micro-observations. The educator chooses the focus; you capture, Tend drafts." />
+      <PageHeader dateline={dateline(new Date(), locale)} title={t('title')} subtitle={t('subtitle')} />
       <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
         <section aria-labelledby="upcoming">
-          <SectionTitle id="upcoming" count={(upcoming ?? []).length}>Upcoming and in progress</SectionTitle>
+          <SectionTitle id="upcoming" count={(upcoming ?? []).length}>{t('upcoming')}</SectionTitle>
           <ul className="tend-card divide-y">
-            {(upcoming ?? []).length === 0 && <li className="p-4 text-sm text-muted-foreground">Nothing scheduled yet.</li>}
+            {(upcoming ?? []).length === 0 && <li className="p-4 text-sm text-muted-foreground">{t('nothing')}</li>}
             {(upcoming ?? []).map((o) => (
               <li key={o.id}>
                 <Link href={`/observe/${o.id}`} className="tend-row group">
@@ -44,8 +47,8 @@ export default async function ObserveIndex({ searchParams }: { searchParams: Pro
                   <span className="min-w-0 flex-1">
                     <span className="block font-medium">{(o.educator as unknown as { full_name: string }).full_name} · {o.title}</span>
                     <span className="block text-sm text-muted-foreground">
-                      {new Date(o.scheduled_at).toLocaleString('en-SG', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Singapore' })}
-                      {' · '}{o.status === 'capturing' ? 'capturing now' : (o.focus_goal_ids ?? []).length ? 'focus chosen' : 'waiting for focus'}
+                      {format.dateTime(new Date(o.scheduled_at), { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}
+                      {' · '}{o.status === 'capturing' ? t('capturingNow') : (o.focus_goal_ids ?? []).length ? t('focusChosen') : t('waitingFocus')}
                     </span>
                   </span>
                   <ArrowRight aria-hidden className="size-4 text-muted-foreground" />
@@ -55,7 +58,7 @@ export default async function ObserveIndex({ searchParams }: { searchParams: Pro
           </ul>
         </section>
         <section aria-labelledby="schedule">
-          <SectionTitle id="schedule">Schedule an observation</SectionTitle>
+          <SectionTitle id="schedule">{t('schedule')}</SectionTitle>
           <ScheduleForm key={prefill?.id ?? 'blank'} educators={people} classes={classes ?? []} request={prefill} />
         </section>
       </div>

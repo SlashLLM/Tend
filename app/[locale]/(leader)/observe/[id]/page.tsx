@@ -1,16 +1,21 @@
 import { ArrowLeft, Eye } from 'lucide-react';
 import { notFound, redirect } from 'next/navigation';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { indicatorLookFors } from '@/lib/i18n/content';
 import { Link } from '@/i18n/navigation';
 import { CaptureStudio } from '@/components/capture/capture-studio';
 import { IndicatorTag } from '@/components/tend/indicator-tag';
 import { aiMode } from '@/lib/ai/availability';
 import { createClient } from '@/lib/supabase/server';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Observe' };
+export const generateMetadata = pageTitle('observe');
 
 export default async function ObservePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
+  const t = await getTranslations('observe');
+  const locale = await getLocale();
   const { data: o } = await supabase
     .from('observation')
     .select('id, title, status, scheduled_at, capture_started_at, focus_goal_ids, focus_note, educator_id, educator:educator_id(full_name), class:class_id(name)')
@@ -39,19 +44,19 @@ export default async function ObservePage({ params }: { params: Promise<{ id: st
     const rows = ((last ?? []) as unknown as { level: number; indicator_id: string; observation: { scheduled_at: string } }[])
       .filter((r) => r.indicator_id === indId)
       .sort((a, b) => b.observation.scheduled_at.localeCompare(a.observation.scheduled_at));
-    if (!rows.length) return 'not yet observed';
+    if (!rows.length) return t('notYet');
     const weeks = Math.max(1, Math.round((Date.now() - new Date(rows[0].observation.scheduled_at).getTime()) / (7 * 86_400_000)));
-    return `last seen at Level ${rows[0].level}, ${weeks} week${weeks === 1 ? '' : 's'} ago`;
+    return t('lastSeen', { level: rows[0].level, weeks });
   };
-  const lookFors = brief.flatMap((g) => g.indicator.look_fors).slice(0, 3);
+  const lookFors = brief.flatMap((g) => indicatorLookFors(locale, g.indicator.code, g.indicator.look_fors)).slice(0, 3);
   const educator = (o.educator as unknown as { full_name: string }).full_name;
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/today" className="mb-3 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" aria-hidden /> Today</Link>
-      <header className="tend-card mb-4 grid gap-3 p-4" aria-label="Pre-brief">
+      <Link href="/today" className="mb-3 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" aria-hidden /> {t('today')}</Link>
+      <header className="tend-card mb-4 grid gap-3 p-4" aria-label={t('preBrief')}>
         <div>
-          <p className="tend-dateline">{(o.class as unknown as { name: string } | null)?.name ?? 'Class'} · {o.title}</p>
+          <p className="tend-dateline">{(o.class as unknown as { name: string } | null)?.name ?? t('class')} · {o.title}</p>
           <h1 className="text-xl font-semibold">{educator}</h1>
         </div>
         {brief.length > 0 ? (
@@ -59,17 +64,17 @@ export default async function ObservePage({ params }: { params: Promise<{ id: st
             {brief.map((g) => (
               <li key={g.id} className="grid gap-1">
                 <IndicatorTag code={g.indicator.code} name={g.indicator.name} className="self-start" />
-                <span className="text-xs text-muted-foreground">{focus.length ? 'Chosen focus' : 'Plan goal'} · {lastFor(g.indicator.id)}</span>
+                <span className="text-xs text-muted-foreground">{focus.length ? t('chosenFocus') : t('planGoal')} · {lastFor(g.indicator.id)}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-muted-foreground">No plan goals yet — capture what you see.</p>
+          <p className="text-sm text-muted-foreground">{t('noGoals')}</p>
         )}
         {o.focus_note && <p className="rounded-md bg-muted px-3 py-2 text-sm">“{o.focus_note}”</p>}
         {lookFors.length > 0 && (
           <div>
-            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"><Eye className="size-3.5" aria-hidden /> Look for</p>
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"><Eye className="size-3.5" aria-hidden /> {t('lookFor')}</p>
             <ol className="grid list-decimal gap-0.5 pl-5 text-sm">{lookFors.map((l) => <li key={l}>{l}</li>)}</ol>
           </div>
         )}

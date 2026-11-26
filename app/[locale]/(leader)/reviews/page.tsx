@@ -1,22 +1,24 @@
 import { ArrowRight, ClipboardCheck, Loader2, MessagesSquare, Send } from 'lucide-react';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { EmptyState } from '@/components/tend/empty-state';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { dateline } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Reviews' };
+export const generateMetadata = pageTitle('reviews');
 
 const GROUPS = [
-  { key: 'draft', title: 'Waiting for your review', statuses: ['processing', 'ai_draft', 'in_review'], icon: ClipboardCheck },
-  { key: 'shared', title: 'Shared · waiting for the educator', statuses: ['shared'], icon: Send },
-  { key: 'debrief', title: 'Ready to debrief', statuses: ['acknowledged'], icon: MessagesSquare },
+  { key: 'draft', title: 'reviewsList.draft', statuses: ['processing', 'ai_draft', 'in_review'], icon: ClipboardCheck },
+  { key: 'shared', title: 'reviewsList.shared', statuses: ['shared'], icon: Send },
+  { key: 'debrief', title: 'reviewsList.debrief', statuses: ['acknowledged'], icon: MessagesSquare },
 ] as const;
 
 export default async function ReviewsPage() {
   const t = await getTranslations();
   const locale = await getLocale();
+  const format = await getFormatter();
   const supabase = await createClient();
   const { data } = await supabase
     .from('observation')
@@ -27,7 +29,7 @@ export default async function ReviewsPage() {
 
   return (
     <>
-      <PageHeader dateline={dateline(new Date(), locale)} title="Reviews" subtitle="Evidence beside every draft. Nothing reaches an educator until you approve it." />
+      <PageHeader dateline={dateline(new Date(), locale)} title={t('reviewsList.title')} subtitle={t('reviewsList.subtitle')} />
       {rows.length === 0 ? (
         <EmptyState message={t('empty.reviews')} actionLabel={t('empty.reviewsAction')} href="/observe" />
       ) : (
@@ -38,7 +40,7 @@ export default async function ReviewsPage() {
             const Icon = g.icon;
             return (
               <section key={g.key} aria-labelledby={`g-${g.key}`}>
-                <SectionTitle id={`g-${g.key}`} count={items.length}>{g.title}</SectionTitle>
+                <SectionTitle id={`g-${g.key}`} count={items.length}>{t(g.title)}</SectionTitle>
                 <ul className="tend-card divide-y">
                   {items.map((r) => (
                     <li key={r.id}>
@@ -46,7 +48,7 @@ export default async function ReviewsPage() {
                         {r.status === 'processing' ? <Loader2 aria-hidden className="size-5 animate-spin text-primary" /> : <Icon aria-hidden className="size-5 text-primary" />}
                         <span className="min-w-0 flex-1">
                           <span className="block font-medium">{r.educator.full_name}</span>
-                          <span className="block truncate text-sm text-muted-foreground">{r.title} · {new Date(r.scheduled_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', timeZone: 'Asia/Singapore' })}</span>
+                          <span className="block truncate text-sm text-muted-foreground">{r.title ?? t('common.observation')} · {format.dateTime(new Date(r.scheduled_at), { day: 'numeric', month: 'short' })}</span>
                         </span>
                         <ArrowRight aria-hidden className="size-4 text-muted-foreground" />
                       </Link>

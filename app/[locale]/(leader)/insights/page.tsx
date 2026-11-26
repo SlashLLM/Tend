@@ -1,5 +1,6 @@
 import { EyeOff, Users } from 'lucide-react';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { areaName, indicatorName } from '@/lib/i18n/content';
 import { Link } from '@/i18n/navigation';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
@@ -9,14 +10,17 @@ import { SUBDOMAIN_NAMES } from '@/lib/lna/content';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/server';
 import { CreateGroup } from './create-group';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Centre Insights' };
+export const generateMetadata = pageTitle('insights');
 
 const LEVEL_CLASS = ['bg-card', 'bg-primary/15', 'bg-primary/40', 'bg-primary text-primary-foreground'];
 
 export default async function InsightsPage({ searchParams }: { searchParams: Promise<{ sd?: string }> }) {
   const { sd } = await searchParams;
   const locale = await getLocale();
+  const t = await getTranslations('insights');
+  const area = (code: string) => areaName(locale, code, SUBDOMAIN_NAMES[code] ?? code);
   const session = (await getSession())!;
   const centreId = session.memberships.find((m) => m.role === 'leader')?.centre_id ?? '';
   const supabase = await createClient();
@@ -31,15 +35,16 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
   const m = buildMatrix((heat ?? []) as HeatRow[], educators);
   const growing = growingBySubdomain(m);
   const spotRows = (spots ?? []) as { kind: string; code: string; name: string; educators: number }[];
-  const shared = spotRows.filter((s) => s.kind === 'shared_growth');
-  const none = spotRows.filter((s) => s.kind === 'no_evidence');
+  // Indicator codes (no evidence) and subdomain codes (shared growth) — names in the reader's language.
+  const shared = spotRows.filter((s) => s.kind === 'shared_growth').map((s) => ({ ...s, name: areaName(locale, s.code, s.name) }));
+  const none = spotRows.filter((s) => s.kind === 'no_evidence').map((s) => ({ ...s, name: indicatorName(locale, s.code, s.name) }));
 
   // Drill-down: one subdomain → its indicators (counts of accepted evidence per educator)
   let drill: { code: string; name: string }[] = [];
   let drillCounts = new Map<string, number>();
   if (sd && (SUBDOMAINS as readonly string[]).includes(sd)) {
     const { data: inds } = await supabase.from('indicator').select('code, name, framework_version!inner(status)').eq('subdomain_code', sd).eq('framework_version.status', 'active').order('code');
-    drill = (inds ?? []).map((i) => ({ code: i.code, name: i.name }));
+    drill = (inds ?? []).map((i) => ({ code: i.code, name: indicatorName(locale, i.code, i.name) }));
     const { data: tags } = await supabase.from('tag').select('indicator:indicator_id!inner(code, subdomain_code), observation:observation_id!inner(educator_id, centre_id)').eq('state', 'accepted').eq('indicator.subdomain_code', sd).eq('observation.centre_id', centreId);
     drillCounts = new Map();
     for (const t of (tags ?? []) as unknown as { indicator: { code: string }; observation: { educator_id: string } }[]) {
@@ -50,23 +55,23 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <PageHeader dateline={dateline(new Date(), locale)} title="Centre Insights" subtitle="Where the centre is growing together — built only from approved evidence. Levels, never scores." />
+      <PageHeader dateline={dateline(new Date(), locale)} title={t('title')} subtitle={t('subtitle')} />
 
       <section aria-labelledby="heat" className="mb-10">
-        <SectionTitle id="heat" action={sd ? <Link href="/insights" className="text-sm text-primary hover:underline">Back to all subdomains</Link> : undefined}>
-          {sd ? `${sd} ${SUBDOMAIN_NAMES[sd]} · by indicator` : 'Heatmap · educators × subdomains'}
+        <SectionTitle id="heat" action={sd ? <Link href="/insights" className="text-sm text-primary hover:underline">{t('backAll')}</Link> : undefined}>
+          {sd ? t('byIndicator', { code: sd, name: area(sd) }) : t('heatmap')}
         </SectionTitle>
         <div className="tend-card overflow-x-auto p-3">
           {!sd ? (
             <table className="w-full min-w-[720px] border-separate border-spacing-1 text-sm">
-              <caption className="sr-only">Most recent observed level per educator and subdomain, with evidence counts</caption>
+              <caption className="sr-only">{t('captionLevels')}</caption>
               <thead>
                 <tr>
-                  <th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">Educator</th>
+                  <th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">{t('educator')}</th>
                   {SUBDOMAINS.map((s) => (
                     <th key={s} scope="col" className="font-medium">
-                      <Link href={`/insights?sd=${s}`} className="block rounded px-1 py-1 hover:bg-muted" title={SUBDOMAIN_NAMES[s]}>
-                        {s}<span className="block text-[0.65rem] font-normal text-muted-foreground">{growing[s]} growing</span>
+                      <Link href={`/insights?sd=${s}`} className="block rounded px-1 py-1 hover:bg-muted" title={area(s)}>
+                        {s}<span className="block text-[0.65rem] font-normal text-muted-foreground">{t('growing', { n: growing[s] })}</span>
                       </Link>
                     </th>
                   ))}
@@ -81,7 +86,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
                       return (
                         <td key={s}
                           className={cn('h-11 rounded-md text-center tabular-nums', LEVEL_CLASS[c.level ?? 0], c.grows > 0 && 'tend-stripes', c.count === 0 && 'border border-dashed')}
-                          aria-label={`${e.name}, ${SUBDOMAIN_NAMES[s]}: ${c.level ? `seen at Level ${c.level}` : 'not yet observed'}, ${c.count} evidence${c.grows ? `, ${c.grows} growth notes` : ''}`}>
+                          aria-label={`${t('cellLabel', { name: e.name, sub: area(s), state: c.level ? t('cellSeen', { level: c.level }) : t('cellNotYet'), n: c.count })}${c.grows ? t('cellGrows', { n: c.grows }) : ''}`}>
                           {c.level ? <><span className="font-semibold">L{c.level}</span><span className="ml-1 text-[0.7rem]">·{c.count}</span></> : <span className="text-muted-foreground">—</span>}
                         </td>
                       );
@@ -92,8 +97,8 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
             </table>
           ) : (
             <table className="w-full min-w-[720px] border-separate border-spacing-1 text-sm">
-              <caption className="sr-only">Evidence count per educator and indicator</caption>
-              <thead><tr><th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">Educator</th>{drill.map((i) => <th key={i.code} scope="col" title={i.name} className="font-medium">{i.code}</th>)}</tr></thead>
+              <caption className="sr-only">{t('captionCounts')}</caption>
+              <thead><tr><th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">{t('educator')}</th>{drill.map((i) => <th key={i.code} scope="col" title={i.name} className="font-medium">{i.code}</th>)}</tr></thead>
               <tbody>
                 {m.educators.map((e) => (
                   <tr key={e.id}>
@@ -111,42 +116,42 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
             <span className="flex items-center gap-1"><span className="inline-block size-3 rounded bg-primary/15" /> L1</span>
             <span className="flex items-center gap-1"><span className="inline-block size-3 rounded bg-primary/40" /> L2</span>
             <span className="flex items-center gap-1"><span className="inline-block size-3 rounded bg-primary" /> L3</span>
-            <span className="flex items-center gap-1"><span className="tend-stripes inline-block size-3 rounded border" /> has growth notes</span>
-            <span>· number = evidence count</span>
+            <span className="flex items-center gap-1"><span className="tend-stripes inline-block size-3 rounded border" /> {t('hasGrowth')}</span>
+            <span>{t('numberIs')}</span>
           </p>
         </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="tend-card p-5" aria-labelledby="spots">
-          <SectionTitle id="spots"><EyeOff className="mr-1.5 inline size-4" aria-hidden />Blind spots</SectionTitle>
-          <p className="mb-2 text-sm text-muted-foreground">No evidence in the last 90 days:</p>
+          <SectionTitle id="spots"><EyeOff className="mr-1.5 inline size-4" aria-hidden />{t('blindSpots')}</SectionTitle>
+          <p className="mb-2 text-sm text-muted-foreground">{t('noEvidence')}</p>
           <ul className="mb-4 flex flex-wrap gap-1.5">
             {none.slice(0, 18).map((s) => <li key={s.code} className="rounded-full border border-dashed px-2.5 py-1 text-xs" title={s.name}>{s.code} {s.name}</li>)}
-            {none.length > 18 && <li className="text-xs text-muted-foreground">+{none.length - 18} more</li>}
+            {none.length > 18 && <li className="text-xs text-muted-foreground">{t('more', { n: none.length - 18 })}</li>}
           </ul>
-          <p className="mb-2 text-sm text-muted-foreground">Shared growth areas:</p>
+          <p className="mb-2 text-sm text-muted-foreground">{t('sharedAreas')}</p>
           <ul className="grid gap-1.5 text-sm">
-            {shared.map((s) => <li key={s.code}><span className="font-medium">{s.code} {s.name}</span> — {s.educators} of {educators.length} educators growing</li>)}
+            {shared.map((s) => <li key={s.code}><span className="font-medium">{s.code} {s.name}</span> — {t('growingOf', { n: s.educators, total: educators.length })}</li>)}
           </ul>
         </section>
 
         <section className="tend-card p-5" aria-labelledby="plc">
-          <SectionTitle id="plc"><Users className="mr-1.5 inline size-4" aria-hidden />Learning groups</SectionTitle>
+          <SectionTitle id="plc"><Users className="mr-1.5 inline size-4" aria-hidden />{t('groups')}</SectionTitle>
           {shared.slice(0, 2).map((s) => {
             const g = proposeGroup(m, s.code);
             const act = (acts ?? []).find((a) => (a.subdomain_codes as string[]).includes(s.code) && a.tier === 'internal') ?? (acts ?? []).find((a) => (a.subdomain_codes as string[]).includes(s.code));
             return (
               <div key={s.code} className="mb-4 grid gap-1.5 rounded-lg bg-muted/50 p-3 text-sm">
-                <p className="font-medium">4-week group: {s.name}</p>
-                <p className="text-muted-foreground">{g.members.length} members · peer leads: {g.leads.map((l) => l.name).join(', ') || 'none yet'}{act ? ` · with “${act.title}”` : ''}</p>
-                <CreateGroup centreId={centreId} name={`${s.name} group`} subdomain={s.code} memberIds={g.members.map((x) => x.id)} leadIds={g.leads.map((x) => x.id)} pdActivityId={act?.id ?? null} />
+                <p className="font-medium">{t('fourWeek', { name: s.name })}</p>
+                <p className="text-muted-foreground">{t('members', { n: g.members.length })} · {t('peerLeads', { list: g.leads.map((l) => l.name).join(', ') || t('noneYet') })}{act ? t('withActivity', { title: act.title }) : ''}</p>
+                <CreateGroup centreId={centreId} name={t('groupName', { name: s.name })} subdomain={s.code} memberIds={g.members.map((x) => x.id)} leadIds={g.leads.map((x) => x.id)} pdActivityId={act?.id ?? null} />
               </div>
             );
           })}
           {(groups ?? []).length > 0 && (
             <ul className="grid gap-1 text-sm">
-              {(groups ?? []).map((g) => <li key={g.id}>✓ {g.name} · {(g.member_ids as string[]).length} members · {g.weeks} weeks</li>)}
+              {(groups ?? []).map((g) => <li key={g.id}>✓ {g.name} · {t('members', { n: (g.member_ids as string[]).length })} · {t('weeks', { n: g.weeks })}</li>)}
             </ul>
           )}
         </section>

@@ -22,6 +22,11 @@ export function AppShell({ area, userName, centreName, children }: Props) {
   const pathname = usePathname();
   const items = NAV[area];
   const { bar, more } = splitForMobile(items);
+  // Leaders keep Settings in their menu; everyone else has the shared Preferences page.
+  const prefsHref = area === 'leader' ? '/settings' : '/preferences';
+  // Phones: show "More" for overflow items, or when there is room — so Preferences and Sign out are always reachable.
+  const showMore = more.length > 0 || bar.length < 5;
+  const prefsInMenu = items.some((it) => it.href === prefsHref);
 
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[15rem_1fr]">
@@ -60,7 +65,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
         <div className="mx-3 mb-3 rounded-xl bg-card/70 px-4 py-3 text-sm">
           <p className="font-medium">{userName}</p>
           {centreName && <p className="text-muted-foreground">{centreName}</p>}
-          <Link href={area === 'educator' ? '/preferences' : area === 'leader' ? '/settings' : area === 'admin' ? '/admin' : '/network'} className="mt-2 block min-h-9 text-muted-foreground hover:text-foreground">{t('nav.preferences')}</Link>
+          <Link href={prefsHref} className="mt-2 block min-h-9 text-muted-foreground hover:text-foreground">{t('nav.preferences')}</Link>
           <form action="/auth/signout" method="post">
             <button className="inline-flex min-h-11 items-center gap-2 text-muted-foreground hover:text-foreground">
               <LogOut aria-hidden className="size-4" /> {t('auth.signOut')}
@@ -77,7 +82,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
 
       {/* phone bottom bar */}
       <nav aria-label={t('nav.main')} className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur md:hidden">
-        <ul className="grid" style={{ gridTemplateColumns: `repeat(${bar.length + (more.length ? 1 : 0)}, minmax(0, 1fr))` }}>
+        <ul className="grid" style={{ gridTemplateColumns: `repeat(${bar.length + (showMore ? 1 : 0)}, minmax(0, 1fr))` }}>
           {bar.map((it) => {
             const Icon = ICONS[it.icon];
             const active = isActive(pathname, it.href);
@@ -96,7 +101,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
               </li>
             );
           })}
-          {more.length > 0 && (
+          {showMore && (
             <li>
               <Popover>
                 <PopoverTrigger className="flex min-h-16 w-full flex-col items-center justify-center gap-0.5 text-[0.7rem] font-medium text-muted-foreground">
@@ -112,6 +117,11 @@ export function AppShell({ area, userName, centreName, children }: Props) {
                       </Link>
                     );
                   })}
+                  {!prefsInMenu && (
+                    <Link href={prefsHref} className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm hover:bg-muted">
+                      <Settings aria-hidden className="size-4" /> {t('nav.preferences')}
+                    </Link>
+                  )}
                   <form action="/auth/signout" method="post">
                     <button className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm hover:bg-muted">
                       <LogOut aria-hidden className="size-4" /> {t('auth.signOut')}

@@ -13,8 +13,10 @@ import { dateline, firstName } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
 import { PeerRequestCard, type IncomingPeerRequest } from './peer-request-card';
 import { RequestObservation } from './request-observation';
+import { indicatorName } from '@/lib/i18n/content';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Home' };
+export const generateMetadata = pageTitle('home');
 
 export default async function HomePage() {
   const t = await getTranslations();
@@ -25,7 +27,7 @@ export default async function HomePage() {
   const uid = session.userId;
 
   const [plans, { data: openRequest }, { count: inFlight }, { data: upcoming }, { data: shared }, { data: reflections }, { data: cards }] = await Promise.all([
-    loadPlans(supabase, uid),
+    loadPlans(supabase, uid, locale),
     supabase.from('observation_request').select('id, note').eq('educator_id', uid).eq('status', 'open').maybeSingle(),
     // Same condition request_observation() enforces: anything scheduled or being captured blocks a new request.
     supabase.from('observation').select('id', { count: 'exact', head: true }).eq('educator_id', uid).in('status', ['scheduled', 'capturing']),
@@ -47,10 +49,10 @@ export default async function HomePage() {
   const peer = (peerRows ?? []) as unknown as PeerRow[];
   const codes = [...new Set(peer.map((p) => p.indicator_code))];
   const { data: inds } = codes.length ? await supabase.from('indicator').select('code, name').in('code', codes) : { data: [] };
-  const indName = (c: string) => `${c} ${(inds ?? []).find((i) => i.code === c)?.name ?? ''}`.trim();
+  const indName = (c: string) => `${c} ${indicatorName(locale, c, (inds ?? []).find((i) => i.code === c)?.name ?? '')}`.trim();
   const incoming: IncomingPeerRequest[] = peer
     .filter((p) => p.status === 'requested' && p.peer_id === uid)
-    .map((p) => ({ id: p.id, observerName: p.observer?.full_name ?? 'A colleague', indicator: indName(p.indicator_code), proposedAt: p.proposed_at, note: p.request_note }));
+    .map((p) => ({ id: p.id, observerName: p.observer?.full_name ?? t('common.aColleague'), indicator: indName(p.indicator_code), proposedAt: p.proposed_at, note: p.request_note }));
   const sessions = peer.filter((p) => p.status === 'accepted' && p.scheduled_at).sort((a, b) => a.scheduled_at!.localeCompare(b.scheduled_at!));
   const now = Date.now();
 
@@ -58,10 +60,12 @@ export default async function HomePage() {
   const awaiting = (shared ?? []).filter((o) => !reflected.has(o.id));
   const goals = plans.active?.goals ?? [];
   const card = cards?.[0] as unknown as { id: string; title: string; body: Record<string, string>; indicator: { code: string; name: string } | null } | undefined;
+  const { data: tries } = card ? await supabase.from('strategy_attempt').select('tried_on').eq('coaching_card_id', card.id).order('tried_on', { ascending: false }).limit(1) : { data: [] };
+  const cardTriedOn = (tries?.[0]?.tried_on as string | undefined) ?? null;
 
   return (
     <>
-      <PageHeader dateline={dateline(new Date(), locale)} title={`Hi ${firstName(session.profile.full_name)}`} subtitle={t('app.tagline')}
+      <PageHeader dateline={dateline(new Date(), locale)} title={t('home.greeting', { name: firstName(session.profile.full_name) })} subtitle={t('app.tagline')}
         actions={<Link href="/preferences" className="inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground md:hidden">{t('nav.preferences')}</Link>} />
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -70,8 +74,8 @@ export default async function HomePage() {
             <Link key={o.id} href={`/feedback/${o.id}`} className="tend-card group flex items-center gap-4 border-l-4 border-l-primary p-5 hover:border-primary">
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Mail aria-hidden className="size-5" /></span>
               <span className="grid flex-1 gap-0.5">
-                <span className="font-semibold">New growth notes · {o.title ?? 'Observation'}</span>
-                <span className="text-sm text-muted-foreground">From {(o.observer as unknown as { full_name: string }).full_name}. Take a moment to reflect first.</span>
+                <span className="font-semibold">{t('home.newNotes', { title: o.title ?? t('common.observation') })}</span>
+                <span className="text-sm text-muted-foreground">{t('home.newNotesFrom', { name: (o.observer as unknown as { full_name: string }).full_name })}</span>
               </span>
               <ArrowRight className="size-5 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
             </Link>
@@ -80,18 +84,18 @@ export default async function HomePage() {
           {(upcoming ?? []).map((o) => {
             const focused = (o.focus_goal_ids ?? []).length > 0;
             return (
-              <section key={o.id} className="tend-card grid gap-3 p-5" aria-label="Upcoming observation">
-                <p className="tend-dateline flex items-center gap-1.5 text-amber"><CalendarClock className="size-3.5" aria-hidden /> Coming up</p>
-                <h2 className="text-lg font-semibold">{o.title ?? 'Observation'}</h2>
+              <section key={o.id} className="tend-card grid gap-3 p-5" aria-label={t('home.upcoming')}>
+                <p className="tend-dateline flex items-center gap-1.5 text-amber"><CalendarClock className="size-3.5" aria-hidden /> {t('home.comingUp')}</p>
+                <h2 className="text-lg font-semibold">{o.title ?? t('common.observation')}</h2>
                 <p className="text-sm text-muted-foreground">
                   <time dateTime={o.scheduled_at}>{format.dateTime(new Date(o.scheduled_at), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })}</time>
-                  {' · '}with {(o.observer as unknown as { full_name: string }).full_name}
+                  {' · '}{t('home.withObserver', { name: (o.observer as unknown as { full_name: string }).full_name })}
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
                   <Button asChild className="min-h-11" variant={focused ? 'outline' : 'default'}>
-                    <Link href={`/focus/${o.id}`}><Target aria-hidden /> {focused ? 'Change my focus' : 'Choose what I’d like feedback on'}</Link>
+                    <Link href={`/focus/${o.id}`}><Target aria-hidden /> {focused ? t('home.changeFocus') : t('home.chooseFocus')}</Link>
                   </Button>
-                  {focused && <span className="text-sm text-success">Your focus is set</span>}
+                  {focused && <span className="text-sm text-success">{t('home.focusSet')}</span>}
                 </div>
               </section>
             );
@@ -101,12 +105,12 @@ export default async function HomePage() {
 
           {sessions.map((s) => {
             const watching = s.observer_id === uid;
-            const other = (watching ? s.peer?.full_name : s.observer?.full_name) ?? 'your colleague';
+            const other = (watching ? s.peer?.full_name : s.observer?.full_name) ?? t('home.yourColleague');
             const due = new Date(s.scheduled_at!).getTime() <= now + 3600_000;
             return (
-              <section key={s.id} className="tend-card grid gap-2 p-5" aria-label="Peer observation">
-                <p className="tend-dateline flex items-center gap-1.5 text-primary"><Users className="size-3.5" aria-hidden /> Peer observation · 15 minutes</p>
-                <h2 className="text-lg font-semibold">{watching ? `You’re watching ${other}` : `${other.split(' ')[0]} is watching you`}</h2>
+              <section key={s.id} className="tend-card grid gap-2 p-5" aria-label={t('home.peerObservation')}>
+                <p className="tend-dateline flex items-center gap-1.5 text-primary"><Users className="size-3.5" aria-hidden /> {t('home.peerObservation15')}</p>
+                <h2 className="text-lg font-semibold">{watching ? t('home.youreWatching', { name: other }) : t('home.isWatchingYou', { name: other.split(' ')[0] })}</h2>
                 <p className="text-sm text-muted-foreground">
                   <time dateTime={s.scheduled_at!}>{format.dateTime(new Date(s.scheduled_at!), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })}</time>
                   {' · '}{indName(s.indicator_code)}
@@ -115,7 +119,7 @@ export default async function HomePage() {
                 {watching && s.action && (
                   <div>
                     <Button asChild className="min-h-11" variant={due ? 'default' : 'outline'}>
-                      <Link href={`/growth/goal/${s.action.idp_goal_id}`}>{due ? 'Record what you noticed' : 'See the goal'} <ArrowRight aria-hidden /></Link>
+                      <Link href={`/growth/goal/${s.action.idp_goal_id}`}>{due ? t('home.recordNoticed') : t('home.seeGoal')} <ArrowRight aria-hidden /></Link>
                     </Button>
                   </div>
                 )}
@@ -126,8 +130,8 @@ export default async function HomePage() {
           {(inFlight ?? 0) === 0 && <RequestObservation open={openRequest} />}
 
           <section aria-labelledby="my-goals">
-            <SectionTitle id="my-goals" count={goals.length} action={<Link href="/growth" className="text-sm text-primary hover:underline">My Growth</Link>}>
-              My goals
+            <SectionTitle id="my-goals" count={goals.length} action={<Link href="/growth" className="text-sm text-primary hover:underline">{t('home.myGrowth')}</Link>}>
+              {t('home.myGoals')}
             </SectionTitle>
             {goals.length === 0 ? (
               <EmptyState message={t('empty.goals')} actionLabel={t('empty.goalsAction')} href="/growth" />
@@ -147,8 +151,8 @@ export default async function HomePage() {
         </div>
 
         <aside className="grid content-start gap-6">
-          {card ? <TryTomorrowCard card={card} /> : (
-            <section className="tend-card p-5 text-sm text-muted-foreground">Your “Try tomorrow” card appears here after your next growth notes.</section>
+          {card ? <TryTomorrowCard card={card} triedOn={cardTriedOn} /> : (
+            <section className="tend-card p-5 text-sm text-muted-foreground">{t('home.tryTomorrowEmpty')}</section>
           )}
         </aside>
       </div>

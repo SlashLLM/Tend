@@ -1,5 +1,6 @@
 'use client';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -14,12 +15,18 @@ export function PreferencesForm({ locale, textScale, peerMatch }: { locale: Loca
   const [s, setS] = useState(textScale);
   const [p, setP] = useState(peerMatch ?? false);
   const [pending, start] = useTransition();
+  const t = useTranslations('prefs');
   return (
     <form className="tend-card grid max-w-xl gap-6 p-6" onSubmit={(e) => {
       e.preventDefault();
       start(async () => {
-        await savePreferences({ locale: l, textScale: s, ...(peerMatch !== null ? { peerMatch: p } : {}) });
-        toast.success('Saved');
+        try {
+          await savePreferences({ locale: l, textScale: s, ...(peerMatch !== null ? { peerMatch: p } : {}) });
+        } catch {
+          toast.error(t('saveFailed'));
+          return;
+        }
+        toast.success(t('saved'));
         if (l !== locale) {
           const path = window.location.pathname.replace(LOCALE_PREFIX_RE, '') || '/';
           window.location.assign(l === 'en' ? path : `/${l}${path === '/' ? '' : path}`);
@@ -27,16 +34,16 @@ export function PreferencesForm({ locale, textScale, peerMatch }: { locale: Loca
       });
     }}>
       <fieldset className="grid gap-2">
-        <legend className="mb-1 font-medium">Language · 语言 · Bahasa</legend>
+        <legend className="mb-1 font-medium">{t('language')}</legend>
         <div className="flex flex-wrap gap-2">
           {LOCALES.map((v) => [v, LOCALE_META[v].label] as const).map(([v, label]) => (
             <button key={v} type="button" aria-pressed={l === v} onClick={() => setL(v)} className={cn('min-h-11 rounded-full border px-4', l === v && 'border-primary bg-primary text-primary-foreground')}>{label}</button>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">தமிழ் arrives in the pilot.</p>
+        <p className="text-xs text-muted-foreground">{t('tamilSoon')}</p>
       </fieldset>
       <fieldset className="grid gap-2">
-        <legend className="mb-1 font-medium">Text size</legend>
+        <legend className="mb-1 font-medium">{t('textSize')}</legend>
         <div className="flex gap-2">
           {[100, 115, 130].map((v) => (
             <button key={v} type="button" aria-pressed={s === v} onClick={() => setS(v)} className={cn('min-h-11 rounded-full border px-4', s === v && 'border-primary bg-primary text-primary-foreground')} style={{ fontSize: `${v}%` }}>{v}%</button>
@@ -45,13 +52,13 @@ export function PreferencesForm({ locale, textScale, peerMatch }: { locale: Loca
       </fieldset>
       {peerMatch !== null && (
         <label className="flex items-start gap-3">
-          <Switch checked={p} onCheckedChange={setP} aria-label="Offer my strengths for Peer Match" className="mt-1" />
-          <span><span className="font-medium">Offer my strengths for Peer Match</span><br /><span className="text-sm text-muted-foreground">Colleagues may be invited to watch you for 15 minutes in areas where you were seen at Level 3.</span></span>
+          <Switch checked={p} onCheckedChange={setP} aria-label={t('peerMatch')} className="mt-1" />
+          <span><span className="font-medium">{t('peerMatch')}</span><br /><span className="text-sm text-muted-foreground">{t('peerMatchHint')}</span></span>
         </label>
       )}
-      <Button type="submit" className="min-h-11 justify-self-start" disabled={pending}>{pending && <Loader2 className="animate-spin" aria-hidden />} Save preferences</Button>
+      <Button type="submit" className="min-h-11 justify-self-start" disabled={pending}>{pending && <Loader2 className="animate-spin" aria-hidden />} {t('save')}</Button>
       <p className="border-t pt-4 text-sm">
-        <Link href="/change-password" className="text-primary underline">Change password</Link>
+        <Link href="/change-password" className="text-primary underline">{t('changePassword')}</Link>
       </p>
     </form>
   );

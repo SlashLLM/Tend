@@ -1,5 +1,6 @@
 'use client';
 import { Camera, CheckCircle2, CloudOff, Loader2, Mic, PenLine, Play, Square, Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from '@/i18n/navigation';
@@ -16,7 +17,7 @@ import { formatMs } from '@/lib/levels';
 
 type Line = { key: string; t: number; text: string; kind: 'note' | 'speech' | 'moment' | 'photo' };
 
-const KIND_LABEL: Record<string, string> = { audio_chunk: 'voice clip', photo: 'photo', note: 'note', moment: 'moment', video: 'video' };
+const KINDS = new Set(['audio_chunk', 'photo', 'note', 'moment', 'video']);
 
 type Props = {
   obsId: string;
@@ -30,6 +31,7 @@ type Props = {
 /** Live capture (PRD M4-B): eyes on the class, big thumb-zone controls, nothing lost offline. */
 export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTranscription }: Props) {
   const router = useRouter();
+  const tr = useTranslations('capture');
   const [status, setStatus] = useState<'ready' | 'capturing' | 'ending'>(initialStatus === 'capturing' ? 'capturing' : 'ready');
   // capture start on THIS device's clock (see lib/capture/clock.ts)
   const [t0, setT0] = useState<number | null>(() => (elapsedMs === null ? null : deviceStart(elapsedMs)));
@@ -68,14 +70,17 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
         (u) => {
           if (u.transcript) setLines((l) => [...l, { key: u.key, t: Number(u.key.split(':')[2]), text: u.transcript!, kind: 'speech' }]);
         },
-        (d) => toast.error(`A ${KIND_LABEL[d.kind] ?? 'capture item'} could not be saved (${d.error}). Please add it again.`, { duration: 10_000 }),
+        (d) => {
+          console.error('capture item failed', d.error);
+          toast.error(tr('itemFailed', { kind: tr(`kind.${KINDS.has(d.kind) ? d.kind : 'item'}`) }), { duration: 10_000 });
+        },
       );
       setQueued(left);
     } finally {
       flushing.current = false;
     }
     if (flushAgain.current) await run();
-  }, [obsId]);
+  }, [obsId, tr]);
 
   useEffect(() => {
     const tick = setInterval(() => setNow(Date.now()), 1000);
@@ -105,7 +110,8 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
       setStatus('capturing');
       navigator.vibrate?.(30);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Could not start');
+      console.error(e);
+      toast.error(tr('startFailed'));
     } finally {
       setBusy(false);
     }
@@ -142,7 +148,7 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
       setRecording(true);
       navigator.vibrate?.(20);
     } catch {
-      toast.error('Microphone unavailable — type or use your keyboard’s dictation instead.');
+      toast.error(tr('micUnavailable'));
     }
   }
 
@@ -158,7 +164,7 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
   async function moment() {
     const t = elapsed();
     await add('moment', {}, t);
-    setLines((l) => [...l, { key: `m${t}`, t, text: '★ Moment', kind: 'moment' }]);
+    setLines((l) => [...l, { key: `m${t}`, t, text: tr('momentLine'), kind: 'moment' }]);
     navigator.vibrate?.([15, 40, 15]);
   }
 
@@ -167,7 +173,7 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
     const t = elapsed();
     const { blob, faces, mode } = await blurFaces(file);
     await add('photo', { blob }, t);
-    setLines((l) => [...l, { key: `p${t}`, t, text: mode === 'whole' ? 'Photo added (fully blurred)' : `Photo added · ${faces} face${faces === 1 ? '' : 's'} blurred`, kind: 'photo' }]);
+    setLines((l) => [...l, { key: `p${t}`, t, text: mode === 'whole' ? tr('photoBlurredAll') : tr('photoBlurred', { n: faces }), kind: 'photo' }]);
   }
 
   async function playDemo() {
@@ -189,13 +195,13 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
       await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
     }
     if ((await pending(obsId)).length > 0) {
-      toast.error('Some items are still waiting to sync. Keep this page open and try again when you have signal.');
+      toast.error(tr('stillSyncing'));
       setStatus('capturing');
       return;
     }
     const res = await fetch(`/api/observations/${obsId}/end`, { method: 'POST' });
     if (!res.ok) {
-      toast.error('Could not end the observation');
+      toast.error(tr('endFailed'));
       setStatus('capturing');
       return;
     }
@@ -205,11 +211,11 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
   if (status === 'ready') {
     return (
       <div className="grid place-items-center gap-4 py-8">
-        <button onClick={begin} disabled={busy} aria-label="Start observation"
+        <button onClick={begin} disabled={busy} aria-label={tr('start')}
           className="grid size-24 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95">
           {busy ? <Loader2 className="size-9 animate-spin" aria-hidden /> : <Play className="size-10 fill-current" aria-hidden />}
         </button>
-        <p className="text-sm text-muted-foreground">Start when you’re ready. Dictate quietly; type a note any time.</p>
+        <p className="text-sm text-muted-foreground">{tr('startHint')}</p>
       </div>
     );
   }
@@ -220,18 +226,18 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
         <span className="font-mono tabular-nums">{formatMs(elapsedSince(t0, now))}</span>
         <span className={cn('flex items-center gap-1.5', online ? 'text-muted-foreground' : 'text-amber')} aria-live="polite">
           {!online && <CloudOff className="size-4" aria-hidden />}
-          {queued > 0 ? `${queued} waiting to sync` : online ? 'All saved' : 'Offline — saving on this device'}
+          {queued > 0 ? tr('waiting', { n: queued }) : online ? tr('allSaved') : tr('offline')}
         </span>
       </div>
 
-      <section aria-label="Live transcript" className="tend-card min-h-56 p-4">
+      <section aria-label={tr('liveTranscript')} className="tend-card min-h-56 p-4">
         {!liveTranscription && (
           <p className="mb-3 rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
-            Audio is saved; live transcription starts when an AI key is added. Meanwhile, type or use your keyboard’s dictation.
+            {tr('noAi')}
           </p>
         )}
         <ol aria-live="polite" className="grid gap-2">
-          {lines.length === 0 && <li className="text-sm text-muted-foreground">Your notes appear here.</li>}
+          {lines.length === 0 && <li className="text-sm text-muted-foreground">{tr('notesHere')}</li>}
           {lines.map((l) => (
             <li key={l.key} className={cn('flex gap-3 text-sm', l.kind === 'moment' && 'font-medium text-amber', l.kind === 'photo' && 'text-muted-foreground')}>
               <span className="w-12 shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{formatMs(l.t)}</span>
@@ -240,34 +246,34 @@ export function CaptureStudio({ obsId, initialStatus, elapsedMs, demo, liveTrans
           ))}
         </ol>
         {demo && lines.length === 0 && (
-          <Button variant="outline" size="sm" className="mt-4 min-h-11" onClick={playDemo}>Play demo dictation (synthetic)</Button>
+          <Button variant="outline" size="sm" className="mt-4 min-h-11" onClick={playDemo}>{tr('playDemo')}</Button>
         )}
       </section>
 
       <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void addNote(); }}>
-        <Input aria-label="Note" placeholder="Type or dictate a note…" value={note} onChange={(e) => setNote(e.target.value)} className="min-h-12" />
-        <Button type="submit" variant="outline" className="min-h-12" aria-label="Add note"><PenLine aria-hidden /></Button>
+        <Input aria-label={tr('note')} placeholder={tr('notePlaceholder')} value={note} onChange={(e) => setNote(e.target.value)} className="min-h-12" />
+        <Button type="submit" variant="outline" className="min-h-12" aria-label={tr('addNote')}><PenLine aria-hidden /></Button>
       </form>
 
       {/* thumb zone */}
       <div className="fixed inset-x-0 bottom-16 z-30 border-t bg-card/95 px-4 pb-4 pt-3 backdrop-blur md:bottom-0 md:left-60">
         <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
-          <label className="grid size-14 cursor-pointer place-items-center rounded-full border bg-card" aria-label="Add photo (faces are blurred on this device)">
+          <label className="grid size-14 cursor-pointer place-items-center rounded-full border bg-card" aria-label={tr('addPhoto')}>
             <Camera aria-hidden />
             <input type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => void photo(e.target.files?.[0])} />
           </label>
-          <button type="button" onClick={toggleMic} aria-pressed={recording} aria-label={recording ? 'Pause dictation' : 'Record dictation'}
+          <button type="button" onClick={toggleMic} aria-pressed={recording} aria-label={recording ? tr('pauseDictation') : tr('recordDictation')}
             className={cn('grid size-24 place-items-center rounded-full text-white shadow-lg transition-transform active:scale-95', recording ? 'tend-pulse bg-destructive' : 'bg-primary')}>
             {recording ? <Square className="size-9 fill-current" aria-hidden /> : <Mic className="size-10" aria-hidden />}
           </button>
-          <button type="button" onClick={() => void moment()} aria-label="Mark a moment"
+          <button type="button" onClick={() => void moment()} aria-label={tr('markMoment')}
             className="grid size-14 place-items-center rounded-full bg-amber text-amber-foreground shadow active:scale-95">
             <Star className="fill-current" aria-hidden />
           </button>
         </div>
         <div className="mx-auto mt-3 max-w-xl">
           <Button onClick={() => void end()} disabled={status === 'ending'} className="min-h-12 w-full text-base font-semibold shadow-sm">
-            {status === 'ending' ? <><Loader2 className="animate-spin" aria-hidden /> Saving and drafting…</> : <><CheckCircle2 aria-hidden /> End observation</>}
+            {status === 'ending' ? <><Loader2 className="animate-spin" aria-hidden /> {tr('drafting')}</> : <><CheckCircle2 aria-hidden /> {tr('end')}</>}
           </Button>
         </div>
       </div>

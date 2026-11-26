@@ -5,6 +5,8 @@
 import { buildIndex } from '../pipeline/retrieve';
 import { postFilter } from './guard';
 import type { IndicatorDoc } from '../pipeline/types';
+import type { Locale } from '@/i18n/routing';
+import { COACH_PHRASES } from './phrases';
 
 export type CoachContext = {
   firstName: string;
@@ -15,7 +17,8 @@ export type CoachContext = {
 
 export type CoachReply = { text: string; citations: { kind: 'goal' | 'card' | 'notes'; ref: string; label: string }[] };
 
-export function offlineCoach(question: string, ctx: CoachContext, goalHint?: string | null): CoachReply {
+export function offlineCoach(question: string, ctx: CoachContext, goalHint?: string | null, locale: Locale = 'en'): CoachReply {
+  const P = COACH_PHRASES[locale];
   const docs = ctx.goals.map((g) => g.doc);
   let goal = ctx.goals.find((g) => g.id === goalHint) ?? null;
   if (!goal && docs.length) {
@@ -24,34 +27,34 @@ export function offlineCoach(question: string, ctx: CoachContext, goalHint?: str
   }
   const citations: CoachReply['citations'] = [];
   const parts: string[] = [];
-  parts.push(empathy(question));
+  parts.push(empathy(question, P));
   if (goal) {
     const aim = Math.min(3, Math.max(goal.current_level ?? 1, 1) + 1);
     const step = goal.doc.level_descriptors[String(aim)] ?? goal.doc.look_fors[0];
-    parts.push(`For your goal ${goal.doc.code} (${goal.doc.name}), one thing to try: ${lower(step)}`);
+    parts.push(P.tryThis(goal.doc.code, goal.doc.name, lower(step)));
     const look = goal.doc.look_fors.find((l) => !step.toLowerCase().includes(l.toLowerCase().slice(0, 12)));
-    if (look) parts.push(`A small signal it’s working: ${lower(look)}.`);
+    if (look) parts.push(P.signal(lower(look)));
     citations.push({ kind: 'goal', ref: goal.id, label: goal.doc.code });
   }
   const card = ctx.cards.find((c) => c.indicator && c.indicator === goal?.doc.code) ?? ctx.cards[0];
   if (card) {
-    parts.push(`Your card “${card.title}” suggests saying: ${card.say_it}`);
+    parts.push(P.card(card.title, card.say_it));
     citations.push({ kind: 'card', ref: card.title, label: 'card' });
   } else if (ctx.lastNextStep) {
-    parts.push(`Your latest next step was: ${ctx.lastNextStep.replace(/^Next step:\s*/i, '')}`);
+    parts.push(P.lastStep(ctx.lastNextStep.replace(/^Next step:\s*/i, '')));
     citations.push({ kind: 'notes', ref: 'latest', label: 'notes' });
   }
   // End with one reflective question; quoted phrases become statements so there is only one question.
   const body = parts.join(' ').replace(/\s+/g, ' ').replace(/\?(”|")/g, '.$1');
-  const text = postFilter(`${body} What is one moment tomorrow where you could try this?`, (x) => x);
+  const text = postFilter(`${body} ${P.closing}`, (x) => x);
   return { text: capWords(text, 120), citations };
 }
 
-function empathy(q: string) {
-  if (/\bquiet|silent|shy|don['’]?t (talk|answer)\b/i.test(q)) return 'Quiet moments are common, especially with open questions — it often means children are thinking.';
-  if (/\b(behaviou?r|push|hit|fight|calm)\b/i.test(q)) return 'That’s a tricky moment, and it helps to plan it ahead.';
-  if (/\b(time|busy|rush)\b/i.test(q)) return 'Time is tight in a preschool day, so let’s keep this small.';
-  return 'Good question — let’s make it practical.';
+function empathy(q: string, P: (typeof COACH_PHRASES)[Locale]) {
+  if (/\bquiet|silent|shy|don['’]?t (talk|answer)\b/i.test(q)) return P.empathyQuiet;
+  if (/\b(behaviou?r|push|hit|fight|calm)\b/i.test(q)) return P.empathyBehaviour;
+  if (/\b(time|busy|rush)\b/i.test(q)) return P.empathyTime;
+  return P.empathyDefault;
 }
 
 const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Figtree, Noto_Sans } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/auth/session';
@@ -12,11 +12,11 @@ import '../globals.css';
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-figtree', display: 'swap' });
 const notoSans = Noto_Sans({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
 
-export const metadata: Metadata = {
-  title: { default: 'Tend — Educator Growth Studio', template: '%s · Tend' },
-  description: 'Growth, not grading. Same-day, evidence-linked growth for preschool educators.',
-  applicationName: 'Tend',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale: isLocale(locale) ? locale : 'en', namespace: 'meta' });
+  return { title: { default: t('appTitle'), template: '%s · Tend' }, description: t('appDescription'), applicationName: 'Tend' };
+}
 
 export const viewport: Viewport = {
   width: 'device-width',
