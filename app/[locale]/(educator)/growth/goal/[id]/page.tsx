@@ -2,6 +2,7 @@ import { ArrowLeft, MessageCircle, TrendingUp } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
+import { ActionItem } from '@/components/growth/action-item';
 import { TrajectoryChart } from '@/components/growth/trajectory-chart';
 import { IndicatorTag } from '@/components/tend/indicator-tag';
 import { LevelStones } from '@/components/tend/level-stones';
@@ -82,10 +83,8 @@ export default async function GoalPage({ params }: { params: Promise<{ id: strin
           </section>
           <section className="tend-card p-5" aria-labelledby="actions">
             <SectionTitle id="actions" count={goal.actions.length}>Actions</SectionTitle>
-            <ul className="grid gap-2 text-sm">
-              {goal.actions.map((a) => (
-                <li key={a.id} className="flex gap-2"><span aria-hidden>{a.status === 'done' ? '✓' : '○'}</span>{a.description}{a.status === 'proposed' && <span className="text-xs text-amber">(waiting for endorsement)</span>}</li>
-              ))}
+            <ul className="grid gap-3 text-sm">
+              {goal.actions.map((a) => <ActionItem key={a.id} action={a} canAct />)}
             </ul>
             <Button asChild variant="link" className="mt-2 h-auto p-0"><Link href={`/learn?goal=${goal.id}`}>Find learning for this goal →</Link></Button>
           </section>

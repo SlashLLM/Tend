@@ -3,6 +3,7 @@ import { IndicatorTag } from '@/components/tend/indicator-tag';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
 import { loadPlans } from '@/lib/data/growth';
+import { cpdHours } from '@/lib/peer';
 import { rankPathway, type Candidate } from '@/lib/ranking/pathway';
 import { createClient } from '@/lib/supabase/server';
 import { AddToPlan } from './add-to-plan';
@@ -17,9 +18,10 @@ export default async function LearnPage({ searchParams }: { searchParams: Promis
   const supabase = await createClient();
   const plans = await loadPlans(supabase, session.userId);
   const goals = (plans.active?.goals ?? []).filter((g) => !focusGoal || g.id === focusGoal);
-  const { data: acts } = await supabase.from('pd_activity').select('*');
-  const { data: done } = await supabase.from('idp_action').select('pd_activity_id, status, idp_goal_id, pd:pd_activity_id(hours)').not('pd_activity_id', 'is', null);
-  const cpd = ((done ?? []) as unknown as { status: string; pd: { hours: number } | null }[]).filter((a) => a.status === 'done').reduce((s, a) => s + Number(a.pd?.hours ?? 0), 0);
+  const { data: acts } = await supabase.from('pd_activity').select('*').eq('status', 'active');
+  // Courses count their listed hours; peer observations (and anything else logged) count their minutes.
+  const { data: done } = await supabase.from('idp_action').select('status, cpd_minutes, pd:pd_activity_id(hours)').eq('status', 'done').or('pd_activity_id.not.is.null,cpd_minutes.not.is.null');
+  const cpd = cpdHours((done ?? []) as unknown as Parameters<typeof cpdHours>[0]);
   const now = new Date();
 
   const sections = await Promise.all(
@@ -64,7 +66,8 @@ export default async function LearnPage({ searchParams }: { searchParams: Promis
                       </p>
                     )}
                   </div>
-                  <AddToPlan goalId={g.id} title={r.title} pdActivityId={r.tier === 'peer' ? null : r.id} already={g.actions.some((a) => a.description === r.title)} />
+                  <AddToPlan goalId={g.id} title={r.title} pdActivityId={r.tier === 'peer' ? null : r.id} peerUserId={r.tier === 'peer' ? r.id.slice('peer-'.length) : null}
+                    already={g.actions.some((a) => a.description === r.title || (r.tier === 'peer' ? a.peer_user_id === r.id.slice('peer-'.length) && a.status !== 'done' : a.pd_activity_id === r.id))} />
                 </li>
               ))}
             </ol>

@@ -1,4 +1,7 @@
+import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
+import { homePathFor } from '@/lib/auth/roles';
+import { getSession, withLocale } from '@/lib/auth/session';
 import { MetricsBoard } from '@/components/metrics/metrics-board';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { dateline } from '@/lib/format';
@@ -13,6 +16,9 @@ type Row = { centre_id: string; centre_name: string; subdomain_code: string; edu
 
 export default async function NetworkPage() {
   const locale = await getLocale();
+  // HQ only. Admins may open the other (hq) pages, but the PRD access table (p. 21) gives them no heatmap.
+  const session = await getSession();
+  if (!session?.memberships.some((m) => m.role === 'hq')) redirect(withLocale(locale, session ? homePathFor(session.memberships) : '/login'));
   const supabase = await createClient();
   const [{ data }, { data: metrics }] = await Promise.all([supabase.rpc('network_heatmap'), supabase.rpc('sandbox_metrics')]);
   const rows = (data ?? []) as Row[];
@@ -28,11 +34,11 @@ export default async function NetworkPage() {
         <div className="tend-card overflow-x-auto p-3">
           <table className="w-full min-w-[720px] border-separate border-spacing-1 text-sm">
             <caption className="sr-only">Share of educators with growth notes per centre and subdomain (last 180 days)</caption>
-            <thead><tr><th className="text-left font-medium text-muted-foreground">Centre</th>{SUBDOMAINS.map((s) => <th key={s} scope="col" title={SUBDOMAIN_NAMES[s]} className="font-medium">{s}</th>)}</tr></thead>
+            <thead><tr><th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">Centre</th>{SUBDOMAINS.map((s) => <th key={s} scope="col" title={SUBDOMAIN_NAMES[s]} className="font-medium">{s}</th>)}</tr></thead>
             <tbody>
               {centres.map((c) => (
                 <tr key={c.id}>
-                  <th scope="row" className="whitespace-nowrap pr-2 text-left font-normal">{c.name} <span className="text-xs text-muted-foreground">({c.n})</span></th>
+                  <th scope="row" className="sticky left-0 z-10 whitespace-nowrap bg-card pr-2 text-left font-normal">{c.name} <span className="text-xs text-muted-foreground">({c.n})</span></th>
                   {SUBDOMAINS.map((s) => {
                     const r = cell(c.id, s);
                     return <td key={s} className={`h-11 rounded-md text-center tabular-nums ${shade(Number(r?.share_growing ?? 0))}`}

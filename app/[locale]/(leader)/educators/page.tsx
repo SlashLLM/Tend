@@ -8,6 +8,12 @@ import { createClient } from '@/lib/supabase/server';
 
 export const metadata = { title: 'Educators' };
 
+/** "Aisha binte Rahman" → "AR": first and last capitalised word, skipping "binte", "bin", "a/l". */
+const initials = (name: string) => {
+  const w = name.split(/\s+/).filter((x) => /^\p{Lu}/u.test(x));
+  return ((w[0]?.[0] ?? '') + (w.length > 1 ? w.at(-1)![0] : '')).toUpperCase() || name.slice(0, 2).toUpperCase();
+};
+
 export default async function EducatorsPage() {
   const locale = await getLocale();
   const session = (await getSession())!;
@@ -36,7 +42,7 @@ export default async function EducatorsPage() {
           <li key={p.user_id}>
             <Link href={`/educators/${p.user_id}`} className="tend-row group">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-secondary font-semibold text-secondary-foreground" aria-hidden>
-                {p.user.full_name.split(' ').map((x) => x[0]).slice(0, 2).join('')}
+                {initials(p.user.full_name)}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">{p.user.full_name}</span>

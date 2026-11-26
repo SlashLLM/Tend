@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 export function TempPassword({ who, password, onDone }: { who: string; password: string; onDone: () => void }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div role="status" className="grid gap-2 rounded-lg border border-primary/40 bg-primary/5 p-4 text-sm">
+    <div role="status" className="grid min-w-64 gap-2 rounded-lg text-left border border-primary/40 bg-primary/5 p-4 text-sm">
       <p>Temporary password for <span className="font-medium">{who}</span>. Give it to them in person or by phone. They choose their own when they first sign in.</p>
-      <div className="flex items-center gap-2">
-        <code aria-label="Temporary password" className="rounded bg-card px-2 py-1 font-mono text-base tracking-wide">{password}</code>
+      <div className="flex flex-wrap items-center gap-2">
+        <code aria-label="Temporary password" className="whitespace-nowrap rounded bg-card px-2 py-1 font-mono text-base tracking-wide select-all">{password}</code>
         <Button type="button" variant="outline" size="sm" className="min-h-11" onClick={async () => {
           try {
             await navigator.clipboard.writeText(password);

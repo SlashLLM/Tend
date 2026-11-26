@@ -59,24 +59,35 @@ export async function addGoal(idpId: string, indicatorCode: string) {
   refresh();
 }
 
-export async function addAction(goalId: string, description: string, source: 'manual' | 'pathway' = 'manual', pdActivityId?: string) {
+export async function addAction(goalId: string, description: string, source: 'manual' | 'pathway' = 'manual', pdActivityId?: string, peerUserId?: string) {
   uuid.parse(goalId);
   const text = z.string().trim().min(3).max(300).parse(description);
   const supabase = await createClient();
-  const { data: goal } = await supabase.from('idp_goal').select('org_id').eq('id', goalId).single();
+  const { data: goal } = await supabase.from('idp_goal').select('org_id, indicator:indicator_id(code)').eq('id', goalId).single();
   if (!goal) throw new Error('Goal not found');
+  if (peerUserId) {
+    // A peer action must name a colleague Peer Match actually suggests for this goal (opted in, seen at Level 3).
+    uuid.parse(peerUserId);
+    const code = (goal.indicator as unknown as { code: string } | null)?.code;
+    const { data: peers } = await supabase.rpc('peer_matches', { p_indicator_code: code });
+    if (!((peers ?? []) as { user_id: string }[]).some((p) => p.user_id === peerUserId)) throw new Error('That colleague is no longer a peer match for this goal');
+  }
   const { error } = await supabase.from('idp_action').insert({
     org_id: goal.org_id, idp_goal_id: goalId, description: text, source,
-    status: source === 'pathway' ? 'proposed' : 'open', pd_activity_id: pdActivityId ?? null,
+    status: source === 'pathway' ? 'proposed' : 'open', pd_activity_id: pdActivityId ?? null, peer_user_id: peerUserId ?? null,
   });
   await fail(error);
   refresh();
 }
 
-export async function setActionStatus(actionId: string, status: 'open' | 'done') {
+/** Mark an endorsed action done (optional note), or undo. Peer observations complete through their reflection instead. */
+export async function setActionStatus(actionId: string, status: 'open' | 'done', note?: string) {
   uuid.parse(actionId);
   const supabase = await createClient();
-  const { error } = await supabase.from('idp_action').update({ status }).eq('id', actionId);
+  const { error } =
+    status === 'done'
+      ? await supabase.rpc('complete_action', { p_action: actionId, p_note: z.string().max(500).optional().parse(note) ?? null })
+      : await supabase.rpc('reopen_action', { p_action: actionId });
   await fail(error);
   refresh();
 }

@@ -192,7 +192,7 @@ export function buildWorld(anchor: Date = new Date()): World {
   // pd catalogue
   for (const a of [...COURSES, ...INTERNAL_ACTIVITIES]) {
     add('pd_activity', {
-      id: uuid(), org_id: a.tier === 'course' ? null : org, centre_id: null, tier: a.tier, provider: a.provider, title: a.title,
+      id: uuid(), org_id: a.tier === 'course' ? null : org, centre_id: null, source: 'seed', status: 'active', tier: a.tier, provider: a.provider, title: a.title,
       mode: a.mode, hours: a.hours, fee_sgd: a.fee_sgd, funding: a.funding, funded: a.funded,
       next_run: a.next_run_days === null ? null : new Date(anchor.getTime() + a.next_run_days * DAY).toISOString().slice(0, 10),
       url: a.tier === 'course' ? 'https://example.org/course-placeholder' : null,

@@ -1,5 +1,6 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { ActionView } from '@/lib/peer';
 
 export type GoalView = {
   id: string;
@@ -9,8 +10,9 @@ export type GoalView = {
   position: number;
   indicator: { id: string; code: string; name: string; subdomain_name: string; level_descriptors: Record<string, string>; look_fors: string[] };
   tsc: { code: string; title: string } | null;
-  actions: { id: string; description: string; status: string; source: string; endorsed_by: string | null; pd_activity_id: string | null }[];
+  actions: ActionView[];
 };
+export type { ActionView, PeerSessionView } from '@/lib/peer';
 
 export type IdpView = {
   id: string;
@@ -25,7 +27,7 @@ export type IdpView = {
 };
 
 const GOAL_SELECT =
-  'id, current_level, target_level, review_date, position, indicator:indicator_id(id, code, name, subdomain_name, level_descriptors, look_fors), tsc:tsc_id(code, title), actions:idp_action(id, description, status, source, endorsed_by, pd_activity_id)';
+  'id, current_level, target_level, review_date, position, indicator:indicator_id(id, code, name, subdomain_name, level_descriptors, look_fors), tsc:tsc_id(code, title), actions:idp_action(id, description, status, source, endorsed_by, pd_activity_id, peer_user_id, completed_at, completion_note, cpd_minutes, created_at, peer:peer_user_id(full_name), peer_sessions:peer_observation(id, status, proposed_at, scheduled_at, peer_note, noticed, will_try, created_at))';
 
 /** Latest active and latest draft plan for an educator (both may exist while revising). */
 export async function loadPlans(supabase: SupabaseClient, educatorId: string) {
