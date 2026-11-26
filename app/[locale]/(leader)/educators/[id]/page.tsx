@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
+import { ActionItem } from '@/components/growth/action-item';
 import { IdpEditor } from '@/components/growth/idp-editor';
 import { IndicatorTag } from '@/components/tend/indicator-tag';
 import { LevelStones } from '@/components/tend/level-stones';
@@ -86,6 +87,21 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
               </ul>
             )}
           </section>
+          {activeGoals.some((g) => g.actions.length) && (
+            <section aria-labelledby="plan-actions">
+              <SectionTitle id="plan-actions" count={activeGoals.reduce((n, g) => n + g.actions.filter((a) => a.status === 'done').length, 0)}>
+                Plan actions done
+              </SectionTitle>
+              <div className="tend-card grid gap-5 p-5">
+                {activeGoals.filter((g) => g.actions.length).map((g) => (
+                  <div key={g.id} className="grid gap-2">
+                    <IndicatorTag code={g.indicator.code} name={g.indicator.name} className="self-start" />
+                    <ul className="grid gap-3">{g.actions.map((a) => <ActionItem key={a.id} action={a} canAct={false} />)}</ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="grid content-start gap-6">

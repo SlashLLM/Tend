@@ -25,7 +25,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
     supabase.rpc('blind_spots', { p_centre: centreId }),
     supabase.from('educator_profile').select('user_id, age_group, user:user_id(full_name)').eq('centre_id', centreId).eq('age_group', 'preschool'),
     supabase.from('plc').select('id, name, member_ids, lead_ids, weeks').eq('centre_id', centreId).order('created_at', { ascending: false }),
-    supabase.from('pd_activity').select('id, title, tier, subdomain_codes').in('tier', ['internal', 'course']),
+    supabase.from('pd_activity').select('id, title, tier, subdomain_codes').in('tier', ['internal', 'course']).eq('status', 'active'),
   ]);
   const educators = ((eds ?? []) as unknown as { user_id: string; user: { full_name: string } }[]).map((e) => ({ id: e.user_id, name: e.user.full_name }));
   const m = buildMatrix((heat ?? []) as HeatRow[], educators);

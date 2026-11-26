@@ -1,4 +1,7 @@
+import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
+import { homePathFor } from '@/lib/auth/roles';
+import { getSession, withLocale } from '@/lib/auth/session';
 import { MetricsBoard } from '@/components/metrics/metrics-board';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { dateline } from '@/lib/format';
@@ -13,6 +16,9 @@ type Row = { centre_id: string; centre_name: string; subdomain_code: string; edu
 
 export default async function NetworkPage() {
   const locale = await getLocale();
+  // HQ only. Admins may open the other (hq) pages, but the PRD access table (p. 21) gives them no heatmap.
+  const session = await getSession();
+  if (!session?.memberships.some((m) => m.role === 'hq')) redirect(withLocale(locale, session ? homePathFor(session.memberships) : '/login'));
   const supabase = await createClient();
   const [{ data }, { data: metrics }] = await Promise.all([supabase.rpc('network_heatmap'), supabase.rpc('sandbox_metrics')]);
   const rows = (data ?? []) as Row[];

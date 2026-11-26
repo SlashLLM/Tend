@@ -38,6 +38,11 @@ describe('navigation', () => {
     expect(NAV.leader.map((i) => i.href)).toEqual(['/today', '/observe', '/reviews', '/educators', '/insights', '/metrics', '/settings']);
   });
 
+  it('HQ sees Network · Framework Registry · Programmes; admin gets no Network (PRD access table: no heatmap)', () => {
+    expect(NAV.hq.map((i) => i.href)).toEqual(['/network', '/registry', '/programmes']);
+    expect(NAV.admin.map((i) => i.href)).toEqual(['/registry', '/programmes', '/admin']);
+  });
+
   it('a URL path cannot be claimed by two route groups', () => {
     const seen = new Map<string, string>();
     for (const g of groups) {

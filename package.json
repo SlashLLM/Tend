@@ -22,6 +22,7 @@
     "db:reset:blank": "supabase db reset && tsx --env-file=.env.local scripts/db-seed.ts --blank",
     "db:remote": "tsx --env-file=.env.local scripts/db-remote.ts",
     "user:reset-password": "tsx --env-file=.env.local scripts/reset-password.ts",
+    "catalogue:sync": "tsx --env-file=.env.local scripts/catalogue-sync.ts",
     "e2e": "playwright test --project=desktop && playwright test --project=mobile"
   },
   "dependencies": {
@@ -34,6 +35,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cn": "^0.5.2",
+    "fflate": "0.8.2",
     "lucide-react": "^1.68.0",
     "next": "15.5.29",
     "next-intl": "^4.14.9",

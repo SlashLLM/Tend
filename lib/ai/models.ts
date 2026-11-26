@@ -5,7 +5,7 @@
  * AI_MODEL_<TASK> in the environment (e.g. AI_MODEL_FEEDBACK_WRITE=gpt-6-sol).
  */
 export const TASKS = [
-  'segment', 'tag', 'tone', 'feedback.write', 'cards', 'coach', 'coach.guard', 'digest', 'agenda', 'lna.snapshot', 'help',
+  'segment', 'tag', 'tone', 'feedback.write', 'cards', 'coach', 'coach.guard', 'digest', 'agenda', 'lna.snapshot', 'help', 'catalogue.tag',
 ] as const;
 export type Task = (typeof TASKS)[number];
 
@@ -23,6 +23,7 @@ export const MODEL_MAP: Record<Task, string> = {
   agenda: DEFAULT_MODEL,
   'lna.snapshot': DEFAULT_MODEL,
   help: DEFAULT_MODEL,
+  'catalogue.tag': DEFAULT_MODEL,
 };
 
 /** US$ per 1M tokens (standard tier, third-party reported Nov 2026 — verify on OpenAI's pricing page). */

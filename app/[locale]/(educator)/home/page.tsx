@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarClock, Mail, Target } from 'lucide-react';
+import { ArrowRight, CalendarClock, Mail, Target, Users } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { getSession } from '@/lib/auth/session';
 import { loadPlans } from '@/lib/data/growth';
 import { dateline, firstName } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
+import { PeerRequestCard, type IncomingPeerRequest } from './peer-request-card';
 import { RequestObservation } from './request-observation';
 
 export const metadata = { title: 'Home' };
@@ -33,6 +34,26 @@ export default async function HomePage() {
     supabase.from('educator_response').select('observation_id').eq('educator_id', uid).eq('kind', 'reflection'),
     supabase.from('coaching_card').select('id, title, body, indicator:indicator_id(code, name), created_at').eq('educator_id', uid).eq('status', 'approved').order('created_at', { ascending: false }).limit(1),
   ]);
+  // Peer Match: requests waiting for me, and agreed sessions where I watch or am watched.
+  const { data: peerRows } = await supabase
+    .from('peer_observation')
+    .select('id, status, observer_id, peer_id, indicator_code, proposed_at, scheduled_at, request_note, peer_note, observer:observer_id(full_name), peer:peer_id(full_name), action:idp_action_id(idp_goal_id)')
+    .or(`and(peer_id.eq.${uid},status.eq.requested),and(status.eq.accepted,or(observer_id.eq.${uid},peer_id.eq.${uid}))`)
+    .order('created_at');
+  type PeerRow = {
+    id: string; status: string; observer_id: string; peer_id: string; indicator_code: string; proposed_at: string | null; scheduled_at: string | null;
+    request_note: string | null; peer_note: string | null; observer: { full_name: string } | null; peer: { full_name: string } | null; action: { idp_goal_id: string } | null;
+  };
+  const peer = (peerRows ?? []) as unknown as PeerRow[];
+  const codes = [...new Set(peer.map((p) => p.indicator_code))];
+  const { data: inds } = codes.length ? await supabase.from('indicator').select('code, name').in('code', codes) : { data: [] };
+  const indName = (c: string) => `${c} ${(inds ?? []).find((i) => i.code === c)?.name ?? ''}`.trim();
+  const incoming: IncomingPeerRequest[] = peer
+    .filter((p) => p.status === 'requested' && p.peer_id === uid)
+    .map((p) => ({ id: p.id, observerName: p.observer?.full_name ?? 'A colleague', indicator: indName(p.indicator_code), proposedAt: p.proposed_at, note: p.request_note }));
+  const sessions = peer.filter((p) => p.status === 'accepted' && p.scheduled_at).sort((a, b) => a.scheduled_at!.localeCompare(b.scheduled_at!));
+  const now = Date.now();
+
   const reflected = new Set((reflections ?? []).map((r) => r.observation_id));
   const awaiting = (shared ?? []).filter((o) => !reflected.has(o.id));
   const goals = plans.active?.goals ?? [];
@@ -72,6 +93,32 @@ export default async function HomePage() {
                   </Button>
                   {focused && <span className="text-sm text-success">Your focus is set</span>}
                 </div>
+              </section>
+            );
+          })}
+
+          {incoming.map((r) => <PeerRequestCard key={r.id} req={r} />)}
+
+          {sessions.map((s) => {
+            const watching = s.observer_id === uid;
+            const other = (watching ? s.peer?.full_name : s.observer?.full_name) ?? 'your colleague';
+            const due = new Date(s.scheduled_at!).getTime() <= now + 3600_000;
+            return (
+              <section key={s.id} className="tend-card grid gap-2 p-5" aria-label="Peer observation">
+                <p className="tend-dateline flex items-center gap-1.5 text-primary"><Users className="size-3.5" aria-hidden /> Peer observation · 15 minutes</p>
+                <h2 className="text-lg font-semibold">{watching ? `You’re watching ${other}` : `${other.split(' ')[0]} is watching you`}</h2>
+                <p className="text-sm text-muted-foreground">
+                  <time dateTime={s.scheduled_at!}>{format.dateTime(new Date(s.scheduled_at!), { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' })}</time>
+                  {' · '}{indName(s.indicator_code)}
+                  {s.peer_note ? ` · “${s.peer_note}”` : ''}
+                </p>
+                {watching && s.action && (
+                  <div>
+                    <Button asChild className="min-h-11" variant={due ? 'default' : 'outline'}>
+                      <Link href={`/growth/goal/${s.action.idp_goal_id}`}>{due ? 'Record what you noticed' : 'See the goal'} <ArrowRight aria-hidden /></Link>
+                    </Button>
+                  </div>
+                )}
               </section>
             );
           })}

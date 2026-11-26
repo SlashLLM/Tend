@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { IndicatorTag } from '@/components/tend/indicator-tag';
 import { LevelStones } from '@/components/tend/level-stones';
 import { addAction, addGoal, confirmIdp, removeGoal, setGoalLevels } from '@/app/actions/idp';
+import { ActionItem } from './action-item';
 import type { IdpView } from '@/lib/data/growth';
 import type { Level } from '@/lib/levels';
 
@@ -75,13 +76,8 @@ export function IdpEditor({ plan, viewer, indicatorOptions, educatorName }: Prop
             <div className="grid gap-2">
               <p className="text-sm font-medium">Actions</p>
               {g.actions.length === 0 && <p className="text-sm text-muted-foreground">No actions yet.</p>}
-              <ul className="grid gap-1.5">
-                {g.actions.map((a) => (
-                  <li key={a.id} className="flex items-start gap-2 text-sm">
-                    {a.status === 'done' ? <CheckCircle2 className="mt-0.5 size-4 text-success" aria-hidden /> : <CircleDashed className="mt-0.5 size-4 text-muted-foreground" aria-hidden />}
-                    <span>{a.description}{a.status === 'proposed' && <span className="ml-2 rounded-full bg-amber/15 px-2 text-xs text-amber">waiting for endorsement</span>}</span>
-                  </li>
-                ))}
+              <ul className="grid gap-3">
+                {g.actions.map((a) => <ActionItem key={a.id} action={a} canAct={viewer === 'educator'} />)}
               </ul>
               <form
                 className="flex gap-2"

@@ -26,9 +26,12 @@ export const NAV: Record<Area, NavItem[]> = {
     { href: '/registry', label: 'nav.hq.registry', icon: 'BookOpen' },
     { href: '/programmes', label: 'nav.hq.programmes', icon: 'GraduationCap' },
   ],
+  // No Network: the PRD's "who can see what" table (p. 21) gives admins no access to the centre heatmap,
+  // even though the nav list (p. 17) groups HQ and admin. The access table wins. HQ pages live in the (hq) group.
   admin: [
-    { href: '/admin', label: 'nav.hq.admin', icon: 'Shield' },
     { href: '/registry', label: 'nav.hq.registry', icon: 'BookOpen' },
+    { href: '/programmes', label: 'nav.hq.programmes', icon: 'GraduationCap' },
+    { href: '/admin', label: 'nav.hq.admin', icon: 'Shield' },
   ],
 };
 

@@ -156,11 +156,12 @@ describe('insights', () => {
     expect(rows.some((r) => r.kind === 'no_evidence' && r.code.startsWith('1.1.'))).toBe(false); // strength area has evidence
   });
 
-  it('HQ network view hides groups under 5 educators and is HQ/admin only', async () => {
+  it('HQ network view hides groups under 5 educators and is HQ only (PRD: admin sees no heatmap)', async () => {
     const rows = await t.q<{ centre_name: string; educators: number }>(w.ids.hq, `select * from public.network_heatmap()`);
     expect(new Set(rows.map((r) => r.centre_name))).toEqual(new Set(['Punggol', 'Tampines', 'Jurong West']));
     expect(rows.every((r) => r.educators >= 5)).toBe(true);
     await expect(t.q(w.ids.sandra, `select * from public.network_heatmap()`)).rejects.toThrow(/not allowed/);
+    await expect(t.q(w.ids.admin, `select * from public.network_heatmap()`)).rejects.toThrow(/not allowed/);
     // shrink a centre below 5 → it disappears
     await t.db.query(`update public.educator_profile set centre_id = $1 where user_id in (select user_id from public.educator_profile where centre_id = (select id from public.centre where name = 'Jurong West') limit 2)`, [w.ids.punggol]);
     const after = await t.q<{ centre_name: string }>(w.ids.hq, `select * from public.network_heatmap()`);
