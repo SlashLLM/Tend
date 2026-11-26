@@ -1,5 +1,6 @@
 'use client';
 import { Check, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -9,19 +10,21 @@ import { addAction } from '@/app/actions/idp';
 export function AddToPlan({ goalId, title, pdActivityId, peerUserId = null, already }: { goalId: string; title: string; pdActivityId: string | null; peerUserId?: string | null; already: boolean }) {
   const [added, setAdded] = useState(already);
   const [pending, start] = useTransition();
-  if (added) return <span className="flex items-center gap-1 text-sm text-muted-foreground"><Check className="size-4" aria-hidden /> In your plan</span>;
+  const t = useTranslations('learn');
+  if (added) return <span className="flex items-center gap-1 text-sm text-muted-foreground"><Check className="size-4" aria-hidden /> {t('inPlan')}</span>;
   return (
     <Button variant="outline" className="min-h-11" disabled={pending}
       onClick={() => start(async () => {
         try {
           await addAction(goalId, title, 'pathway', pdActivityId ?? undefined, peerUserId ?? undefined);
           setAdded(true);
-          toast.success(peerUserId ? 'Added. Once your leader endorses it, ask your colleague from My Growth.' : 'Added — waiting for your leader to endorse');
+          toast.success(peerUserId ? t('addedPeer') : t('added'));
         } catch (e) {
-          toast.error(e instanceof Error ? e.message : 'Could not add');
+          console.error(e);
+          toast.error(t('addFailed'));
         }
       })}>
-      <Plus aria-hidden /> Add to my plan
+      <Plus aria-hidden /> {t('add')}
     </Button>
   );
 }

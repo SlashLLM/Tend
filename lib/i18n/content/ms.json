@@ -1,0 +1,302 @@
+{
+  "frameworks": {
+    "QTT": "Alat Pengajaran Berkualiti",
+    "SFW_EC": "Rangka Kerja Kemahiran untuk Pendidikan Awal Kanak-kanak (benih draf)",
+    "EYDF": "Set amalan sejajar EYDF (draf)",
+    "TRUE": "Nilai TRUE Agape"
+  },
+  "domains": {
+    "1": "Membina Hubungan yang Dipercayai",
+    "2": "Memupuk Kesejahteraan Kanak-kanak",
+    "3": "Memudah Cara Pembelajaran dan Perkembangan",
+    "IT": "Amalan Bayi dan Kanak-kanak Kecil",
+    "TRUE": "Nilai Agape"
+  },
+  "subdomains": {
+    "1.1": "Terlibat dalam Interaksi Positif",
+    "2.1": "Menyokong Perkembangan Nilai",
+    "2.2": "Kecekapan Sosial dan Emosi",
+    "2.3": "Memupuk Disposisi Pembelajaran",
+    "3.1": "Merancang Persekitaran dan Pengalaman Pembelajaran",
+    "3.2": "Amalan Berpusatkan Kanak-kanak dan Bermain",
+    "3.3": "Meluaskan Pemikiran, Bahasa dan Pembelajaran",
+    "3.4": "Kawal Kendiri dan Fungsi Eksekutif",
+    "IT.1": "Penjagaan dan Rutin",
+    "IT.2": "Hubungan",
+    "IT.3": "Persekitaran",
+    "IT.4": "Komunikasi",
+    "IT.5": "Kesejahteraan",
+    "IT.6": "Hubungan",
+    "TRUE": "Nilai"
+  },
+  "indicators": {
+    "1.1.1": {
+      "name": "Mewujudkan Persekitaran yang Mesra, Selamat dan Memotivasikan",
+      "levels": ["Menyambut kanak-kanak dengan mesra dan memastikan ruang selamat serta tenang.", "Menyesuaikan nada, ruang dan rutin supaya setiap kanak-kanak berasa dialu-alukan dan mahu menyertai.", "Kanak-kanak membantu membentuk ruang yang penyayang dan mengambil berat tentang keselesaan serta keselamatan satu sama lain."],
+      "look_fors": ["Menyambut kanak-kanak dengan nama secara mesra", "Nada suara yang tenang dan mesra", "Kanak-kanak bergerak dengan yakin dan mendekati pendidik"]
+    },
+    "1.1.2": {
+      "name": "Memudah Cara Interaksi Responsif",
+      "levels": ["Menyedari dan mengakui usaha kanak-kanak untuk mendapatkan perhatian.", "Bertindak balas dengan segera dan selaras dengan isyarat serta mood setiap kanak-kanak.", "Mengikut pimpinan kanak-kanak dan membina perbualan berbalas yang panjang daripada minat mereka."],
+      "look_fors": ["Merendahkan diri ke paras mata kanak-kanak", "Bertindak balas terhadap isyarat kanak-kanak dalam beberapa saat", "Membina daripada apa yang dikatakan atau ditunjukkan oleh kanak-kanak"]
+    },
+    "1.1.3": {
+      "name": "Memudah Cara Interaksi Timbal Balik",
+      "levels": ["Bergilir-gilir dalam pertukaran mudah dengan kanak-kanak.", "Meneruskan perbualan dengan jeda yang menjemput kanak-kanak menyumbang.", "Kanak-kanak mengekalkan perbualan berbilang giliran dengan pendidik dan sesama mereka."],
+      "look_fors": ["Menunggu kanak-kanak menjawab", "Beberapa giliran tentang satu topik", "Menjemput kanak-kanak kedua menyertai perbualan"]
+    },
+    "1.1.4": {
+      "name": "Menyokong Kanak-kanak Menghadapi Cabaran",
+      "levels": ["Menenangkan kanak-kanak yang sedih dan memastikan mereka selamat.", "Menamakan kesukaran dan menawarkan strategi untuk dicuba.", "Membimbing kanak-kanak mengatasi cabaran sendiri dan menyokong rakan."],
+      "look_fors": ["Mengakui perasaan kanak-kanak sebelum mengalihkan perhatian", "Menawarkan pilihan atau strategi", "Membiarkan kanak-kanak mencuba lagi dengan sokongan"]
+    },
+    "1.1.5": {
+      "name": "Terlibat dalam Interaksi yang Inklusif dan Hormat",
+      "levels": ["Bercakap dengan hormat kepada setiap kanak-kanak dan mengelakkan pilih kasih.", "Menyesuaikan interaksi supaya setiap kanak-kanak, termasuk yang lebih pendiam, turut serta.", "Kanak-kanak menunjukkan rasa hormat dan saling melibatkan tanpa digesa."],
+      "look_fors": ["Menggunakan nama dan bahasa pilihan setiap kanak-kanak", "Menarik kanak-kanak yang pendiam ke dalam aktiviti", "Bertindak balas kepada semua kanak-kanak dengan kemesraan yang sama"]
+    },
+    "2.1.1": {
+      "name": "Membangunkan Nilai",
+      "levels": ["Menamakan nilai seperti kebaikan atau kejujuran semasa rutin.", "Merancang detik yang membolehkan kanak-kanak meneroka rupa sesuatu nilai.", "Kanak-kanak membincangkan nilai dan mengaplikasikannya dalam situasi sebenar di kelas."],
+      "look_fors": ["Bercakap tentang sesuatu nilai mengikut konteks", "Menggunakan cerita atau main peranan untuk meneroka nilai", "Bertanya kepada kanak-kanak apakah pilihan yang baik"]
+    },
+    "2.1.2": {
+      "name": "Mengukuhkan Nilai",
+      "levels": ["Memuji tingkah laku yang menunjukkan sesuatu nilai.", "Memberi maklum balas khusus yang mengaitkan tindakan dengan nilai.", "Kanak-kanak mengenal pasti dan mengiktiraf nilai dalam tindakan satu sama lain."],
+      "look_fors": ["Pujian khusus yang menamakan nilai", "Mengaitkan tingkah laku dengan kesannya kepada orang lain", "Kanak-kanak perasan perbuatan baik rakan"]
+    },
+    "2.1.3": {
+      "name": "Menggalakkan Kesedaran, Penghormatan dan Perayaan Kepelbagaian",
+      "levels": ["Menggunakan bahan yang menunjukkan budaya dan keluarga yang berbeza.", "Menjemput kanak-kanak berkongsi dan membandingkan tradisi mereka sendiri.", "Kanak-kanak meneroka perbezaan dengan rasa ingin tahu dan meraikannya bersama."],
+      "look_fors": ["Buku dan bahan mencerminkan keluarga yang pelbagai", "Menjemput kanak-kanak berkongsi bahasa atau adat di rumah", "Bertindak balas secara positif terhadap soalan tentang perbezaan"]
+    },
+    "2.2.1": {
+      "name": "Membantu Kanak-kanak Membina Konsep Kendiri yang Positif",
+      "levels": ["Mengakui usaha dan pencapaian kanak-kanak.", "Menonjolkan kekuatan dan perkembangan setiap kanak-kanak dari semasa ke semasa.", "Kanak-kanak menerangkan kekuatan mereka sendiri dan menetapkan matlamat kecil."],
+      "look_fors": ["Memuji usaha, bukan hanya hasil", "Mempamerkan hasil kerja kanak-kanak bersama kata-kata mereka", "Bertanya kepada kanak-kanak apa yang mereka banggakan"]
+    },
+    "2.2.2": {
+      "name": "Membantu Kanak-kanak Mengenal Pasti Emosi",
+      "levels": ["Menamakan emosi yang ditunjukkan oleh kanak-kanak.", "Membantu kanak-kanak menyedari isyarat badan dan menamakan pelbagai perasaan.", "Kanak-kanak menamakan perasaan sendiri dan orang lain dalam situasi harian."],
+      "look_fors": ["Melabel perasaan semasa ia berlaku", "Menggunakan gambar atau buku emosi", "Bertanya 'apa yang dia rasa agaknya?'"]
+    },
+    "2.2.3": {
+      "name": "Membantu Kanak-kanak Meluahkan Emosi",
+      "levels": ["Menerima perasaan kanak-kanak tanpa menolaknya.", "Menawarkan cara selamat untuk meluahkan perasaan melalui kata-kata, seni atau pergerakan.", "Kanak-kanak memilih cara yang sesuai untuk meluahkan perasaan sendiri."],
+      "look_fors": ["Mengesahkan perasaan ('tidak mengapa berasa sedih')", "Menyediakan sudut tenang atau alat untuk meluahkan perasaan", "Menunjukkan contoh meluahkan perasaan sendiri"]
+    },
+    "2.2.4": {
+      "name": "Membantu Kanak-kanak Mengurus dan Mengawal Emosi",
+      "levels": ["Menenangkan kanak-kanak yang sedih.", "Mengajar strategi menenangkan diri yang mudah dan menggesa penggunaannya.", "Kanak-kanak menggunakan strategi menenangkan diri secara berdikari dan membantu rakan."],
+      "look_fors": ["Mengajar strategi bernafas atau mengira", "Menggesa penggunaan strategi sebelum campur tangan", "Kanak-kanak memilih sendiri aktiviti menenangkan diri"]
+    },
+    "2.2.5": {
+      "name": "Membantu Kanak-kanak Mengenal Pasti dan Bertindak Balas terhadap Emosi dan Perspektif Orang Lain",
+      "levels": ["Menunjukkan bagaimana perasaan orang lain mungkin.", "Meminta kanak-kanak mempertimbangkan pandangan orang lain dan cara bertindak balas.", "Kanak-kanak menunjukkan empati dan bertindak balas terhadap perasaan rakan tanpa digesa."],
+      "look_fors": ["Bertanya 'apa yang awak rasa jika…?'", "Membimbing kanak-kanak untuk memujuk rakan", "Membincangkan perasaan watak dalam cerita"]
+    },
+    "2.2.6": {
+      "name": "Menggalakkan Tingkah Laku Prososial",
+      "levels": ["Menggalakkan berkongsi dan bergilir-gilir.", "Menyediakan aktiviti yang memerlukan kerjasama dan saling membantu.", "Kanak-kanak bekerjasama, berkongsi dan membantu tanpa digesa oleh orang dewasa."],
+      "look_fors": ["Merancang tugasan berpasangan atau berkumpulan", "Mengakui tingkah laku membantu", "Kanak-kanak berunding giliran sendiri"]
+    },
+    "2.2.7": {
+      "name": "Memupuk Kesedaran Sosial",
+      "levels": ["Bercakap tentang orang dan peranan dalam komuniti.", "Menghubungkan kehidupan di kelas dengan keluarga dan komuniti yang lebih luas.", "Kanak-kanak menyertai projek yang menyumbang kepada komuniti mereka."],
+      "look_fors": ["Membincangkan pembantu komuniti", "Menjemput keluarga atau pelawat dari komuniti", "Kanak-kanak merancang cara untuk membantu orang lain"]
+    },
+    "2.3.1": {
+      "name": "Membangunkan Ketabahan",
+      "levels": ["Menggalakkan kanak-kanak terus mencuba.", "Memecahkan tugasan kepada langkah-langkah dan meraikan kegigihan.", "Kanak-kanak menyahut cabaran dan terus berusaha walaupun menghadapi kegagalan."],
+      "look_fors": ["Berkata 'cuba cara lain' dan bukannya menyelesaikannya", "Menamakan kegigihan apabila ia berlaku", "Menawarkan tugasan yang mencabar secara sesuai"]
+    },
+    "2.3.2": {
+      "name": "Memupuk Sikap Reflektif",
+      "levels": ["Bertanya kepada kanak-kanak apa yang mereka lakukan.", "Bertanya kepada kanak-kanak bagaimana mereka melakukannya dan apa yang mungkin mereka ubah.", "Kanak-kanak menyemak hasil kerja sendiri dan merancang penambahbaikan."],
+      "look_fors": ["Bertanya 'apa yang awak akan buat secara berbeza?'", "Mengadakan masa semakan yang ringkas", "Kanak-kanak melihat semula dan memperbaiki hasil kerja mereka"]
+    },
+    "2.3.3": {
+      "name": "Membantu Kanak-kanak Menghargai Perspektif dan Sumbangan Orang Lain",
+      "levels": ["Membiarkan kanak-kanak berkongsi idea secara bergilir.", "Menonjolkan bagaimana idea yang berbeza membantu kumpulan.", "Kanak-kanak membina daripada idea satu sama lain dan memberi penghargaan kepada rakan."],
+      "look_fors": ["Menjemput beberapa kanak-kanak berkongsi idea", "Mengaitkan idea seorang kanak-kanak dengan idea yang lain", "Kanak-kanak berkata 'saya suka idea awak kerana…'"]
+    },
+    "2.3.4": {
+      "name": "Menggalakkan Daya Cipta",
+      "levels": ["Menyediakan bahan terbuka.", "Menjemput kanak-kanak mencuba cara baharu menggunakan bahan dan idea.", "Kanak-kanak mereka bentuk, mencipta dan menguji ciptaan mereka sendiri."],
+      "look_fors": ["Bahan terbuka tersedia", "Bertanya 'apa lagi benda ini boleh jadi?'", "Kanak-kanak menerangkan ciptaan mereka"]
+    },
+    "2.3.5": {
+      "name": "Memupuk Rasa Ingin Tahu",
+      "levels": ["Bertindak balas secara positif terhadap soalan kanak-kanak.", "Menyediakan provokasi yang mencetuskan rasa ingin tahu.", "Kanak-kanak mengemukakan soalan sendiri dan menyiasatnya."],
+      "look_fors": ["Mengalu-alukan soalan kanak-kanak", "Memperkenalkan objek atau masalah yang menarik", "Kanak-kanak bertanya 'mengapa' dan 'bagaimana jika'"]
+    },
+    "2.3.6": {
+      "name": "Memupuk Penglibatan dan Minat",
+      "levels": ["Menarik perhatian kanak-kanak kepada aktiviti.", "Membina aktiviti berdasarkan minat kanak-kanak untuk mengekalkan penglibatan.", "Kanak-kanak terlibat secara mendalam dan meluaskan aktiviti sendiri."],
+      "look_fors": ["Menggunakan minat kanak-kanak dalam perancangan", "Kanak-kanak kekal fokus pada tugasan untuk tempoh yang lama", "Kanak-kanak mencadangkan langkah seterusnya"]
+    },
+    "3.1.1": {
+      "name": "Membuat Kaitan Melalui Pendekatan Bersepadu",
+      "levels": ["Mengaitkan aktiviti dengan satu bidang pembelajaran lain.", "Merancang pengalaman yang menghubungkan beberapa bidang pembelajaran berdasarkan tema.", "Kanak-kanak membuat kaitan sendiri merentas bidang pembelajaran dan dengan kehidupan sebenar."],
+      "look_fors": ["Aktiviti menghubungkan dua atau lebih bidang pembelajaran", "Merujuk kembali kepada pembelajaran terdahulu", "Kanak-kanak mengaitkan idea dengan rumah atau komuniti"]
+    },
+    "3.1.2": {
+      "name": "Memenuhi Keperluan Pelajar yang Pelbagai",
+      "levels": ["Menyedari bahawa kanak-kanak belajar dengan cara yang berbeza.", "Merancang titik permulaan dan sokongan yang berbeza untuk pelajar yang berbeza.", "Kanak-kanak memilih cara belajar yang sesuai dengan mereka."],
+      "look_fors": ["Menawarkan bahan pada tahap yang berbeza", "Menyesuaikan sokongan untuk kanak-kanak secara individu", "Merangkumi pilihan visual, lisan dan hands-on"]
+    },
+    "3.1.3": {
+      "name": "Mengurus dan Memaksimumkan Peluang Pembelajaran",
+      "levels": ["Memastikan rutin berjalan lancar dengan masa menunggu yang singkat.", "Menggunakan peralihan dan rutin sebagai peluang untuk belajar.", "Kanak-kanak mengurus rutin sendiri, memberi lebih masa untuk pembelajaran yang lebih mendalam."],
+      "look_fors": ["Masa menunggu yang minimum semasa peralihan", "Perbualan pembelajaran semasa rutin", "Kanak-kanak tahu apa yang perlu dibuat seterusnya"]
+    },
+    "3.1.4": {
+      "name": "Menyediakan Pelbagai Jenis Pengalaman Pembelajaran",
+      "levels": ["Menawarkan gabungan aktiviti berkumpulan dan individu.", "Mengimbangi pengalaman yang dibimbing oleh orang dewasa dan dimulakan oleh kanak-kanak secara sengaja.", "Kanak-kanak beralih antara pengalaman pilihan mereka dengan bertujuan."],
+      "look_fors": ["Gabungan masa seluruh kelas, kumpulan kecil dan individu", "Pengalaman dalam dan luar bilik darjah", "Permainan yang dimulakan oleh kanak-kanak dirancang"]
+    },
+    "3.1.5": {
+      "name": "Menetapkan Jangkaan yang Jelas dan Membimbing Secara Proaktif",
+      "levels": ["Menyatakan peraturan secara ringkas dan mengingatkan kanak-kanak.", "Menetapkan jangkaan berserta sebab dan membimbing sebelum masalah timbul.", "Kanak-kanak membantu menetapkan jangkaan dan saling mengingatkan."],
+      "look_fors": ["Menerangkan sebab di sebalik sesuatu peraturan", "Menyediakan kanak-kanak sebelum peralihan", "Kanak-kanak bersama-sama mencipta persetujuan kelas"]
+    },
+    "3.1.6": {
+      "name": "Mengubah Suai Pengajaran untuk Memenuhi Keperluan Kanak-kanak",
+      "levels": ["Mengulang atau memudahkan apabila kanak-kanak kurang pasti.", "Menukar rentak, bahan atau kumpulan serta-merta berdasarkan tindak balas.", "Tindak balas dan idea kanak-kanak jelas mengubah hala tuju pelajaran."],
+      "look_fors": ["Menyemak kefahaman semasa aktiviti", "Menukar pendekatan apabila kanak-kanak hilang minat", "Mengikut idea kanak-kanak ke langkah seterusnya"]
+    },
+    "3.2.1": {
+      "name": "Bersikap Fleksibel dalam Memenuhi Keperluan dan Minat Kanak-kanak",
+      "levels": ["Membenarkan perubahan kecil pada rancangan apabila kanak-kanak meminta.", "Menyesuaikan rancangan berdasarkan minat kanak-kanak yang baru muncul.", "Minat kanak-kanak memacu projek lanjutan."],
+      "look_fors": ["Menyesuaikan rancangan dengan minat yang baru muncul", "Memanjangkan masa apabila penglibatan tinggi", "Idea kanak-kanak muncul dalam perancangan"]
+    },
+    "3.2.2": {
+      "name": "Memperkasakan Kebolehan Berdikari Kanak-kanak",
+      "levels": ["Membiarkan kanak-kanak melakukan tugasan mudah sendiri.", "Menyusun ruang dan rutin supaya kanak-kanak boleh menguruskan diri sendiri.", "Kanak-kanak mengambil alih tugasan dan menyokong kebolehan berdikari orang lain."],
+      "look_fors": ["Bahan dalam jangkauan kanak-kanak", "Menunggu sebelum masuk membantu", "Kanak-kanak mengambil dan mengemas sendiri"]
+    },
+    "3.2.3": {
+      "name": "Menggalakkan Kanak-kanak Membuat Pilihan dan Keputusan",
+      "levels": ["Menawarkan pilihan mudah antara dua pilihan.", "Memberi pilihan yang bermakna dan membincangkan keputusan.", "Kanak-kanak membuat dan memberi alasan bagi keputusan kumpulan dan individu."],
+      "look_fors": ["Menawarkan pilihan sebenar", "Meminta kanak-kanak menerangkan pilihan mereka", "Kanak-kanak mengundi atau bersetuju tentang keputusan kumpulan"]
+    },
+    "3.2.4": {
+      "name": "Memberi Kanak-kanak Peluang Memimpin dan Memegang Peranan",
+      "levels": ["Memberikan peranan pembantu yang mudah.", "Menggilirkan peranan kepimpinan dan membimbing kanak-kanak dalam peranan itu.", "Kanak-kanak memimpin aktiviti dan memegang peranan yang mereka reka sendiri."],
+      "look_fors": ["Peranan pembantu kelas secara bergilir", "Kanak-kanak memimpin sebahagian aktiviti", "Kanak-kanak mengajar atau menunjukkan kepada rakan"]
+    },
+    "3.2.5": {
+      "name": "Melibatkan Kanak-kanak Melalui Pelbagai Jenis Permainan",
+      "levels": ["Menyediakan masa dan bahan untuk bermain.", "Menyertai permainan untuk meluaskannya tanpa mengambil alih.", "Kanak-kanak mengekalkan permainan yang kompleks dengan peranan dan idea yang kaya."],
+      "look_fors": ["Pelbagai jenis permainan (main pura-pura, binaan, fizikal)", "Pendidik menyertai permainan sebagai rakan bermain", "Senario permainan yang panjang dan kompleks"]
+    },
+    "3.2.6": {
+      "name": "Memenuhi Tahap Penglibatan Kanak-kanak",
+      "levels": ["Menyedari apabila kanak-kanak tidak terlibat.", "Menyesuaikan cabaran atau sokongan untuk melibatkan semula kanak-kanak secara individu.", "Kanak-kanak mengawal sendiri penglibatan mereka dan memilih cabaran."],
+      "look_fors": ["Menyedari dan bertindak balas terhadap ketidakterlibatan", "Menawarkan aktiviti lanjutan kepada kanak-kanak yang selesai awal", "Kanak-kanak memilih tahap yang lebih sukar sendiri"]
+    },
+    "3.3.1": {
+      "name": "Menggalakkan Penggunaan Bahasa",
+      "levels": ["Bercakap dengan kanak-kanak sepanjang hari.", "Menunjukkan contoh dan memperkenalkan perkataan baharu mengikut konteks.", "Kanak-kanak menggunakan perbendaharaan kata yang kaya dan baharu dalam percakapan mereka."],
+      "look_fors": ["Menerangkan tindakan dengan kuat", "Memperkenalkan perkataan baharu berserta maksudnya", "Kanak-kanak menggunakan perkataan baharu"]
+    },
+    "3.3.2": {
+      "name": "Meluaskan Penggunaan Bahasa Melalui Bahan Bercetak",
+      "levels": ["Menunjukkan bahan bercetak di persekitaran.", "Menggunakan bahan bercetak secara bertujuan bersama kanak-kanak, seperti label, senarai dan cerita.", "Kanak-kanak mencipta dan menggunakan bahan bercetak untuk tujuan mereka sendiri."],
+      "look_fors": ["Label dan bahan bercetak pada paras ketinggian kanak-kanak", "Menulis kata-kata kanak-kanak", "Kanak-kanak membuat papan tanda, senarai atau buku"]
+    },
+    "3.3.3": {
+      "name": "Menggalakkan Komunikasi dan Perbualan",
+      "levels": ["Menjemput kanak-kanak bercakap tentang pengalaman mereka.", "Menyediakan perbualan berpasangan dan kumpulan kecil.", "Kanak-kanak mengekalkan perbualan yang berterusan dengan rakan."],
+      "look_fors": ["Menggunakan 'pusing dan bercakap'", "Perbualan kumpulan kecil", "Kanak-kanak saling bertindak balas, bukan hanya kepada orang dewasa"]
+    },
+    "3.3.4": {
+      "name": "Meluaskan Pemikiran Melalui Penyoalan",
+      "levels": ["Bertanya soalan, kebanyakannya soalan tertutup atau mengingat semula.", "Bertanya soalan terbuka dan menunggu kanak-kanak berfikir.", "Menggunakan soalan susulan untuk mendalamkan pemikiran, dan kanak-kanak saling bertanya soalan."],
+      "look_fors": ["Bertanya soalan terbuka 'mengapa' dan 'bagaimana'", "Menunggu sekurang-kurangnya 3 saat selepas bertanya", "Menyusul dengan 'apa yang membuatkan awak fikir begitu?'"]
+    },
+    "3.3.5": {
+      "name": "Memberi Sokongan untuk Mendalamkan Pemikiran",
+      "levels": ["Memberi petunjuk apabila kanak-kanak buntu.", "Menyediakan perancah melalui gesaan, contoh dan bahan.", "Kanak-kanak menaakul dengan kuat dan menguji idea dengan sedikit sokongan."],
+      "look_fors": ["Menyediakan perancah dan bukannya memberi jawapan", "Menunjukkan contoh berfikir dengan kuat", "Kanak-kanak menerangkan penaakulan mereka"]
+    },
+    "3.3.6": {
+      "name": "Memberi Maklum Balas yang Meluaskan Kefahaman dan Mendalamkan Pemikiran",
+      "levels": ["Memberi pujian umum seperti 'bagus'.", "Memberi maklum balas khusus tentang apa yang dilakukan oleh kanak-kanak.", "Memberi maklum balas yang mendorong kanak-kanak berfikir lebih jauh dan memperbaiki diri."],
+      "look_fors": ["Maklum balas yang khusus dan deskriptif", "Maklum balas diakhiri dengan soalan atau langkah seterusnya", "Kanak-kanak bertindak berdasarkan maklum balas"]
+    },
+    "3.3.7": {
+      "name": "Menyediakan Peluang Menyelesaikan Masalah",
+      "levels": ["Mengemukakan masalah mudah dengan satu jawapan.", "Menetapkan masalah terbuka dengan lebih daripada satu penyelesaian.", "Kanak-kanak mengenal pasti masalah sendiri dan merancang penyelesaian."],
+      "look_fors": ["Mengemukakan masalah sebenar yang terbuka", "Menerima lebih daripada satu penyelesaian", "Kanak-kanak mengenal pasti masalah untuk diselesaikan"]
+    },
+    "3.3.8": {
+      "name": "Melibatkan Kanak-kanak dalam Penyelesaian Masalah",
+      "levels": ["Menyelesaikan masalah bersama kanak-kanak langkah demi langkah.", "Membimbing kanak-kanak mencuba, menyemak dan mengubah pendekatan mereka.", "Kanak-kanak menyelesaikan masalah bersama dan menerangkan strategi mereka."],
+      "look_fors": ["Meminta kanak-kanak meramal dan menguji", "Menggalakkan mencuba strategi yang berbeza", "Kanak-kanak bekerjasama mencari penyelesaian"]
+    },
+    "3.4.1": {
+      "name": "Memudah Cara Kemahiran Pengurusan Kendiri",
+      "levels": ["Mengingatkan kanak-kanak tentang rutin dan langkah.", "Menggunakan jadual visual dan senarai semak yang boleh diikuti oleh kanak-kanak.", "Kanak-kanak mengurus barang, masa dan tugasan mereka sendiri."],
+      "look_fors": ["Jadual visual digunakan", "Kanak-kanak mengikut langkah tanpa peringatan", "Kanak-kanak mengurus bahan mereka sendiri"]
+    },
+    "3.4.2": {
+      "name": "Memudah Cara Kemahiran Kawal Kendiri",
+      "levels": ["Menyuruh kanak-kanak menunggu atau berhenti.", "Menggunakan permainan dan strategi untuk berlatih menunggu dan mengawal dorongan.", "Kanak-kanak mengawal tingkah laku mereka dan membantu rakan berbuat demikian."],
+      "look_fors": ["Menggunakan permainan berhenti–jalan atau bergilir-gilir", "Memberi strategi sebelum masa menunggu", "Kanak-kanak saling mengingatkan tentang persetujuan"]
+    },
+    "3.4.3": {
+      "name": "Memudah Cara Ingatan Kerja",
+      "levels": ["Memberi satu arahan pada satu masa.", "Bermain permainan yang meminta kanak-kanak mengingat dan menggunakan maklumat.", "Kanak-kanak mengingati rancangan berbilang langkah dan melaksanakannya."],
+      "look_fors": ["Permainan ingatan atau aktiviti mengingat semula", "Arahan berbilang langkah dengan sokongan", "Kanak-kanak menceritakan semula urutan"]
+    },
+    "3.4.4": {
+      "name": "Membangunkan Fleksibiliti Kognitif",
+      "levels": ["Menunjukkan bahawa terdapat lebih daripada satu cara.", "Meminta kanak-kanak menukar peraturan atau memikirkan alternatif.", "Kanak-kanak menukar strategi dan memahami pandangan orang lain dengan mudah."],
+      "look_fors": ["Permainan dengan peraturan yang berubah", "Bertanya 'apa cara lain?'", "Kanak-kanak menyesuaikan diri apabila rancangan berubah"]
+    },
+    "3.4.5": {
+      "name": "Membimbing Kanak-kanak Merancang dan Menyusun untuk Mencapai Matlamat",
+      "levels": ["Memberitahu kanak-kanak rancangan untuk sesuatu aktiviti.", "Membantu kanak-kanak membuat rancangan mudah dan menyemak kemajuan.", "Kanak-kanak menetapkan matlamat, merancang langkah dan menyemak kemajuan mereka sendiri."],
+      "look_fors": ["Rutin rancang–buat–semak", "Kanak-kanak melukis atau menyatakan rancangan mereka", "Kanak-kanak menyemak kemajuan berbanding rancangan mereka"]
+    },
+    "IT.1": { "name": "Rutin Penjagaan yang Responsif" },
+    "IT.2": { "name": "Keterikatan Selamat dan Hubungan dengan Penjaga Utama" },
+    "IT.3": { "name": "Persekitaran yang Selamat dan Merangsang untuk Penerokaan" },
+    "IT.4": { "name": "Komunikasi “Hantar dan Balas”" },
+    "IT.5": { "name": "Menyokong Kawal Kendiri Awal" },
+    "IT.6": { "name": "Bekerjasama dengan Keluarga" },
+    "T": { "name": "Kepercayaan" },
+    "R": { "name": "Daya Tahan" },
+    "U": { "name": "Perpaduan" },
+    "E": { "name": "Pemerkasaan" }
+  },
+  "tsc": {
+    "EC-TSC-REL": "Hubungan dan Interaksi Positif dengan Kanak-kanak",
+    "EC-TSC-VAL": "Nilai dan Perkembangan Sosio-Emosi",
+    "EC-TSC-DIS": "Disposisi Pembelajaran",
+    "EC-TSC-CUR": "Perancangan Kurikulum dan Persekitaran Pembelajaran",
+    "EC-TSC-PLY": "Pedagogi Berpusatkan Kanak-kanak dan Berasaskan Permainan",
+    "EC-TSC-LAN": "Pemudahcaraan Bahasa, Literasi dan Kemahiran Berfikir",
+    "EC-TSC-EXF": "Sokongan Kawal Kendiri dan Fungsi Eksekutif",
+    "EC-TSC-INF": "Penjagaan dan Perkembangan Bayi dan Kanak-kanak Kecil"
+  },
+  "scenarios": {
+    "1.1.2": { "prompt": "Semasa bermain bebas, seorang kanak-kanak yang pendiam asyik memandang anda sambil membina dengan blok. Apakah yang paling mungkin anda lakukan?", "l1": "Senyum dan berkata “Binaan yang bagus!” sambil lalu.", "l2": "Pergi kepadanya, melutut dan bertanya apa yang sedang dibinanya.", "l3": "Duduk di sebelahnya, terangkan apa yang anda perhatikan, dan ikut pimpinannya semasa dia menerangkan rancangannya." },
+    "1.1.4": { "prompt": "Seorang kanak-kanak menangis kerana seorang lagi kanak-kanak mengambil krayon merah. Apakah yang paling mungkin anda lakukan?", "l1": "Pujuk kanak-kanak itu dan berikan krayon lain.", "l2": "Namakan perasaannya (“Awak sedih”) dan cadangkan dia meminta giliran.", "l3": "Namakan perasaannya, kemudian bantu kedua-dua kanak-kanak berbincang dan bersetuju tentang rancangan sendiri." },
+    "2.1.2": { "prompt": "Anda perasan seorang kanak-kanak membantu rakannya mengutip manik yang bertaburan. Apakah yang paling mungkin anda lakukan?", "l1": "Berkata “Bagus!”", "l2": "Berkata “Awak tolong Mei kutip maniknya — baiknya awak.”", "l3": "Jemput kelas memerhatikan perbuatan baik itu dan berbincang bagaimana ia membantu." },
+    "2.1.3": { "prompt": "Seorang kanak-kanak bertanya mengapa rakan sekelasnya makan dengan tangan semasa makan tengah hari. Apakah yang paling mungkin anda lakukan?", "l1": "Berkata “Setiap orang makan dengan cara berbeza” dan teruskan.", "l2": "Terangkan bahawa setiap keluarga mempunyai adat yang berbeza dan semuanya dialu-alukan.", "l3": "Jemput rakan sekelas itu (jika dia mahu) berkongsi tentangnya, dan rancang aktiviti kelas tentang makanan dari rumah." },
+    "2.2.2": { "prompt": "Seorang kanak-kanak menghentak kaki dan bermasam muka selepas kalah dalam permainan. Apakah yang paling mungkin anda lakukan?", "l1": "Beritahu dia itu cuma permainan.", "l2": "Berkata “Awak nampak kecewa” dan tunggu bersamanya.", "l3": "Bantu dia menyedari isyarat badannya dan menamakan perasaan itu, kemudian tanya bagaimana perasaan orang lain dalam permainan itu." },
+    "2.2.4": { "prompt": "Semasa waktu bulatan, seorang kanak-kanak asyik menjerit menyampuk. Apakah yang paling mungkin anda lakukan?", "l1": "Ingatkan dia supaya diam.", "l2": "Secara senyap tawarkan strategi, seperti memegang “batu bercakap” sambil menunggu.", "l3": "Gunakan strategi menunggu yang telah dilatih bersama oleh kelas, dan biarkan kanak-kanak itu memilih alat menenangkan diri sendiri." },
+    "2.3.1": { "prompt": "Seorang kanak-kanak berputus asa dengan teka-teki sambil berkata “Susah sangat.” Apakah yang paling mungkin anda lakukan?", "l1": "Siapkan teka-teki itu bersama-sama dengan cepat.", "l2": "Pecahkan kepada langkah-langkah: “Jom cari semua kepingan tepi dahulu.”", "l3": "Tanya apa yang telah dicubanya, galakkan strategi lain, dan raikan usahanya apabila dia terus mencuba." },
+    "2.3.5": { "prompt": "Seorang kanak-kanak membawa seekor siput dari taman. Apakah yang paling mungkin anda lakukan?", "l1": "Berkata “Menariknya!” dan letakkan semula di luar.", "l2": "Tanya kumpulan apa yang mereka perhatikan tentang siput itu.", "l3": "Biarkan soalan kanak-kanak tentang siput itu membentuk satu siasatan untuk beberapa hari akan datang." },
+    "3.1.2": { "prompt": "Sesetengah kanak-kanak cepat menyiapkan aktiviti mengira manakala yang lain bergelut. Apakah yang paling mungkin anda lakukan?", "l1": "Minta mereka yang siap awal menunggu dengan senyap.", "l2": "Beri kad lanjutan kepada sesetengahnya dan sokongan tambahan kepada yang lain.", "l3": "Tawarkan aktiviti pada tahap berbeza sejak awal dan biarkan kanak-kanak memilih cabaran mereka." },
+    "3.1.5": { "prompt": "Peralihan ke permainan luar selalunya bising dan tergesa-gesa. Apakah yang paling mungkin anda lakukan?", "l1": "Ingatkan kanak-kanak tentang peraturan setiap kali.", "l2": "Terangkan sebab rutin itu dan beri amaran sebelum peralihan.", "l3": "Berbincang dengan kanak-kanak untuk bersetuju tentang rutin dan biarkan mereka saling mengingatkan." },
+    "3.2.3": { "prompt": "Anda sedang merancang aktiviti seni untuk esok. Apakah yang paling mungkin anda lakukan?", "l1": "Sediakan satu aktiviti seni untuk semua.", "l2": "Tawarkan dua atau tiga pilihan bahan.", "l3": "Tanya kanak-kanak apa yang mereka mahu buat dan bantu mereka merancang serta mengumpul bahan." },
+    "3.2.5": { "prompt": "Kanak-kanak sedang bermain “kedai” di sudut main pura-pura. Apakah yang paling mungkin anda lakukan?", "l1": "Mengawasi dari dekat.", "l2": "Sertai sebagai pelanggan dan tanya soalan untuk meluaskan permainan.", "l3": "Sertai sebentar, tambahkan masalah untuk diselesaikan (cth. “kedai sudah kehabisan duit kecil”), kemudian berundur sementara kanak-kanak meneruskannya." },
+    "3.3.4": { "prompt": "Anda sedang membaca cerita dan berhenti pada gambar seekor beruang yang bersembunyi. Apakah yang paling mungkin anda tanya?", "l1": "“Haiwan apakah ini?”", "l2": "“Mengapa agaknya beruang itu bersembunyi?” — dan tunggu jawapan.", "l3": "“Mengapa awak fikir begitu?” — kemudian susuli jawapan seorang kanak-kanak dan jemput yang lain memberi respons." },
+    "3.3.6": { "prompt": "Seorang kanak-kanak menunjukkan menara yang dibinanya. Apakah yang paling mungkin anda katakan?", "l1": "“Bagus!”", "l2": "“Awak letak blok besar di bawah supaya ia tidak tumbang.”", "l3": "“Awak letak blok besar di bawah. Apa akan berlaku jika awak cuba sebaliknya?”" },
+    "3.4.2": { "prompt": "Kanak-kanak perlu menunggu giliran untuk bermain buaian. Apakah yang paling mungkin anda lakukan?", "l1": "Suruh mereka menunggu dan bergilir-gilir.", "l2": "Gunakan jam pasir dan ingatkan mereka tentangnya.", "l3": "Main permainan menunggu yang ringkas yang diketahui kelas, dan biarkan kanak-kanak mengurus pemasa sendiri." },
+    "3.4.5": { "prompt": "Pada permulaan masa projek, apakah yang paling mungkin anda lakukan?", "l1": "Beritahu kanak-kanak apa yang akan mereka lakukan hari ini.", "l2": "Bantu setiap kanak-kanak menyatakan atau melukis rancangan ringkas.", "l3": "Kanak-kanak membuat rancangan, menyemaknya semasa sesi, dan menyemak semula bersama rakan pada akhir sesi." }
+  }
+}

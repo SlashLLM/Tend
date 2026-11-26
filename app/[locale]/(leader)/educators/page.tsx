@@ -1,12 +1,13 @@
 import { ArrowRight } from 'lucide-react';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { PageHeader } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
 import { dateline } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Educators' };
+export const generateMetadata = pageTitle('educators');
 
 /** "Aisha binte Rahman" → "AR": first and last capitalised word, skipping "binte", "bin", "a/l". */
 const initials = (name: string) => {
@@ -16,6 +17,7 @@ const initials = (name: string) => {
 
 export default async function EducatorsPage() {
   const locale = await getLocale();
+  const t = await getTranslations('educators');
   const session = (await getSession())!;
   const centreId = session.memberships.find((m) => m.role === 'leader')?.centre_id;
   const supabase = await createClient();
@@ -29,14 +31,14 @@ export default async function EducatorsPage() {
   const { data: idps } = await supabase.from('idp').select('educator_id, status').in('status', ['draft', 'active']);
   const statusOf = (id: string) => {
     const s = (idps ?? []).filter((i) => i.educator_id === id).map((i) => i.status);
-    return s.includes('draft') ? 'Draft plan' : s.includes('active') ? 'Active plan' : 'No plan yet';
+    return s.includes('draft') ? t('draftPlan') : s.includes('active') ? t('activePlan') : t('noPlan');
   };
   const people = ((data ?? []) as unknown as { user_id: string; years_experience: number; user: { full_name: string }; title: { name: string } | null }[])
     .sort((a, b) => a.user.full_name.localeCompare(b.user.full_name));
 
   return (
     <>
-      <PageHeader dateline={dateline(new Date(), locale)} title="Educators" subtitle={`${people.length} educators in your centre. Plans, evidence and growth on one page each.`} />
+      <PageHeader dateline={dateline(new Date(), locale)} title={t('title')} subtitle={t('subtitle', { n: people.length })} />
       <ul className="tend-card divide-y">
         {people.map((p) => (
           <li key={p.user_id}>
@@ -46,7 +48,7 @@ export default async function EducatorsPage() {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">{p.user.full_name}</span>
-                <span className="block truncate text-sm text-muted-foreground">{p.title?.name ?? 'Educator'} · {classesOf(p.user_id).join(', ') || '—'} · {p.years_experience} yrs</span>
+                <span className="block truncate text-sm text-muted-foreground">{p.title?.name ?? t('educator')} · {classesOf(p.user_id).join(', ') || '—'} · {t('years', { n: p.years_experience })}</span>
               </span>
               <span className="hidden text-sm text-muted-foreground sm:inline">{statusOf(p.user_id)}</span>
               <ArrowRight aria-hidden className="size-4 text-muted-foreground" />

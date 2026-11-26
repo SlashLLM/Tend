@@ -1,23 +1,25 @@
 import { AlertTriangle, ExternalLink } from 'lucide-react';
+import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
+import { indicatorName } from '@/lib/i18n/content';
 import { IndicatorTag } from '@/components/tend/indicator-tag';
 import { PageHeader } from '@/components/tend/page-header';
 import { Link } from '@/i18n/navigation';
 import type { TagSuggestion } from '@/lib/ai/tasks/course-tags';
-import { ATTRIBUTION } from '@/lib/catalogue/transform';
 import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
 import { CourseActions } from './course-actions';
 import { SyncButton } from './sync-button';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Programmes' };
+export const generateMetadata = pageTitle('programmes');
 // "Sync now" downloads the open datasets and tags new courses inside this page's server action.
 export const maxDuration = 300;
 
-const TIER: Record<string, string> = { internal: 'In-house', micro: 'Micro-learning', course: 'Course', peer: 'Peer' };
+const TIERS = new Set(['internal', 'micro', 'course', 'peer']);
 const TABS = [
-  { key: 'review', label: 'Needs review', status: 'pending_review' },
-  { key: 'live', label: 'Live', status: 'active' },
-  { key: 'retired', label: 'Retired', status: 'retired' },
+  { key: 'review', status: 'pending_review' },
+  { key: 'live', status: 'active' },
+  { key: 'retired', status: 'retired' },
 ] as const;
 
 type Row = {
@@ -26,11 +28,15 @@ type Row = {
   level_min: number; level_max: number; source: string; status: string; tag_suggestion: TagSuggestion | null; tagged_by: string | null; source_updated_at: string | null;
 };
 
-const fmtDate = (d: string) => new Date(d).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Singapore' });
 
 export default async function ProgrammesPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { tab: tabParam } = await searchParams;
   const supabase = await createClient();
+  const t = await getTranslations('programmes');
+  const locale = await getLocale();
+  const tl = await getTranslations('learn');
+  const format = await getFormatter();
+  const fmtDate = (d: string) => format.dateTime(new Date(d), { day: 'numeric', month: 'short', year: 'numeric' });
   const [{ data: rows }, { data: lastRun }, { data: inds }] = await Promise.all([
     supabase
       .from('pd_activity')
@@ -41,46 +47,46 @@ export default async function ProgrammesPage({ searchParams }: { searchParams: P
     supabase.from('indicator').select('code, name, framework_version!inner(status)').eq('framework_version.status', 'active').order('code'),
   ]);
   const all = (rows ?? []) as Row[];
-  const counts = Object.fromEntries(TABS.map((t) => [t.key, all.filter((r) => r.status === t.status).length]));
-  const tab = TABS.find((t) => t.key === tabParam) ?? (counts.review ? TABS[0] : TABS[1]);
+  const counts = Object.fromEntries(TABS.map((x) => [x.key, all.filter((r) => r.status === x.status).length]));
+  const tab = TABS.find((x) => x.key === tabParam) ?? (counts.review ? TABS[0] : TABS[1]);
   const list = all.filter((r) => r.status === tab.status);
-  const names = new Map(((inds ?? []) as { code: string; name: string }[]).map((i) => [i.code, i.name]));
+  const names = new Map(((inds ?? []) as { code: string; name: string }[]).map((i) => [i.code, indicatorName(locale, i.code, i.name)]));
   const indicators = [...names].map(([code, name]) => ({ code, name }));
   const stale = (d: string | null) => !d || Date.now() - new Date(d).getTime() > 90 * 86_400_000;
 
   return (
     <>
       <PageHeader
-        dateline="Catalogue"
-        title="Programmes"
-        subtitle="Early-childhood courses from the SkillsFuture course directory, plus your in-house learning. New courses get AI-suggested framework skills; approve them here before they are recommended to educators."
+        dateline={t('dateline')}
+        title={t('title')}
+        subtitle={t('subtitle')}
         actions={<SyncButton />}
       />
       <p className="-mt-3 mb-5 text-sm text-muted-foreground">
         {lastRun
           ? lastRun.ok
-            ? `Last synced ${fmtDate(lastRun.finished_at ?? lastRun.started_at)}: ${lastRun.fetched} courses in the feed, ${lastRun.inserted} new, ${lastRun.tagged} tagged.`
+            ? t('lastSynced', { date: fmtDate(lastRun.finished_at ?? lastRun.started_at), fetched: lastRun.fetched, inserted: lastRun.inserted, tagged: lastRun.tagged })
             : lastRun.ok === false
-              ? `Last sync failed on ${fmtDate(lastRun.started_at)}: ${lastRun.error ?? 'unknown error'}`
-              : 'A sync is running…'
-          : 'Not synced yet. The catalogue refreshes automatically on the 1st of each month, or press Sync now.'}
+              ? t('lastFailed', { date: fmtDate(lastRun.started_at), error: lastRun.error ?? t('unknownError') })
+              : t('running')
+          : t('notSynced')}
       </p>
 
-      <nav aria-label="Catalogue status" className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
-        {TABS.map((t) => (
+      <nav aria-label={t('statusNav')} className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
+        {TABS.map((x) => (
           <Link
-            key={t.key}
-            href={`/programmes?tab=${t.key}`}
-            aria-current={t.key === tab.key ? 'page' : undefined}
-            className={cn('inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-sm font-medium sm:gap-2 sm:px-4', t.key === tab.key ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground')}
+            key={x.key}
+            href={`/programmes?tab=${x.key}`}
+            aria-current={x.key === tab.key ? 'page' : undefined}
+            className={cn('inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-sm font-medium sm:gap-2 sm:px-4', x.key === tab.key ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground')}
           >
-            {t.label} <span className="tabular-nums opacity-80">{counts[t.key]}</span>
+            {t(`tab.${x.key}`)} <span className="tabular-nums opacity-80">{counts[x.key]}</span>
           </Link>
         ))}
       </nav>
 
       {list.length === 0 ? (
-        <p className="tend-card p-5 text-muted-foreground">{tab.key === 'review' ? 'Nothing waiting for review.' : 'No programmes here.'}</p>
+        <p className="tend-card p-5 text-muted-foreground">{tab.key === 'review' ? t('nothingReview') : t('noProgrammes')}</p>
       ) : (
         <ol className="grid gap-3">
           {list.map((a) => {
@@ -91,34 +97,34 @@ export default async function ProgrammesPage({ searchParams }: { searchParams: P
               <li key={a.id} className="tend-card grid gap-3 p-4 lg:grid-cols-[1fr_auto] lg:items-start">
                 <div className="grid min-w-0 gap-1.5">
                   <p className="tend-dateline">
-                    {TIER[a.tier] ?? a.tier}
+                    {TIERS.has(a.tier) ? tl(`tier.${a.tier}`) : a.tier}
                     {a.provider ? ` · ${a.provider}` : ''}
-                    {a.source === 'skillsfuture' ? ' · SkillsFuture' : a.source === 'seed' && a.tier === 'course' ? ' · Sample' : ''}
+                    {a.source === 'skillsfuture' ? ' · SkillsFuture' : a.source === 'seed' && a.tier === 'course' ? t('sample') : ''}
                   </p>
                   <p className="font-medium">
                     {a.title}
-                    {a.tier === 'course' && stale(a.source_updated_at) && <AlertTriangle className="ml-1 inline size-3.5 text-amber" aria-label="Listing older than 90 days" />}
+                    {a.tier === 'course' && stale(a.source_updated_at) && <AlertTriangle className="ml-1 inline size-3.5 text-amber" aria-label={t('staleListing')} />}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {[
                       a.mode,
-                      a.hours ? `${a.hours} h` : null,
-                      fee ? (after !== null && after < fee ? `S$${fee} → S$${after} after subsidy` : `S$${fee}`) : 'Free',
-                      a.next_run ? `next run ${fmtDate(a.next_run)}` : a.tier === 'course' ? 'no upcoming run listed' : null,
+                      a.hours ? tl('hours', { n: a.hours }) : null,
+                      fee ? (after !== null && after < fee ? t('afterSubsidy', { fee, after }) : `S$${fee}`) : tl('free'),
+                      a.next_run ? tl('nextRun', { date: fmtDate(a.next_run) }) : a.tier === 'course' ? t('noRun') : null,
                     ]
                       .filter(Boolean)
                       .join(' · ')}
                     {a.url && !a.url.includes('example.org') && (
                       <a href={a.url} target="_blank" rel="noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-primary underline underline-offset-2">
-                        Details <ExternalLink className="size-3" aria-hidden />
+                        {tl('details')} <ExternalLink className="size-3" aria-hidden />
                       </a>
                     )}
                   </p>
                   {a.status === 'active' && a.indicator_codes.length > 0 && (
                     <p className="flex flex-wrap items-center gap-1.5 text-xs">
-                      <span className="text-muted-foreground">Skills{a.tagged_by ? ` (${a.tagged_by === 'hq' ? 'chosen by HQ' : 'AI, approved'})` : ''}:</span>
+                      <span className="text-muted-foreground">{t('skills')}{a.tagged_by ? (a.tagged_by === 'hq' ? t('chosenByHq') : t('aiApproved')) : ''}:</span>
                       {a.indicator_codes.map((c) => <IndicatorTag key={c} code={c} name={names.get(c) ?? c} />)}
-                      <span className="text-muted-foreground">· levels {a.level_min}–{a.level_max}</span>
+                      <span className="text-muted-foreground">· {t('levels', { min: a.level_min, max: a.level_max })}</span>
                     </p>
                   )}
                   {a.status === 'pending_review' && (
@@ -126,18 +132,18 @@ export default async function ProgrammesPage({ searchParams }: { searchParams: P
                       {s ? (
                         <>
                           <p className="mb-1.5 text-xs font-medium text-muted-foreground">
-                            AI suggestion · {s.confidence} confidence{!s.relevant ? ' · looks unrelated to early-childhood teaching' : ''}
+                            {t('aiSuggestion', { confidence: t(`confidence.${s.confidence}`) })}{!s.relevant ? t('unrelated') : ''}
                           </p>
                           {s.indicator_codes.length > 0 && (
                             <p className="mb-1.5 flex flex-wrap gap-1.5">
                               {s.indicator_codes.map((c) => <IndicatorTag key={c} code={c} name={names.get(c) ?? c} />)}
-                              <span className="text-xs text-muted-foreground">levels {s.level_min}–{s.level_max}</span>
+                              <span className="text-xs text-muted-foreground">{t('levels', { min: s.level_min, max: s.level_max })}</span>
                             </p>
                           )}
                           <p className="text-xs text-muted-foreground">{s.reason}</p>
                         </>
                       ) : (
-                        <p className="text-xs text-muted-foreground">No AI suggestion yet. It will be added on the next sync, or choose the skills yourself.</p>
+                        <p className="text-xs text-muted-foreground">{t('noSuggestion')}</p>
                       )}
                     </div>
                   )}
@@ -155,7 +161,7 @@ export default async function ProgrammesPage({ searchParams }: { searchParams: P
           })}
         </ol>
       )}
-      <p className="mt-8 text-xs text-muted-foreground">{ATTRIBUTION}</p>
+      <p className="mt-8 text-xs text-muted-foreground">{t('attribution')}</p>
     </>
   );
 }

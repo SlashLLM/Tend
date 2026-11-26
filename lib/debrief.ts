@@ -6,18 +6,44 @@ export type Agenda = { celebrate: string; questions: string[]; decision: string 
 
 const clip = (s: string, n = 140) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 
-export function buildAgenda(input: {
-  glows: string[];
-  grows: string[];
-  nextStep: string;
-  reflection: string | null;
-  contexts: string[];
-}): Agenda {
-  const celebrate = input.glows[0] ? `Celebrate: ${clip(input.glows[0])}` : 'Celebrate one thing that went well today.';
+/** Agenda sentences; English by default, the UI passes translated ones. */
+export type AgendaPhrases = {
+  celebrate: (glow: string) => string;
+  celebrateDefault: string;
+  youSaid: (reflection: string) => string;
+  youAdded: (context: string) => string;
+  whatWouldHelp: (grow: string) => string;
+  tryFirst: string;
+  agree: (step: string) => string;
+  agreeDefault: string;
+};
+
+export const AGENDA_EN: AgendaPhrases = {
+  celebrate: (g) => `Celebrate: ${g}`,
+  celebrateDefault: 'Celebrate one thing that went well today.',
+  youSaid: (r) => `You said: “${r}” — what made you notice that?`,
+  youAdded: (c) => `You added: “${c}” — how should we take that into account?`,
+  whatWouldHelp: (g) => `What would help you with this next: ${g}?`,
+  tryFirst: 'What would you like to try first, and how will we know it is working?',
+  agree: (s) => `Agree one step: ${s}`,
+  agreeDefault: 'Agree one small step to try this week.',
+};
+
+export function buildAgenda(
+  input: {
+    glows: string[];
+    grows: string[];
+    nextStep: string;
+    reflection: string | null;
+    contexts: string[];
+  },
+  P: AgendaPhrases = AGENDA_EN,
+): Agenda {
+  const celebrate = input.glows[0] ? P.celebrate(clip(input.glows[0])) : P.celebrateDefault;
   const qs: string[] = [];
-  if (input.reflection?.trim()) qs.push(`You said: “${clip(input.reflection.trim(), 110)}” — what made you notice that?`);
-  if (input.contexts[0]) qs.push(`You added: “${clip(input.contexts[0], 90)}” — how should we take that into account?`);
-  if (input.grows[0]) qs.push(`What would help you with this next: ${clip(input.grows[0].replace(/^An opportunity to grow[^:]*:\s*/i, ''), 110)}?`);
-  qs.push('What would you like to try first, and how will we know it is working?');
-  return { celebrate, questions: qs.slice(0, 2), decision: input.nextStep ? `Agree one step: ${clip(input.nextStep)}` : 'Agree one small step to try this week.' };
+  if (input.reflection?.trim()) qs.push(P.youSaid(clip(input.reflection.trim(), 110)));
+  if (input.contexts[0]) qs.push(P.youAdded(clip(input.contexts[0], 90)));
+  if (input.grows[0]) qs.push(P.whatWouldHelp(clip(input.grows[0].replace(/^An opportunity to grow[^:]*:\s*/i, ''), 110)));
+  qs.push(P.tryFirst);
+  return { celebrate, questions: qs.slice(0, 2), decision: input.nextStep ? P.agree(clip(input.nextStep)) : P.agreeDefault };
 }

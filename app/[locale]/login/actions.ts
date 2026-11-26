@@ -6,6 +6,7 @@ import { mustChangePassword, PASSWORD_MAX } from '@/lib/auth/password';
 import { demoSignInAllowed, homePathFor, safeNext, type Membership } from '@/lib/auth/roles';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
+import { setLocaleCookie } from '@/lib/i18n/locale-cookie';
 
 export type LoginState = { status: 'idle' | 'error'; email?: string };
 
@@ -32,6 +33,14 @@ async function roleHome(supabase: Awaited<ReturnType<typeof createClient>>, user
   return l === 'en' ? path : `/${l}${path}`;
 }
 
+/** The language saved in the user's profile wins over the login page's; the cookie keeps routing in step. */
+async function preferredLocale(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, fallback: string) {
+  const { data } = await supabase.from('app_user').select('locale').eq('id', userId).maybeSingle();
+  const l = toLocale(data?.locale ?? fallback);
+  await setLocaleCookie(l);
+  return l;
+}
+
 /** Email + password. Accounts are created by an admin (sign-ups are off). */
 export async function signIn(_prev: LoginState, form: FormData): Promise<LoginState> {
   const parsed = Creds.safeParse({ email: form.get('email'), password: form.get('password') });
@@ -41,7 +50,7 @@ export async function signIn(_prev: LoginState, form: FormData): Promise<LoginSt
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error || !data.user) return { status: 'error', email };
-  const locale = String(form.get('locale') ?? 'en');
+  const locale = await preferredLocale(supabase, data.user.id, String(form.get('locale') ?? 'en'));
   // First sign-in with a temporary password: choose your own before anything else.
   if (mustChangePassword(data.user)) redirect(`${home(locale).replace(/\/$/, '')}/change-password`);
   const next = String(form.get('next') ?? '');
@@ -59,5 +68,7 @@ export async function demoSignIn(form: FormData) {
   const supabase = await createClient();
   const { data: verified, error: vErr } = await supabase.auth.verifyOtp({ type: 'magiclink', token_hash: data.properties.hashed_token });
   if (vErr) throw new Error(`Demo sign-in failed: ${vErr.message}`);
-  redirect(verified.user ? await roleHome(supabase, verified.user.id, locale) : home(locale));
+  if (!verified.user) redirect(home(locale));
+  const l = await preferredLocale(supabase, verified.user.id, locale);
+  redirect(await roleHome(supabase, verified.user.id, l));
 }

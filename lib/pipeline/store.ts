@@ -13,7 +13,7 @@ export type LoadedPipelineInput = PipelineInput & { frameworkVersionId: string; 
 export async function loadPipelineInput(admin: SupabaseClient, observationId: string): Promise<LoadedPipelineInput> {
   const { data: o, error } = await admin
     .from('observation')
-    .select('id, org_id, centre_id, educator_id, class_id, focus_goal_ids, framework_version_id, class:class_id(level), educator:educator_id(full_name)')
+    .select('id, org_id, centre_id, educator_id, class_id, focus_goal_ids, framework_version_id, class:class_id(level), educator:educator_id(full_name, locale)')
     .eq('id', observationId)
     .single();
   if (error || !o) throw new Error(`observation not found: ${error?.message}`);
@@ -41,7 +41,8 @@ export async function loadPipelineInput(admin: SupabaseClient, observationId: st
       goals: goalRows.map((g) => ({ id: g.id, code: g.indicator.code, current_level: g.current_level, target_level: g.target_level })),
       educatorFirstName: ((o.educator as unknown as { full_name: string })?.full_name ?? '').split(' ')[0],
       classLevel: (o.class as unknown as { level: string } | null)?.level ?? null,
-      locale: 'en',
+      // Growth notes are written for the educator, so draft them in the educator's own language.
+      locale: (o.educator as unknown as { locale?: string } | null)?.locale ?? 'en',
     },
     lastLevels: goalRows.map((g) => `${g.indicator.code}: L${g.current_level ?? '?'}`).join(', '),
   };

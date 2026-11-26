@@ -1,6 +1,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ActionView } from '@/lib/peer';
+import { indicatorLevels, indicatorLookFors, indicatorName, indicatorSubdomain, tscTitle } from '@/lib/i18n/content';
 
 export type GoalView = {
   id: string;
@@ -29,15 +30,31 @@ export type IdpView = {
 const GOAL_SELECT =
   'id, current_level, target_level, review_date, position, indicator:indicator_id(id, code, name, subdomain_name, level_descriptors, look_fors), tsc:tsc_id(code, title), actions:idp_action(id, description, status, source, endorsed_by, pd_activity_id, peer_user_id, completed_at, completion_note, cpd_minutes, created_at, peer:peer_user_id(full_name), peer_sessions:peer_observation(id, status, proposed_at, scheduled_at, peer_note, noticed, will_try, created_at))';
 
-/** Latest active and latest draft plan for an educator (both may exist while revising). */
-export async function loadPlans(supabase: SupabaseClient, educatorId: string) {
+/** Framework text of a goal in the reader's language (the stored English stays the source). */
+export function localizeGoal(g: GoalView, locale: string): GoalView {
+  const i = g.indicator;
+  return {
+    ...g,
+    indicator: {
+      ...i,
+      name: indicatorName(locale, i.code, i.name),
+      subdomain_name: indicatorSubdomain(locale, i.code, i.subdomain_name),
+      level_descriptors: indicatorLevels(locale, i.code, i.level_descriptors),
+      look_fors: indicatorLookFors(locale, i.code, i.look_fors),
+    },
+    tsc: g.tsc ? { ...g.tsc, title: tscTitle(locale, g.tsc.code, g.tsc.title) } : null,
+  };
+}
+
+/** Latest active and latest draft plan for an educator (both may exist while revising). Pass `locale` to localize framework text. */
+export async function loadPlans(supabase: SupabaseClient, educatorId: string, locale = 'en') {
   const { data } = await supabase
     .from('idp')
     .select(`id, lineage_id, version, status, educator_id, centre_id, educator_confirmed_at, leader_confirmed_at, goals:idp_goal(${GOAL_SELECT})`)
     .eq('educator_id', educatorId)
     .in('status', ['draft', 'active'])
     .order('version', { ascending: false });
-  const plans = ((data ?? []) as unknown as IdpView[]).map((p) => ({ ...p, goals: [...p.goals].sort((a, b) => a.position - b.position) }));
+  const plans = ((data ?? []) as unknown as IdpView[]).map((p) => ({ ...p, goals: [...p.goals].sort((a, b) => a.position - b.position).map((g) => localizeGoal(g, locale)) }));
   return { active: plans.find((p) => p.status === 'active') ?? null, draft: plans.find((p) => p.status === 'draft') ?? null };
 }
 

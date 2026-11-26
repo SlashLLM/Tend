@@ -1,5 +1,6 @@
 'use client';
 import { CheckCircle2, Loader2, Timer } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ export function DebriefPanel({ obsId, agenda, completed, notes: initialNotes, ca
   const [action, setAction] = useState(suggestedAction);
   const [goal, setGoal] = useState(suggestedGoal ?? goals[0]?.id ?? '');
   const [pending, start] = useTransition();
+  const t = useTranslations('debrief');
 
   useEffect(() => {
     if (!running) return;
@@ -28,9 +30,9 @@ export function DebriefPanel({ obsId, agenda, completed, notes: initialNotes, ca
   return (
     <section className="tend-card grid gap-4 p-5" aria-labelledby="debrief-h">
       <div className="flex items-center justify-between">
-        <h2 id="debrief-h" className="text-base font-semibold">Debrief</h2>
+        <h2 id="debrief-h" className="text-base font-semibold">{t('title')}</h2>
         {completed ? (
-          <span className="flex items-center gap-1 text-sm text-success"><CheckCircle2 className="size-4" aria-hidden /> Discussed</span>
+          <span className="flex items-center gap-1 text-sm text-success"><CheckCircle2 className="size-4" aria-hidden /> {t('discussed')}</span>
         ) : running ? (
           <span className="flex items-center gap-1 font-mono text-sm tabular-nums" aria-live="off"><Timer className="size-4" aria-hidden />{Math.floor(left / 60)}:{String(left % 60).padStart(2, '0')}</span>
         ) : null}
@@ -43,15 +45,15 @@ export function DebriefPanel({ obsId, agenda, completed, notes: initialNotes, ca
       {completed ? (
         notes && <p className="rounded-md bg-muted px-3 py-2 text-sm">{notes}</p>
       ) : !canRun ? null : !running ? (
-        <Button className="min-h-11" onClick={() => setRunning(true)}><Timer aria-hidden /> Start 15-minute debrief</Button>
+        <Button className="min-h-11" onClick={() => setRunning(true)}><Timer aria-hidden /> {t('start')}</Button>
       ) : (
         <div className="grid gap-3">
-          <Textarea aria-label="Debrief notes" placeholder="Notes from the conversation…" value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <Textarea aria-label={t('notesLabel')} placeholder={t('notesPlaceholder')} value={notes} onChange={(e) => setNotes(e.target.value)} />
           <div className="grid gap-2">
-            <label className="text-sm font-medium" htmlFor="agreed">Agreed action (goes into the IDP)</label>
+            <label className="text-sm font-medium" htmlFor="agreed">{t('agreed')}</label>
             <Input id="agreed" value={action} onChange={(e) => setAction(e.target.value)} className="min-h-11" />
-            <select aria-label="Goal for the action" className="min-h-11 w-full rounded-md border bg-card px-2 text-sm" value={goal} onChange={(e) => setGoal(e.target.value)}>
-              {goals.length === 0 && <option value="">No active plan</option>}
+            <select aria-label={t('goalFor')} className="min-h-11 w-full rounded-md border bg-card px-2 text-sm" value={goal} onChange={(e) => setGoal(e.target.value)}>
+              {goals.length === 0 && <option value="">{t('noPlan')}</option>}
               {goals.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
             </select>
           </div>
@@ -62,14 +64,15 @@ export function DebriefPanel({ obsId, agenda, completed, notes: initialNotes, ca
               start(async () => {
                 try {
                   await completeDebrief(obsId, notes, goal && action.trim().length >= 3 ? [{ goal_id: goal, description: action.trim() }] : [], agenda);
-                  toast.success('Debrief complete — action added to the plan');
+                  toast.success(t('done'));
                 } catch (e) {
-                  toast.error(e instanceof Error ? e.message : 'Could not complete');
+                  console.error(e);
+                  toast.error(t('failed'));
                 }
               })
             }
           >
-            {pending ? <Loader2 className="animate-spin" aria-hidden /> : <CheckCircle2 aria-hidden />} Complete debrief
+            {pending ? <Loader2 className="animate-spin" aria-hidden /> : <CheckCircle2 aria-hidden />} {t('complete')}
           </Button>
         </div>
       )}

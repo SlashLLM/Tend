@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { mustChangePassword } from '@/lib/auth/password';
 import { createClient } from '@/lib/supabase/server';
 import { ChangePasswordForm } from './change-password-form';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Change password' };
+export const generateMetadata = pageTitle('changePassword');
 
 export default async function ChangePasswordPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

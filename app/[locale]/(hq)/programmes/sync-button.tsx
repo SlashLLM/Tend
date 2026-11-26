@@ -1,5 +1,6 @@
 'use client';
 import { Loader2, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 import { syncNow } from '@/app/actions/catalogue';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 
 export function SyncButton() {
   const [pending, start] = useTransition();
+  const t = useTranslations('programmes');
   return (
     <Button
       type="button"
@@ -15,17 +17,18 @@ export function SyncButton() {
       disabled={pending}
       onClick={() =>
         start(async () => {
-          const id = toast.loading('Syncing from SkillsFuture… this can take a minute.');
+          const id = toast.loading(t('syncing'));
           try {
             const r = await syncNow();
-            toast.success(`Synced: ${r.fetched} courses in the feed, ${r.inserted} new, ${r.tagged} tagged${r.pendingUntagged ? `, ${r.pendingUntagged} still to tag` : ''}.`, { id });
+            toast.success(`${t('synced', { fetched: r.fetched, inserted: r.inserted, tagged: r.tagged })}${r.pendingUntagged ? t('stillToTag', { n: r.pendingUntagged }) : ''}`, { id });
           } catch (err) {
-            toast.error(err instanceof Error ? err.message : 'Sync failed', { id });
+            console.error(err);
+            toast.error(t('syncFailed'), { id });
           }
         })
       }
     >
-      {pending ? <Loader2 className="animate-spin" aria-hidden /> : <RefreshCw aria-hidden />} Sync now
+      {pending ? <Loader2 className="animate-spin" aria-hidden /> : <RefreshCw aria-hidden />} {t('syncNow')}
     </Button>
   );
 }

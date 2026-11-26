@@ -1,5 +1,6 @@
 import { ArrowLeft, Users } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { getFormatter, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { AiLabel } from '@/components/tend/ai-label';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
@@ -9,12 +10,15 @@ import type { NarrativeContent } from '@/lib/pipeline/types';
 import { createClient } from '@/lib/supabase/server';
 import { FeedbackView } from './feedback-view';
 import { ReflectFirst } from './reflect-first';
+import { pageTitle } from '@/lib/i18n/meta';
 
-export const metadata = { title: 'Growth notes' };
+export const generateMetadata = pageTitle('growthNotes');
 
 export default async function FeedbackPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = (await getSession())!;
+  const t = await getTranslations();
+  const format = await getFormatter();
   const supabase = await createClient();
   const { data: o } = await supabase
     .from('observation')
@@ -23,13 +27,13 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
     .eq('educator_id', session.userId)
     .maybeSingle();
   if (!o || !['shared', 'acknowledged', 'discussed'].includes(o.status)) notFound();
-  const reviewer = (o.approver as unknown as { full_name: string } | null)?.full_name ?? 'your Centre Leader';
+  const reviewer = (o.approver as unknown as { full_name: string } | null)?.full_name ?? t('common.yourCentreLeader');
   const { data: refl } = await supabase.from('educator_response').select('body').eq('observation_id', id).eq('kind', 'reflection').maybeSingle();
 
   const header = (
     <>
-      <Link href="/home" className="mb-3 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" aria-hidden /> Home</Link>
-      <PageHeader dateline={`${o.title} · ${new Date(o.scheduled_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', timeZone: 'Asia/Singapore' })}`} title="Your growth notes" />
+      <Link href="/home" className="mb-3 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" aria-hidden /> {t('common.home')}</Link>
+      <PageHeader dateline={`${o.title ?? t('common.observation')} · ${format.dateTime(new Date(o.scheduled_at), { day: 'numeric', month: 'long' })}`} title={t('feedbackPage.title')} />
     </>
   );
 
@@ -44,13 +48,16 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
     supabase.from('tag').select('valence, indicator:indicator_id(code, name)').eq('observation_id', id),
   ]);
   const growCodes = [...new Set(((tags ?? []) as unknown as { valence: string; indicator: { code: string; name: string } }[]).filter((t) => t.valence === 'grow').map((t) => t.indicator.code))].slice(0, 2);
+  const cardIds = ((cards ?? []) as { id: string }[]).map((c) => c.id);
+  const { data: tries } = cardIds.length ? await supabase.from('strategy_attempt').select('coaching_card_id, tried_on').in('coaching_card_id', cardIds).order('tried_on', { ascending: false }) : { data: [] };
+  const triedOn = (id: string) => ((tries ?? []).find((x) => x.coaching_card_id === id)?.tried_on as string | undefined) ?? null;
   const peers = (await Promise.all(growCodes.map(async (code) => ({ code, list: ((await supabase.rpc('peer_matches', { p_indicator_code: code })).data ?? []) as { full_name: string }[] })))).filter((p) => p.list.length);
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6">
       {header}
       <div className="-mt-4"><AiLabel reviewer={reviewer} /></div>
-      <blockquote className="rounded-xl bg-muted/70 px-4 py-3 text-sm"><span className="font-medium">Your reflection:</span> “{refl.body}”</blockquote>
+      <blockquote className="rounded-xl bg-muted/70 px-4 py-3 text-sm"><span className="font-medium">{t('feedbackPage.yourReflection')}</span> “{refl.body}”</blockquote>
       <FeedbackView
         obsId={id}
         content={narr!.content as NarrativeContent}
@@ -59,19 +66,19 @@ export default async function FeedbackPage({ params }: { params: Promise<{ id: s
       />
       {(cards ?? []).length > 0 && (
         <section aria-labelledby="cards-h" className="grid gap-3">
-          <SectionTitle id="cards-h">Coaching cards</SectionTitle>
+          <SectionTitle id="cards-h">{t('feedbackPage.coachingCards')}</SectionTitle>
           <div className="grid gap-4 md:grid-cols-2">
-            {(cards as unknown as { id: string; title: string; body: Record<string, string>; indicator: { code: string; name: string } | null }[]).map((c) => <TryTomorrowCard key={c.id} card={c} />)}
+            {(cards as unknown as { id: string; title: string; body: Record<string, string>; indicator: { code: string; name: string } | null }[]).map((c) => <TryTomorrowCard key={c.id} card={c} triedOn={triedOn(c.id)} />)}
           </div>
         </section>
       )}
       {peers.length > 0 && (
-        <section className="tend-card flex gap-3 p-5" aria-label="Peer Match">
+        <section className="tend-card flex gap-3 p-5" aria-label={t('feedbackPage.peerMatch')}>
           <Users className="size-5 shrink-0 text-amber" aria-hidden />
           <div className="text-sm">
-            <p className="font-medium">Learn from a colleague</p>
-            {peers.map((p) => <p key={p.code}>Watch <span className="font-medium">{p.list[0].full_name}</span> for 15 minutes — strong at {p.code}. Free and targeted.</p>)}
-            <Link href="/learn" className="mt-1 inline-block text-primary underline underline-offset-2">See your learning pathway →</Link>
+            <p className="font-medium">{t('feedbackPage.learnFromColleague')}</p>
+            {peers.map((p) => <p key={p.code}>{t.rich('feedbackPage.watchPeer', { name: p.list[0].full_name, code: p.code, b: (c) => <span className="font-medium">{c}</span> })}</p>)}
+            <Link href="/learn" className="mt-1 inline-block text-primary underline underline-offset-2">{t('feedbackPage.seePathway')}</Link>
           </div>
         </section>
       )}

@@ -3,6 +3,8 @@
  * children's names, responds with care to distress, uses only the educator's own data, resists
  * prompt injection. These deterministic checks run BEFORE any model call, in both AI modes.
  */
+import { COACH_PHRASES } from './phrases';
+
 export type GuardResult =
   | { kind: 'ok'; text: string }
   | { kind: 'distress'; reply: string }
@@ -12,11 +14,9 @@ const DISTRESS = /\b(overwhelm(ed|ing)?|burn(ed|t)? ?out|can['’]?t cope|cannot
 const DIAGNOSIS = /\b(diagnos(e|is|ing)|does (he|she|this child|the child|child [a-z]) have|(is|might) (he|she|this child|the child) (be )?(autistic|adhd|dyslexic|delayed)|autism|adhd|asd\b|dyslexia|developmental delay|disorder|on the spectrum|special needs assessment)\b/i;
 const INJECTION = /(ignore (all|any|the)? ?(previous|prior|above) (instructions|rules)|disregard (your|the) (rules|instructions)|you are now|act as (a|an) |system prompt|developer mode|reveal (your|the) (prompt|instructions)|show me (other|another) (educator|teacher)['’]?s|jailbreak)/i;
 
-export const DISTRESS_REPLY =
-  'That sounds really hard, and it matters. You don’t have to carry it alone — please talk to your Centre Leader, or reach out to your employee support line. If you feel unsafe right now, call 995 or the Samaritans of Singapore on 1767 (24 hours). When you’re ready, I’m here to help with one small, practical step.';
+export const DISTRESS_REPLY = COACH_PHRASES.en.distress;
 
-export const DIAGNOSIS_REPLY =
-  'I can’t diagnose children or suggest a condition — that needs families and qualified professionals. What I can do is help you describe what you observe, plan supportive strategies for the classroom, and prepare to talk with your Centre Leader about next steps.';
+export const DIAGNOSIS_REPLY = COACH_PHRASES.en.diagnosis;
 
 export function guard(input: string): GuardResult {
   const text = input.replace(/\s+/g, ' ').trim().slice(0, 1500);

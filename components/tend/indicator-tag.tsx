@@ -1,5 +1,6 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { indicatorName } from '@/lib/i18n/content';
 import { cn } from '@/lib/utils';
 import { DOMAIN_CLASSES, domainOf, isPossible } from '@/lib/levels';
 
@@ -20,6 +21,7 @@ type Props = {
  */
 export function IndicatorTag({ code, name, level, valence, confidence, className }: Props) {
   const t = useTranslations();
+  const locale = useLocale();
   const domain = domainOf(code);
   const possible = confidence != null && isPossible(confidence);
   return (
@@ -35,7 +37,7 @@ export function IndicatorTag({ code, name, level, valence, confidence, className
     >
       <span className="sr-only">{t(`tag.domain.${domain}`)}: </span>
       <span className="font-semibold tabular-nums">{code}</span>{' '}
-      <span>{name}</span>
+      <span>{indicatorName(locale, code, name)}</span>
       {level != null && <span className="font-semibold"> · {t('level.short', { level })}</span>}
       {valence && <span className="sr-only">({t(`feedback.${valence}`)})</span>}
       {confidence != null &&

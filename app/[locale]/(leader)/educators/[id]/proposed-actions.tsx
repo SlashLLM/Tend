@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { SectionTitle } from '@/components/tend/page-header';
 import { createClient } from '@/lib/supabase/server';
 import { EndorseButton } from './endorse-button';
@@ -12,9 +13,10 @@ export async function ProposedActions({ idpId }: { idpId: string }) {
     .eq('goal.idp_id', idpId);
   const rows = (data ?? []) as unknown as { id: string; description: string; goal: { indicator: { code: string } } }[];
   if (!rows.length) return null;
+  const t = await getTranslations('proposed');
   return (
     <section className="tend-card p-5" aria-labelledby="proposed">
-      <SectionTitle id="proposed" count={rows.length}>Proposed learning</SectionTitle>
+      <SectionTitle id="proposed" count={rows.length}>{t('title')}</SectionTitle>
       <ul className="grid gap-2">
         {rows.map((r) => (
           <li key={r.id} className="flex items-center justify-between gap-3 text-sm">

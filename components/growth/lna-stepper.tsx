@@ -1,5 +1,7 @@
 'use client';
 import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { areaName, scenarioOption, scenarioPrompt } from '@/lib/i18n/content';
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -13,6 +15,9 @@ type Props = { attemptId: string; questions: Question[]; initial: Answers; local
 
 export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
   const router = useRouter();
+  const t = useTranslations('lna');
+  const area = (code: string) => areaName(locale, code, SUBDOMAIN_NAMES[code] ?? code);
+  const tc = useTranslations('common');
   const [answers, setAnswers] = useState<Answers>(initial);
   const firstOpen = useMemo(() => {
     const i = questions.findIndex((q) => (q.type === 'confidence' ? initial[q.id]?.confidence : initial[q.id]?.level) == null);
@@ -37,7 +42,7 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
         await saveLnaAnswer({ attemptId, questionId: q.id, answer });
         if (!isLast) setIndex((i) => Math.min(i + 1, questions.length - 1));
       } catch {
-        setError('We couldn’t save that answer. Check your connection and try again.');
+        setError(t('saveFailed'));
       }
     });
   }
@@ -48,7 +53,8 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
         await completeLna(attemptId, locale);
         router.push('/growth/snapshot');
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Something went wrong.');
+        console.error(e);
+        setError(tc('error'));
       }
     });
   }
@@ -56,10 +62,10 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
   return (
     <div className="mx-auto grid max-w-2xl gap-5">
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span className="tend-dateline">{SUBDOMAIN_NAMES[q.subdomain] ?? q.subdomain}</span>
+        <span className="tend-dateline">{area(q.subdomain)}</span>
         <span aria-live="polite" className="tabular-nums">
           {index + 1} / {questions.length}
-          {saving && <Loader2 aria-label="Saving" className="ml-2 inline size-3.5 animate-spin" />}
+          {saving && <Loader2 aria-label={t('saving')} className="ml-2 inline size-3.5 animate-spin" />}
         </span>
       </div>
       {/* step dots, not a progress bar */}
@@ -71,7 +77,7 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
       </ol>
 
       <section className="tend-card grid gap-5 p-5 md:p-7" aria-labelledby="q-prompt">
-        <h2 id="q-prompt" className="text-lg font-semibold leading-snug md:text-xl">{q.prompt}</h2>
+        <h2 id="q-prompt" className="text-lg font-semibold leading-snug md:text-xl">{q.type === 'scenario' ? scenarioPrompt(locale, q.indicator, q.prompt) : t(q.type === 'self' ? 'selfPrompt' : 'confPrompt', { name: area(q.subdomain) })}</h2>
 
         {q.type === 'scenario' && (
           <div role="radiogroup" aria-labelledby="q-prompt" className="grid gap-2">
@@ -90,7 +96,7 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
                 <span className={cn('mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2', value === o.level ? 'border-primary bg-primary text-primary-foreground' : 'border-border')}>
                   {value === o.level && <Check className="size-3" aria-hidden />}
                 </span>
-                <span>{o.text}</span>
+                <span>{scenarioOption(locale, q.indicator, o.level, o.text)}</span>
               </button>
             ))}
           </div>
@@ -99,7 +105,7 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
         {q.type === 'self' && (
           <div className="grid gap-3">
             <LevelStones level={value ?? null} onSelect={choose} />
-            <p className="text-sm text-muted-foreground">L1 basic positive practice · L2 more responsive and intentional · L3 advanced, child-led. Every level is valuable.</p>
+            <p className="text-sm text-muted-foreground">{t('levelsHint')}</p>
           </div>
         )}
 
@@ -114,7 +120,7 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
                 onClick={() => choose(c.value)}
                 className={cn('min-h-14 rounded-xl border px-4 py-3 text-left font-medium', value === c.value ? 'border-primary bg-primary/5' : 'hover:border-primary/60')}
               >
-                {c.label}
+                {t(`conf${c.value}`)}
               </button>
             ))}
           </div>
@@ -125,19 +131,19 @@ export function LnaStepper({ attemptId, questions, initial, locale }: Props) {
 
       <div className="flex items-center justify-between gap-3">
         <Button variant="ghost" className="min-h-11" disabled={index === 0} onClick={() => setIndex((i) => i - 1)}>
-          <ArrowLeft aria-hidden /> Back
+          <ArrowLeft aria-hidden /> {t('back')}
         </Button>
         {isLast || answered === questions.length ? (
           <Button className="min-h-11" disabled={answered < questions.length || finishing} onClick={finish}>
-            {finishing ? <Loader2 className="animate-spin" aria-hidden /> : <Check aria-hidden />} See my Growth Snapshot
+            {finishing ? <Loader2 className="animate-spin" aria-hidden /> : <Check aria-hidden />} {t('seeSnapshot')}
           </Button>
         ) : (
           <Button variant="outline" className="min-h-11" disabled={value == null} onClick={() => setIndex((i) => i + 1)}>
-            Next <ArrowRight aria-hidden />
+            {t('next')} <ArrowRight aria-hidden />
           </Button>
         )}
       </div>
-      <p className="text-center text-xs text-muted-foreground">Every answer saves as you go. You can stop and come back any time.</p>
+      <p className="text-center text-xs text-muted-foreground">{t('savesAsYouGo')}</p>
     </div>
   );
 }

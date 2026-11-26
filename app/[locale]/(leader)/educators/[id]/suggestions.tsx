@@ -1,5 +1,6 @@
 'use client';
 import { Check, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -10,13 +11,16 @@ type Item = { id: string; kind: string; code: string; name: string; from: number
 /** Suggested IDP updates — the leader accepts or declines; nothing changes automatically (PRD M3.5). */
 export function Suggestions({ items }: { items: Item[] }) {
   const [pending, start] = useTransition();
+  const t = useTranslations('suggestion');
+  const tw = useTranslations('workspace');
   const decide = (id: string, accept: boolean) =>
     start(async () => {
       try {
         await decideSuggestion(id, accept);
-        toast.success(accept ? 'Plan updated — a new version was saved' : 'Suggestion declined');
+        toast.success(accept ? t('accepted') : t('declined'));
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : 'Something went wrong');
+        console.error(e);
+        toast.error(tw('error'));
       }
     });
   return (
@@ -27,12 +31,12 @@ export function Suggestions({ items }: { items: Item[] }) {
             <span className="font-medium">{s.code} {s.name}</span>
             <br />
             {s.kind === 'raise_target'
-              ? `Seen at Level ${s.level}. Raise the aim from Level ${s.from} to Level ${s.to}?`
-              : `Seen at Level ${s.level}. Update the current level?`}
+              ? t('raise', { level: s.level ?? '—', from: s.from, to: s.to ?? '—' })
+              : t('update', { level: s.level ?? '—' })}
           </p>
           <span className="flex gap-2">
-            <Button size="sm" className="min-h-11" disabled={pending} onClick={() => decide(s.id, true)}><Check aria-hidden /> Accept</Button>
-            <Button size="sm" variant="outline" className="min-h-11" disabled={pending} onClick={() => decide(s.id, false)}><X aria-hidden /> Decline</Button>
+            <Button size="sm" className="min-h-11" disabled={pending} onClick={() => decide(s.id, true)}><Check aria-hidden /> {t('accept')}</Button>
+            <Button size="sm" variant="outline" className="min-h-11" disabled={pending} onClick={() => decide(s.id, false)}><X aria-hidden /> {t('decline')}</Button>
           </span>
         </li>
       ))}
