@@ -116,8 +116,8 @@ export function ReviewWorkspace(p: Props) {
     <div className="grid gap-6 lg:grid-cols-2">
       {/* ── Evidence ── */}
       <section aria-labelledby="evidence-h" className="grid content-start gap-3">
-        <div className="flex items-baseline justify-between">
-          <h2 id="evidence-h" className="text-base font-semibold">Evidence <span className="text-sm font-normal text-muted-foreground">{p.units.length} moments</span></h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="evidence-h" className="whitespace-nowrap text-base font-semibold">Evidence <span className="text-sm font-normal text-muted-foreground">{p.units.length} moments</span></h2>
           <audio ref={audioRef} controls className="h-8 max-w-[14rem]" aria-label="Replay audio" />
         </div>
         {p.units.length === 0 && <p className="tend-card p-4 text-sm text-muted-foreground">No evidence was captured.</p>}

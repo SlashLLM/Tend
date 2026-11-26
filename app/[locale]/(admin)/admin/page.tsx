@@ -7,6 +7,8 @@ import { ResetPasswordButton } from './reset-password-button';
 
 export const metadata = { title: 'Admin' };
 
+const ROLE: Record<string, string> = { educator: 'Educator', leader: 'Leader', hq: 'HQ', admin: 'Admin' };
+
 export default async function AdminPage() {
   const supabase = await createClient();
   const me = (await getSession())?.userId;
@@ -20,19 +22,29 @@ export default async function AdminPage() {
   return (
     <>
       <PageHeader dateline="Administration" title="Users, roles and access" subtitle="Create accounts with a temporary password, and reset forgotten ones. Every view or change of a person’s records is logged, and they can see who accessed them." />
-      <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <section aria-labelledby="users">
           <SectionTitle id="users" count={people.length}>People</SectionTitle>
           <div className="tend-card overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-left text-muted-foreground"><tr className="border-b">{['Name', 'Email', 'Role · centre', 'Password'].map((h) => <th key={h} scope="col" className="px-3 py-2 font-medium">{h}</th>)}</tr></thead>
+              <thead className="text-left text-muted-foreground"><tr className="border-b"><th scope="col" className="px-3 py-2 font-medium">Person</th><th scope="col" className="hidden px-3 py-2 font-medium sm:table-cell">Role · centre</th><th scope="col" className="px-3 py-2 text-right font-medium">Password</th></tr></thead>
               <tbody>
                 {people.map((u) => (
                   <tr key={u.id} className="border-b last:border-0">
-                    <td className="px-3 py-2 font-medium">{u.full_name}</td>
-                    <td className="px-3 py-2 text-muted-foreground">{u.email}</td>
-                    <td className="px-3 py-2">{u.memberships.map((m) => `${m.role}${m.centre ? ` · ${m.centre.name}` : ''}`).join(', ')}</td>
-                    <td className="px-3 py-2">{u.id === me ? <Link href="/change-password" className="text-primary underline">Change mine</Link> : <ResetPasswordButton userId={u.id} name={u.full_name} />}</td>
+                    <td className="px-3 py-2">
+                      <span className="block font-medium">{u.full_name}</span>
+                      <span className="block text-xs text-muted-foreground [overflow-wrap:anywhere]">{u.email}</span>
+                      <span className="mt-0.5 block text-xs sm:hidden">{u.memberships.map((m) => `${ROLE[m.role] ?? m.role}${m.centre ? ` · ${m.centre.name}` : ''}`).join(', ')}</span>
+                    </td>
+                    <td className="hidden px-3 py-2 sm:table-cell">
+                      {u.memberships.map((m, i) => (
+                        <span key={i} className="block whitespace-nowrap">
+                          {ROLE[m.role] ?? m.role}
+                          {m.centre && <span className="block text-xs text-muted-foreground">{m.centre.name}</span>}
+                        </span>
+                      ))}
+                    </td>
+                    <td className="px-3 py-2 text-right">{u.id === me ? <Link href="/change-password" className="text-primary underline">Change mine</Link> : <ResetPasswordButton userId={u.id} name={u.full_name} />}</td>
                   </tr>
                 ))}
               </tbody>

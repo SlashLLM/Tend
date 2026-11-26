@@ -62,7 +62,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
               <caption className="sr-only">Most recent observed level per educator and subdomain, with evidence counts</caption>
               <thead>
                 <tr>
-                  <th scope="col" className="text-left font-medium text-muted-foreground">Educator</th>
+                  <th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">Educator</th>
                   {SUBDOMAINS.map((s) => (
                     <th key={s} scope="col" className="font-medium">
                       <Link href={`/insights?sd=${s}`} className="block rounded px-1 py-1 hover:bg-muted" title={SUBDOMAIN_NAMES[s]}>
@@ -75,7 +75,7 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
               <tbody>
                 {m.educators.map((e) => (
                   <tr key={e.id}>
-                    <th scope="row" className="whitespace-nowrap pr-2 text-left font-normal"><Link href={`/educators/${e.id}`} className="hover:underline">{e.name}</Link></th>
+                    <th scope="row" className="sticky left-0 z-10 whitespace-nowrap bg-card pr-2 text-left font-normal"><Link href={`/educators/${e.id}`} className="hover:underline">{e.name}</Link></th>
                     {SUBDOMAINS.map((s) => {
                       const c = m.cells[e.id][s];
                       return (
@@ -93,11 +93,11 @@ export default async function InsightsPage({ searchParams }: { searchParams: Pro
           ) : (
             <table className="w-full min-w-[720px] border-separate border-spacing-1 text-sm">
               <caption className="sr-only">Evidence count per educator and indicator</caption>
-              <thead><tr><th className="text-left font-medium text-muted-foreground">Educator</th>{drill.map((i) => <th key={i.code} scope="col" title={i.name} className="font-medium">{i.code}</th>)}</tr></thead>
+              <thead><tr><th scope="col" className="sticky left-0 z-10 bg-card text-left font-medium text-muted-foreground">Educator</th>{drill.map((i) => <th key={i.code} scope="col" title={i.name} className="font-medium">{i.code}</th>)}</tr></thead>
               <tbody>
                 {m.educators.map((e) => (
                   <tr key={e.id}>
-                    <th scope="row" className="whitespace-nowrap pr-2 text-left font-normal">{e.name}</th>
+                    <th scope="row" className="sticky left-0 z-10 whitespace-nowrap bg-card pr-2 text-left font-normal">{e.name}</th>
                     {drill.map((i) => {
                       const n = drillCounts.get(`${e.id}|${i.code}`) ?? 0;
                       return <td key={i.code} className={cn('h-10 rounded-md text-center tabular-nums', n === 0 ? 'border border-dashed text-muted-foreground' : n < 3 ? 'bg-primary/15' : 'bg-primary/40')}>{n || '—'}</td>;

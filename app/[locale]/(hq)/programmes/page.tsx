@@ -66,13 +66,13 @@ export default async function ProgrammesPage({ searchParams }: { searchParams: P
           : 'Not synced yet. The catalogue refreshes automatically on the 1st of each month, or press Sync now.'}
       </p>
 
-      <nav aria-label="Catalogue status" className="mb-4 flex flex-wrap gap-2">
+      <nav aria-label="Catalogue status" className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
         {TABS.map((t) => (
           <Link
             key={t.key}
             href={`/programmes?tab=${t.key}`}
             aria-current={t.key === tab.key ? 'page' : undefined}
-            className={cn('inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium', t.key === tab.key ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground')}
+            className={cn('inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-sm font-medium sm:gap-2 sm:px-4', t.key === tab.key ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground')}
           >
             {t.label} <span className="tabular-nums opacity-80">{counts[t.key]}</span>
           </Link>

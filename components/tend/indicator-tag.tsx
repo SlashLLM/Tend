@@ -27,22 +27,22 @@ export function IndicatorTag({ code, name, level, valence, confidence, className
       data-domain={domain}
       data-possible={possible}
       className={cn(
-        'inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 gap-y-0.5 rounded-2xl px-3 py-1 text-sm leading-snug',
+        'inline-block max-w-full rounded-2xl px-3 py-1 text-sm leading-snug [overflow-wrap:anywhere]',
         DOMAIN_CLASSES[domain],
         possible && 'border border-dashed border-current',
         className,
       )}
     >
       <span className="sr-only">{t(`tag.domain.${domain}`)}: </span>
-      <span className="font-semibold tabular-nums">{code}</span>
-      <span className="min-w-0 break-words">{name}</span>
-      {level != null && <span className="font-semibold">· {t('level.short', { level })}</span>}
+      <span className="font-semibold tabular-nums">{code}</span>{' '}
+      <span>{name}</span>
+      {level != null && <span className="font-semibold"> · {t('level.short', { level })}</span>}
       {valence && <span className="sr-only">({t(`feedback.${valence}`)})</span>}
       {confidence != null &&
         (possible ? (
-          <span className="italic">· {t('tag.possible')}</span>
+          <span className="italic"> · {t('tag.possible')}</span>
         ) : (
-          <span className="text-xs">· {t('tag.confidence', { pct: Math.round(confidence * 100) })}</span>
+          <span className="text-xs"> · {t('tag.confidence', { pct: Math.round(confidence * 100) })}</span>
         ))}
     </span>
   );
