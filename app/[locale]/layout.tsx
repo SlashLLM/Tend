@@ -3,6 +3,7 @@ import { Figtree, Noto_Sans } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
+import { ServiceWorker } from '@/components/shell/service-worker';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { getSession } from '@/lib/auth/session';
@@ -40,6 +41,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <NextIntlClientProvider locale={locale} messages={messages} timeZone="Asia/Singapore">
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster position="top-center" />
+          <ServiceWorker />
         </NextIntlClientProvider>
       </body>
     </html>

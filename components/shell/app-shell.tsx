@@ -1,6 +1,6 @@
 'use client';
 import {
-  BarChart3, BookOpen, ClipboardCheck, GraduationCap, Grid3x3, Home, LogOut, MessageCircle, Mic, MoreHorizontal, Network, Plus,
+  BarChart3, BookOpen, ClipboardCheck, Compass, GraduationCap, Grid3x3, Home, LogOut, MessageCircle, Mic, MoreHorizontal, Network, Plus,
   Settings, Shield, Sprout, Sun, Users, type LucideIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -9,15 +9,16 @@ import { cn } from '@/lib/utils';
 import { NAV, isActive, splitForMobile } from '@/lib/nav';
 import type { Area } from '@/lib/auth/roles';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { launchTour, RoleTour } from './role-tour';
 
 const ICONS: Record<string, LucideIcon> = {
   BarChart3, BookOpen, ClipboardCheck, GraduationCap, Grid3x3, Home, MessageCircle, Mic, Network, Plus, Settings, Shield, Sprout, Sun, Users,
 };
 
-type Props = { area: Area; userName: string; centreName?: string | null; children: React.ReactNode };
+type Props = { area: Area; userName: string; centreName?: string | null; tourAutoStep?: number | null; children: React.ReactNode };
 
 /** Bottom bar on phones, side rail on desktop. Icons are always labelled (PRD §9). */
-export function AppShell({ area, userName, centreName, children }: Props) {
+export function AppShell({ area, userName, centreName, tourAutoStep = null, children }: Props) {
   const t = useTranslations();
   const pathname = usePathname();
   const items = NAV[area];
@@ -48,6 +49,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
                 <li key={it.href}>
                   <Link
                     href={it.href}
+                    data-tour={it.href}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-[background,box-shadow] duration-150',
@@ -66,6 +68,9 @@ export function AppShell({ area, userName, centreName, children }: Props) {
           <p className="font-medium">{userName}</p>
           {centreName && <p className="text-muted-foreground">{centreName}</p>}
           <Link href={prefsHref} className="mt-2 block min-h-9 text-muted-foreground hover:text-foreground">{t('nav.preferences')}</Link>
+          <button type="button" onClick={launchTour} className="inline-flex min-h-9 items-center gap-2 text-muted-foreground hover:text-foreground">
+            <Compass aria-hidden className="size-4" /> {t('tour.take')}
+          </button>
           <form action="/auth/signout" method="post">
             <button className="inline-flex min-h-11 items-center gap-2 text-muted-foreground hover:text-foreground">
               <LogOut aria-hidden className="size-4" /> {t('auth.signOut')}
@@ -90,6 +95,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
               <li key={it.href}>
                 <Link
                   href={it.href}
+                  data-tour={it.href}
                   aria-current={active ? 'page' : undefined}
                   className={cn('flex min-h-16 flex-col items-center justify-center gap-0.5 text-[0.7rem] font-medium', active ? 'text-primary' : 'text-muted-foreground')}
                 >
@@ -104,7 +110,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
           {showMore && (
             <li>
               <Popover>
-                <PopoverTrigger className="flex min-h-16 w-full flex-col items-center justify-center gap-0.5 text-[0.7rem] font-medium text-muted-foreground">
+                <PopoverTrigger data-tour="more" className="flex min-h-16 w-full flex-col items-center justify-center gap-0.5 text-[0.7rem] font-medium text-muted-foreground">
                   <MoreHorizontal aria-hidden className="size-5" />
                   {t('nav.more')}
                 </PopoverTrigger>
@@ -122,6 +128,9 @@ export function AppShell({ area, userName, centreName, children }: Props) {
                       <Settings aria-hidden className="size-4" /> {t('nav.preferences')}
                     </Link>
                   )}
+                  <button type="button" onClick={launchTour} className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm hover:bg-muted">
+                    <Compass aria-hidden className="size-4" /> {t('tour.take')}
+                  </button>
                   <form action="/auth/signout" method="post">
                     <button className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm hover:bg-muted">
                       <LogOut aria-hidden className="size-4" /> {t('auth.signOut')}
@@ -133,6 +142,7 @@ export function AppShell({ area, userName, centreName, children }: Props) {
           )}
         </ul>
       </nav>
+      <RoleTour area={area} autoStep={tourAutoStep} />
     </div>
   );
 }

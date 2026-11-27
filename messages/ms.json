@@ -150,7 +150,8 @@
     "review": "Semakan",
     "settings": "Tetapan",
     "today": "Hari ini",
-    "changePassword": "Tukar kata laluan"
+    "changePassword": "Tukar kata laluan",
+    "onboarding": "Selamat datang"
   },
   "noAccess": {
     "title": "Belum ada akses",
@@ -372,7 +373,7 @@
     "dateline": "Jurnal refleksi",
     "title": "Refleksi",
     "subtitle": "Peribadi secara lalai. Catatan peribadi tidak akan ditunjukkan kepada Ketua Pusat atau HQ anda.",
-    "empty": "Refleksi anda akan muncul di sini.",
+    "empty": "Belum ada apa-apa di sini. Renungan pertama anda boleh hanya satu ayat.",
     "private": "Peribadi",
     "sharedWithLeader": "Dikongsi dengan ketua anda",
     "savedShared": "Disimpan dan dikongsi dengan ketua anda",
@@ -381,7 +382,8 @@
     "placeholder": "Apa yang anda perhatikan hari ini?",
     "share": "Kongsi dengan Ketua Pusat saya",
     "delete": "Padam refleksi",
-    "deleted": "Dipadam"
+    "deleted": "Dipadam",
+    "emptyAction": "Tulis renungan"
   },
   "learn": {
     "dateline": "Laluan",
@@ -406,7 +408,8 @@
     "addedPeer": "Ditambah. Selepas ketua anda menyokongnya, minta rakan sekerja anda daripada Pertumbuhan Saya.",
     "added": "Ditambah — menunggu sokongan ketua anda",
     "addFailed": "Tidak dapat menambah",
-    "add": "Tambah ke pelan saya"
+    "add": "Tambah ke pelan saya",
+    "noPlanAction": "Pergi ke Perkembangan Saya"
   },
   "pathway": {
     "reason": {
@@ -440,7 +443,11 @@
     "timeSaved": "Masa dijimatkan penggal ini",
     "hours": "jam",
     "perWriteUp": "Kira-kira <b>{min} minit</b> setiap laporan, turun daripada ~90.",
-    "allMetrics": "Semua metrik Kotak Pasir →"
+    "allMetrics": "Semua metrik Kotak Pasir →",
+    "toEndorse": "{n, plural, one {# item pembelajaran} other {# item pembelajaran}} ditambah pada pelan mereka",
+    "endorse": "Sokong",
+    "newReflections": "Berkongsi {n, plural, one {satu renungan} other {# renungan}} minggu ini",
+    "read": "Baca"
   },
   "reviewsList": {
     "title": "Semakan",
@@ -453,7 +460,7 @@
     "title": "Pemerhatian",
     "subtitle": "Pemerhatian mikro yang ringkas dan berfokus. Pendidik memilih fokus; anda merakam, Tend merangka.",
     "upcoming": "Akan datang dan sedang berjalan",
-    "nothing": "Belum ada yang dijadualkan.",
+    "nothing": "Belum ada yang dijadualkan. Lawatan 10 minit sudah cukup untuk bermula.",
     "capturingNow": "sedang merakam",
     "focusChosen": "fokus telah dipilih",
     "waitingFocus": "menunggu fokus",
@@ -466,7 +473,8 @@
     "notYet": "belum diperhatikan",
     "lastSeen": "kali terakhir dilihat pada Tahap {level}, {weeks} minggu lalu",
     "noGoals": "Belum ada matlamat pelan — rakam apa yang anda lihat.",
-    "lookFor": "Perhatikan"
+    "lookFor": "Perhatikan",
+    "nothingAction": "Jadualkan pemerhatian"
   },
   "schedule": {
     "defaultTitle": "Waktu bercerita",
@@ -519,7 +527,16 @@
     "recordDictation": "Rakam imlak",
     "markMoment": "Tandakan detik",
     "drafting": "Menyimpan dan merangka…",
-    "end": "Tamatkan pemerhatian"
+    "end": "Tamatkan pemerhatian",
+    "endQueued": "Tiada isyarat. Semuanya disimpan pada telefon ini. Tend akan memuat naik dan menyelesaikan pemerhatian sebaik sahaja anda kembali dalam talian. Anda boleh biarkan skrin ini terbuka.",
+    "addVideo": "Tambah video pendek (sehingga {s} saat)",
+    "videoBlurring": "Mengaburkan wajah dalam video… {pct}%",
+    "videoBlurred": "Video · wajah dikaburkan pada telefon ini",
+    "videoBlurredAll": "Video · seluruh gambar dikaburkan (pengesanan wajah tidak tersedia)",
+    "videoSaved": "Video disimpan, wajah dikaburkan",
+    "videoTooLong": "Sila hadkan video kepada {s} saat atau kurang.",
+    "videoFailed": "Video ini tidak dapat dibaca. Cuba foto atau nota sebaliknya.",
+    "endWaiting": "Menunggu isyarat…"
   },
   "reviewPage": {
     "back": "Semakan",
@@ -616,7 +633,8 @@
     "chooseIndicator": "Penunjuk…",
     "level": "Tahap",
     "glowOrGrow": "Kekuatan atau Ruang pertumbuhan",
-    "add": "Tambah"
+    "add": "Tambah",
+    "videoAlt": "Video pendek, wajah dikaburkan"
   },
   "pipeline": {
     "transcribe": "Mentranskrip",
@@ -670,7 +688,9 @@
     "strengths": "Kekuatan:",
     "growing": "Sedang berkembang:",
     "reflects": "“Mencerminkan bidang pertumbuhan saya”: {answer}",
-    "timeline": "Garis masa pemerhatian"
+    "timeline": "Garis masa pemerhatian",
+    "sharedReflections": "Renungan yang dikongsi",
+    "noSharedReflections": "{name} belum berkongsi sebarang catatan jurnal. Catatan peribadi tidak pernah dipaparkan di sini."
   },
   "digest": {
     "title": "Tema jurulatih",
@@ -679,7 +699,19 @@
     "askedAbout": "Bertanya tentang: {list}",
     "banner": "Pendidik melihat sepanduk bahawa anda boleh melihat tema daripada perbualan mereka.",
     "goalTheme": "Matlamat {code}",
-    "wellbeing": "Kesejahteraan — tanya khabar dengan baik"
+    "wellbeing": "Kesejahteraan — tanya khabar dengan baik",
+    "details": "Butiran perbualan",
+    "detailsLogged": "Membuka perbualan akan direkodkan, dan {name} boleh melihatnya di bawah “Siapa yang mengakses rekod anda”.",
+    "noThreads": "Belum ada perbualan jurulatih.",
+    "messages": "{n, plural, one {# mesej} other {# mesej}}",
+    "open": "Buka",
+    "coach": "Jurulatih",
+    "conversationOf": "Perbualan pada {date}",
+    "confirmTitle": "Buka perbualan ini?",
+    "confirmBody": "{name} akan melihat bahawa anda membukanya. Tema ringkasan biasanya sudah memadai untuk bertanya khabar.",
+    "confirmOpen": "Buka dan rekodkan",
+    "cancel": "Batal",
+    "detailFailed": "Tidak dapat membuka butiran perbualan."
   },
   "proposed": {
     "title": "Pembelajaran yang dicadangkan",
@@ -975,5 +1007,137 @@
     "selfRating": "Penilaian kendiri anda",
     "seenAtLegend": "Dilihat pada (pemerhatian)",
     "aim": "Sasaran: Tahap {level}"
+  },
+  "onboarding": {
+    "stepOf": "Langkah {n} daripada {total}",
+    "slideOf": "{n} daripada {total}",
+    "back": "Kembali",
+    "continue": "Teruskan",
+    "saveFailed": "Tidak dapat disimpan. Sila cuba lagi.",
+    "languageTitle": "Selamat datang ke Tend, {name}",
+    "languageBody": "Bahasa apakah yang anda mahu gunakan?",
+    "languageLater": "Anda boleh menukarnya bila-bila masa dalam Keutamaan.",
+    "sizeTitle": "Pilih saiz teks yang selesa",
+    "sizeBody": "Pilih saiz yang paling mudah dibaca pada skrin ini.",
+    "sizeSample": "Dilihat pada Tahap 2 · seterusnya: cuba Tahap 3. Beginilah rupa nota perkembangan anda.",
+    "introTitle": "Berkembang, bukan dinilai",
+    "introBody": "Satu minit tentang cara Tend berfungsi.",
+    "skipIntro": "Langkau pengenalan",
+    "slides": {
+      "growth": {
+        "title": "Pemerhatian membantu anda berkembang",
+        "body": "Tend untuk pembangunan profesional, bukan penilaian prestasi. Tiada markah, purata atau perbandingan dengan rakan sekerja. Anda melihat di mana sesuatu amalan dilihat dan apa yang boleh dicuba seterusnya."
+      },
+      "focus": {
+        "title": "Anda memilih fokus",
+        "body": "Sebelum setiap pemerhatian, anda memilih perkara yang anda mahu maklum balas, daripada matlamat anda sendiri."
+      },
+      "reflect": {
+        "title": "Anda merenung dahulu",
+        "body": "AI membantu Ketua Pusat anda menulis nota, dan ketua anda menyemak serta meluluskan setiap perkataan sebelum anda melihatnya. Anda berkongsi pengalaman anda sebelum membacanya, kemudian bersetuju atau menambah konteks."
+      },
+      "next": {
+        "title": "Satu langkah seterusnya milik anda",
+        "body": "Setiap pemerhatian berakhir dengan satu langkah praktikal, tip yang boleh dicuba esok dan jurulatih yang boleh ditanya bila-bila masa."
+      }
+    },
+    "roleTitle": "Adakah ini anda?",
+    "roleBody": "Anda menyertai Tend sebagai {role}.",
+    "roleBodyCentre": "Anda menyertai Tend sebagai {role} di {centre}.",
+    "roleWrong": "Tidak betul? Sila minta pentadbir Tend anda menukarnya. Anda masih boleh meneruskan.",
+    "roleConfirm": "Ya, itu saya",
+    "noticeTitle": "Cara Tend menggunakan AI dan data anda",
+    "noticeUpdatedTitle": "Kami telah mengemas kini cara Tend menggunakan AI dan data anda",
+    "noticeBody": "Sila baca ini sebelum anda mula.",
+    "notice": {
+      "purpose": "Tend menggunakan AI untuk mentranskripsi nota pemerhatian, memadankannya dengan Quality Teaching Tool dan mendraf nota perkembangan serta tip bimbingan. Ia untuk pembangunan profesional sahaja, bukan penilaian prestasi.",
+      "gate": "Tiada apa-apa yang ditulis oleh AI sampai kepada pendidik sehingga Ketua Pusat menyemak dan meluluskannya.",
+      "private": "Renungan peribadi tidak pernah ditunjukkan kepada ketua. Ketua hanya melihat tema daripada perbualan jurulatih, dan jika mereka membuka butiran lanjut, ia direkodkan.",
+      "access": "Anda boleh melihat siapa yang membuka rekod anda dalam Keutamaan.",
+      "children": "Wajah kanak-kanak dikaburkan pada peranti sebelum foto dimuat naik, dan nama kanak-kanak diganti dengan “Kanak-kanak A” dalam nota perkembangan.",
+      "storage": "Data anda disimpan di Singapura."
+    },
+    "noticeAck": "Saya telah membaca cara Tend menggunakan AI dan data saya.",
+    "finish": "Mula menggunakan Tend"
+  },
+  "tour": {
+    "take": "Ikuti lawatan",
+    "stepOf": "Lawatan · {n} daripada {total}",
+    "next": "Seterusnya",
+    "back": "Kembali",
+    "skip": "Langkau lawatan",
+    "finish": "Faham",
+    "educator": {
+      "home": {
+        "title": "Laman Utama",
+        "body": "Nota perkembangan baharu daripada Ketua Pusat anda muncul di sini, bersama tip “Cuba esok” hari ini."
+      },
+      "growth": {
+        "title": "Perkembangan Saya",
+        "body": "Pelan anda: sehingga 3 matlamat, tahap terakhir setiap satu dilihat, dan bukti di sebaliknya."
+      },
+      "reflect": {
+        "title": "Renung",
+        "body": "Catat bagaimana sesuatu pelajaran berjalan. Anda tentukan sama ada catatan itu peribadi atau dikongsi; catatan peribadi tidak pernah ditunjukkan kepada ketua."
+      },
+      "coach": {
+        "title": "Jurulatih",
+        "body": "Minta idea bila-bila masa, melalui teks atau suara. Jawapan berdasarkan matlamat anda sendiri dan nota yang diluluskan."
+      },
+      "learn": {
+        "title": "Belajar",
+        "body": "Cara untuk berkembang bagi setiap matlamat: rakan sekerja untuk diperhatikan, sesi dalaman dan kursus, masing-masing dengan sebab ia sesuai."
+      }
+    },
+    "leader": {
+      "today": {
+        "title": "Hari Ini",
+        "body": "Perkara yang memerlukan anda: draf untuk disemak, sesi taklimat yang perlu diadakan, pemerhatian tertunggak, renungan baharu yang dikongsi dan item pelan untuk disokong."
+      },
+      "observe": {
+        "title": "Perhati",
+        "body": "Jadualkan pemerhatian, baca taklimat awal, kemudian rakam dengan satu ketikan: imlak, nota, foto dan detik ★."
+      },
+      "reviews": {
+        "title": "Semakan",
+        "body": "Semak draf AI di sebelah buktinya. Tiada apa-apa sampai kepada pendidik sehingga anda meluluskan dan berkongsinya."
+      },
+      "educators": {
+        "title": "Pendidik",
+        "body": "Pelan, garis masa bukti dan perkembangan setiap pendidik dari semasa ke semasa dalam satu halaman."
+      },
+      "insights": {
+        "title": "Wawasan Pusat",
+        "body": "Bidang perkembangan bersama dan titik buta di seluruh pusat anda, serta pembina kumpulan pembelajaran."
+      }
+    },
+    "hq": {
+      "network": {
+        "title": "Rangkaian",
+        "body": "Bidang perkembangan merentas pusat. Kumpulan kurang daripada 5 orang disembunyikan."
+      },
+      "registry": {
+        "title": "Daftar Kerangka",
+        "body": "Penunjuk QTT, kemahiran dan nilai yang digunakan Tend, disimpan sebagai data berversi."
+      },
+      "programmes": {
+        "title": "Program",
+        "body": "Katalog kursus: semak kursus baharu dan penunjuk yang dikaitkan dengannya."
+      }
+    },
+    "admin": {
+      "admin": {
+        "title": "Pentadbir",
+        "body": "Cipta akaun, tetapkan semula kata laluan dan lihat log audit."
+      },
+      "registry": {
+        "title": "Daftar Kerangka",
+        "body": "Penunjuk QTT, kemahiran dan nilai yang digunakan Tend, disimpan sebagai data berversi."
+      },
+      "programmes": {
+        "title": "Program",
+        "body": "Katalog kursus: semak kursus baharu dan penunjuk yang dikaitkan dengannya."
+      }
+    }
   }
 }

@@ -9,7 +9,8 @@ function leaves(obj: Tree, prefix = ''): [string, string][] {
     typeof v === 'string' ? [[`${prefix}${k}`, v] as [string, string]] : leaves(v, `${prefix}${k}.`),
   );
 }
-const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
+// ICU-aware: `{n}` and `{n, plural, …}` both name the argument `n`; plural branch text (`{# item}`) is not an argument.
+const placeholders = (s: string) => [...new Set([...s.matchAll(/\{\s*(\w+)\s*(?=[,}])/g)].map((m) => m[1]))].sort();
 
 describe('messages', () => {
   const enLeaves = new Map(leaves(en as Tree));

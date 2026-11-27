@@ -1,7 +1,10 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
+import { aiMode } from '@/lib/ai/availability';
 import { serverGateway } from '@/lib/ai/server';
+import { speechToText } from '@/lib/ai/stt';
+import { retranscribeClips, vocabularyPrompt, type AudioClip } from './retranscribe';
 import { makeProgressWriter } from './progress';
 import { runPipeline, type PipelineInput, type PipelineOutput, type Step } from './run';
 import type { CaptureItem, IndicatorDoc } from './types';
@@ -19,7 +22,7 @@ export async function loadPipelineInput(admin: SupabaseClient, observationId: st
   if (error || !o) throw new Error(`observation not found: ${error?.message}`);
 
   const [{ data: items }, { data: roster }, { data: docs }, { data: goals }] = await Promise.all([
-    admin.from('capture_item').select('id, kind, t_offset_ms, text, transcript').eq('observation_id', observationId).order('t_offset_ms'),
+    admin.from('capture_item').select('id, kind, t_offset_ms, text, transcript, storage_path').eq('observation_id', observationId).order('t_offset_ms'),
     // Whole-centre roster: children move between rooms, and a name from another class must still be redacted.
     admin.from('class_roster').select('child_name, aliases, centre_id').eq('centre_id', o.centre_id),
     admin.from('indicator').select('id, code, name, subdomain_code, subdomain_name, level_descriptors, look_fors').eq('framework_version_id', o.framework_version_id!),
@@ -93,11 +96,17 @@ export async function savePipelineOutput(admin: SupabaseClient, input: LoadedPip
 }
 
 /** Run the whole pipeline for one observation and persist the AI draft. Never throws to the caller. */
-export async function processObservation(admin: SupabaseClient, observationId: string) {
+export async function processObservation(admin: SupabaseClient, observationId: string, opts: { retranscribe?: boolean } = {}) {
   const progress = makeProgressWriter(admin, observationId);
   try {
     const input = await loadPipelineInput(admin, observationId);
-    const out = await runPipeline(input, { gateway: serverGateway(), setStep: (s: Step) => progress.set(s), newId: randomUUID });
+    const out = await runPipeline(input, {
+      gateway: serverGateway(),
+      setStep: (s: Step) => progress.set(s),
+      newId: randomUUID,
+      // Regenerate skips it: the clips already carry their second-pass text.
+      retranscribe: aiMode() === 'luna' && opts.retranscribe !== false ? (items) => secondPass(admin, input, items) : undefined,
+    });
     await progress.flush();
     await savePipelineOutput(admin, input, out);
     return { ok: true as const, mode: out.mode };
@@ -106,4 +115,22 @@ export async function processObservation(admin: SupabaseClient, observationId: s
     await admin.from('observation').update({ pipeline_step: `error:${e instanceof Error ? e.message.slice(0, 120) : 'unknown'}` }).eq('id', observationId);
     return { ok: false as const, error: e instanceof Error ? e.message : String(e) };
   }
+}
+
+/** Step 1 second pass: re-transcribe each stored clip with the accurate model; improvements are saved on the clip. */
+async function secondPass(admin: SupabaseClient, input: LoadedPipelineInput, items: PipelineInput['items']) {
+  const vocab = vocabularyPrompt(input.docs, [input.ctx.educatorFirstName, input.ctx.classLevel]);
+  const res = await retranscribeClips(items, items as AudioClip[], vocab, {
+    download: async (path) => {
+      const { data, error } = await admin.storage.from('capture').download(path);
+      if (error || !data) throw new Error(error?.message ?? 'download failed');
+      return new Uint8Array(await data.arrayBuffer());
+    },
+    transcribe: (audio, prompt) => speechToText(audio, { pass: 'final', prompt, signal: AbortSignal.timeout(15_000) }),
+    save: async (id, transcript) => {
+      await admin.from('capture_item').update({ transcript }).eq('id', id);
+    },
+  });
+  if (res.skipped) console.warn(`pipeline: second-pass STT skipped ${res.skipped} clip(s) for ${input.observationId} (time budget)`);
+  return res.items;
 }

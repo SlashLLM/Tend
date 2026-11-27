@@ -1,4 +1,5 @@
 import { Lock, Users } from 'lucide-react';
+import { EmptyState } from '@/components/tend/empty-state';
 import { PageHeader } from '@/components/tend/page-header';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { getSession } from '@/lib/auth/session';
@@ -18,8 +19,8 @@ export default async function ReflectPage() {
     <div className="mx-auto max-w-2xl">
       <PageHeader dateline={t('dateline')} title={t('title')} subtitle={t('subtitle')} />
       <JournalForm />
+      {(data ?? []).length === 0 && <EmptyState className="mt-6" message={t('empty')} actionLabel={t('emptyAction')} href="#journal-text" />}
       <ol className="mt-6 grid gap-3">
-        {(data ?? []).length === 0 && <li className="text-sm text-muted-foreground">{t('empty')}</li>}
         {(data ?? []).map((r) => (
           <li key={r.id} className="tend-card grid gap-2 p-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">

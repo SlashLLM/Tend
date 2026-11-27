@@ -1,8 +1,7 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { transcribe } from 'ai';
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { aiMode } from '@/lib/ai/availability';
+import { speechToText } from '@/lib/ai/stt';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
@@ -60,9 +59,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Live transcript for audio chunks when an AI key is configured.
     if (meta.data.kind === 'audio_chunk' && aiMode() === 'luna') {
       try {
-        const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY, baseURL: process.env.OPENAI_BASE_URL || undefined });
-        const res = await transcribe({ model: openai.transcription(process.env.AI_STT_MODEL ?? 'gpt-4o-mini-transcribe'), audio: bytes });
-        transcript = res.text?.trim() || null;
+        transcript = await speechToText(bytes, { pass: 'live', signal: AbortSignal.timeout(10_000) });
         if (transcript) await admin.from('capture_item').update({ transcript }).eq('id', item.id);
       } catch (e) {
         // the clip is stored either way and the leader can still type notes — but make failures visible in the logs

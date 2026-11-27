@@ -162,6 +162,14 @@
   .tend-page-title {
     @apply font-heading text-3xl font-semibold tracking-tight md:text-4xl;
   }
+  /* Role tour: the nav item the current step is about (colour + outline, never colour alone). */
+  [data-tour-active] {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+    position: relative;
+    z-index: 45;
+  }
   /* Todoist-style list row. */
   .tend-row {
     @apply flex min-h-14 items-center gap-3 px-4 py-3 transition-colors duration-150 hover:bg-muted/60;

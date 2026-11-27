@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarClock, ClipboardCheck, Clock, HandHelping, MessagesSquare, PenSquare, TimerOff, UserRoundPlus } from 'lucide-react';
+import { ArrowRight, BadgeCheck, CalendarClock, ClipboardCheck, Clock, HandHelping, MessagesSquare, NotebookPen, PenSquare, TimerOff, UserRoundPlus } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
 import { dateline, firstName } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
-import { buildTodayQueue, thisWeek, type QueueObs } from '@/lib/today';
+import { buildTodayQueue, NEW_REFLECTION_DAYS, perEducator, thisWeek, type PerEducator, type QueueObs } from '@/lib/today';
 import { pageTitle } from '@/lib/i18n/meta';
 
 export const generateMetadata = pageTitle('today');
@@ -26,11 +26,16 @@ export default async function TodayPage() {
   const centreId = session.memberships.find((m) => m.role === 'leader')?.centre_id ?? null;
   const supabase = await createClient();
 
-  const [{ data }, { data: drafts }, { data: requested }, metrics] = await Promise.all([
+  const since = new Date(Date.now() - NEW_REFLECTION_DAYS * 86_400_000).toISOString();
+  const [{ data }, { data: drafts }, { data: requested }, metrics, { data: proposed }, { data: reflections }] = await Promise.all([
     supabase.from('observation').select('id, status, scheduled_at, title, shared_at, educator:educator_id(full_name)').in('status', ['scheduled', 'ai_draft', 'in_review', 'acknowledged']).order('scheduled_at'),
     supabase.from('idp').select('id, educator_id, educator:educator_id(full_name), leader_confirmed_at').eq('status', 'draft').is('leader_confirmed_at', null),
     supabase.from('observation_request').select('id, note, educator:educator_id(full_name)').eq('status', 'open').order('created_at'),
     centreId ? supabase.rpc('sandbox_metrics', { p_centre: centreId }) : Promise.resolve({ data: null }),
+    // Learning items educators added to their plan, waiting for the leader to endorse (PRD M6.6).
+    supabase.from('idp_action').select('id, goal:idp_goal_id!inner(idp:idp_id!inner(educator_id, educator:educator_id(full_name)))').eq('status', 'proposed'),
+    // Journal entries educators chose to share this week (RLS: shared only, own centre).
+    supabase.from('reflection').select('id, educator_id, educator:educator_id(full_name)').eq('visibility', 'shared').gte('created_at', since),
   ]);
 
   const rows: QueueObs[] = (data ?? []).map((r) => ({
@@ -43,7 +48,11 @@ export default async function TodayPage() {
   const m = metrics.data as null | { hours_saved_this_term: number; documentation_minutes: { value: number; reduction: number } };
   const plans = (drafts ?? []) as unknown as { id: string; educator_id: string; educator: { full_name: string } }[];
   const requests = (requested ?? []) as unknown as { id: string; note: string | null; educator: { full_name: string } }[];
-  const total = requests.length + queue.length + plans.length;
+  const endorse = perEducator(((proposed ?? []) as unknown as { goal: { idp: { educator_id: string; educator: { full_name: string } | null } } }[])
+    .map((r) => ({ educator_id: r.goal.idp.educator_id, name: r.goal.idp.educator?.full_name ?? '—' })));
+  const shared = perEducator(((reflections ?? []) as unknown as { educator_id: string; educator: { full_name: string } | null }[])
+    .map((r) => ({ educator_id: r.educator_id, name: r.educator?.full_name ?? '—' })));
+  const total = requests.length + queue.length + plans.length + endorse.length + shared.length;
 
   return (
     <>
@@ -93,6 +102,14 @@ export default async function TodayPage() {
                   </li>
                 );
               })}
+              {endorse.map((e) => (
+                <PersonRow key={`endorse-${e.educator_id}`} row={e} icon={<BadgeCheck aria-hidden className="size-5 shrink-0 text-primary" />}
+                  detail={t('today.toEndorse', { n: e.count })} action={t('today.endorse')} />
+              ))}
+              {shared.map((r) => (
+                <PersonRow key={`refl-${r.educator_id}`} row={r} hash="shared-reflections" icon={<NotebookPen aria-hidden className="size-5 shrink-0 text-amber" />}
+                  detail={t('today.newReflections', { n: r.count })} action={t('today.read')} />
+              ))}
               {plans.map((p) => (
                 <li key={p.id}>
                   <Link href={`/educators/${p.educator_id}`} className="tend-row group">
@@ -143,5 +160,22 @@ export default async function TodayPage() {
         </aside>
       </div>
     </>
+  );
+}
+
+function PersonRow({ row, icon, detail, action, hash }: { row: PerEducator; icon: React.ReactNode; detail: string; action: string; hash?: string }) {
+  return (
+    <li>
+      <Link href={`/educators/${row.educator_id}${hash ? `#${hash}` : ''}`} className="tend-row group">
+        {icon}
+        <span className="min-w-0 flex-1">
+          <span className="block font-medium">{row.name}</span>
+          <span className="block text-sm text-muted-foreground">{detail}</span>
+        </span>
+        <span className="hidden text-sm text-muted-foreground sm:inline">{action}</span>
+        <span className="sr-only sm:hidden">{action}</span>
+        <ArrowRight aria-hidden className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+      </Link>
+    </li>
   );
 }

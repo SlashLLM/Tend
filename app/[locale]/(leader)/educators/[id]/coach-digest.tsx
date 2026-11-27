@@ -2,9 +2,10 @@ import { MessageCircle } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { SectionTitle } from '@/components/tend/page-header';
 import { createClient } from '@/lib/supabase/server';
+import { CoachDetails } from './coach-details';
 
 /** Weekly coach digest: themes only. Opening details is logged and visible to the educator (PRD M5.7). */
-export async function CoachDigest({ educatorId }: { educatorId: string }) {
+export async function CoachDigest({ educatorId, educatorFirstName }: { educatorId: string; educatorFirstName: string }) {
   const supabase = await createClient();
   const t = await getTranslations('digest');
   const format = await getFormatter();
@@ -25,6 +26,7 @@ export async function CoachDigest({ educatorId }: { educatorId: string }) {
         </>
       )}
       <p className="mt-3 text-xs text-muted-foreground">{t('banner')}</p>
+      <CoachDetails educatorId={educatorId} educatorFirstName={educatorFirstName} />
     </section>
   );
 }

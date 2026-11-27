@@ -150,7 +150,8 @@
     "review": "审阅",
     "settings": "设置",
     "today": "今天",
-    "changePassword": "更改密码"
+    "changePassword": "更改密码",
+    "onboarding": "欢迎"
   },
   "noAccess": {
     "title": "暂无访问权限",
@@ -372,7 +373,7 @@
     "dateline": "反思日志",
     "title": "反思",
     "subtitle": "默认私密。私密条目绝不会向你的中心领导或总部展示。",
-    "empty": "你的反思将显示在这里。",
+    "empty": "这里还没有内容。第一则反思写一句话就可以。",
     "private": "私密",
     "sharedWithLeader": "已与你的领导分享",
     "savedShared": "已保存并与你的领导分享",
@@ -381,7 +382,8 @@
     "placeholder": "你今天注意到了什么？",
     "share": "与我的中心领导分享",
     "delete": "删除反思",
-    "deleted": "已删除"
+    "deleted": "已删除",
+    "emptyAction": "写一则反思"
   },
   "learn": {
     "dateline": "学习路径",
@@ -406,7 +408,8 @@
     "addedPeer": "已添加。领导认可后，请在“我的成长”中邀请你的同事。",
     "added": "已添加——等待领导认可",
     "addFailed": "无法添加",
-    "add": "添加到我的计划"
+    "add": "添加到我的计划",
+    "noPlanAction": "前往我的成长"
   },
   "pathway": {
     "reason": {
@@ -440,7 +443,11 @@
     "timeSaved": "本学期节省的时间",
     "hours": "小时",
     "perWriteUp": "每份记录约 <b>{min} 分钟</b>，原先约 90 分钟。",
-    "allMetrics": "所有沙盒指标 →"
+    "allMetrics": "所有沙盒指标 →",
+    "toEndorse": "已在计划中加入 {n} 项学习",
+    "endorse": "认可",
+    "newReflections": "本周分享了 {n} 则反思",
+    "read": "阅读"
   },
   "reviewsList": {
     "title": "审阅",
@@ -453,7 +460,7 @@
     "title": "观察",
     "subtitle": "简短、聚焦的微观察。教育者选择关注点；你负责记录，Tend 负责起草。",
     "upcoming": "即将进行和进行中",
-    "nothing": "暂无安排。",
+    "nothing": "还没有安排观察。10 分钟的观察就足以开始。",
     "capturingNow": "正在记录",
     "focusChosen": "已选关注点",
     "waitingFocus": "等待选择关注点",
@@ -466,7 +473,8 @@
     "notYet": "尚未观察",
     "lastSeen": "{weeks} 周前观察到第 {level} 级",
     "noGoals": "还没有计划目标——记录你看到的内容即可。",
-    "lookFor": "观察要点"
+    "lookFor": "观察要点",
+    "nothingAction": "安排观察"
   },
   "schedule": {
     "defaultTitle": "讲故事时间",
@@ -519,7 +527,16 @@
     "recordDictation": "录制口述",
     "markMoment": "标记时刻",
     "drafting": "正在保存并起草……",
-    "end": "结束观察"
+    "end": "结束观察",
+    "endQueued": "没有网络。所有内容已保存在这部手机上。恢复网络后，Tend 会自动上传并完成这次观察。你可以让这个页面保持打开。",
+    "addVideo": "添加短视频（最长 {s} 秒）",
+    "videoBlurring": "正在模糊视频中的脸部…… {pct}%",
+    "videoBlurred": "视频 · 已在本机模糊脸部",
+    "videoBlurredAll": "视频 · 整个画面已模糊（无法检测脸部）",
+    "videoSaved": "视频已保存，脸部已模糊",
+    "videoTooLong": "请将视频控制在 {s} 秒以内。",
+    "videoFailed": "无法读取此视频。请改用照片或笔记。",
+    "endWaiting": "等待网络……"
   },
   "reviewPage": {
     "back": "审阅",
@@ -616,7 +633,8 @@
     "chooseIndicator": "选择指标……",
     "level": "级别",
     "glowOrGrow": "亮点或成长点",
-    "add": "添加"
+    "add": "添加",
+    "videoAlt": "短视频，脸部已模糊"
   },
   "pipeline": {
     "transcribe": "正在转录",
@@ -670,7 +688,9 @@
     "strengths": "强项：",
     "growing": "成长中：",
     "reflects": "“反映了我的成长领域”：{answer}",
-    "timeline": "观察时间线"
+    "timeline": "观察时间线",
+    "sharedReflections": "分享的反思",
+    "noSharedReflections": "{name} 尚未分享任何日志。私人记录绝不会显示在这里。"
   },
   "digest": {
     "title": "教练对话主题",
@@ -679,7 +699,19 @@
     "askedAbout": "询问了：{list}",
     "banner": "教育者会看到提示，说明你可以查看他们聊天的主题。",
     "goalTheme": "目标 {code}",
-    "wellbeing": "身心健康——请温和地关心一下"
+    "wellbeing": "身心健康——请温和地关心一下",
+    "details": "对话详情",
+    "detailsLogged": "打开对话会被记录，{name} 可在“谁查阅过您的记录”中看到。",
+    "noThreads": "还没有教练对话。",
+    "messages": "{n} 条信息",
+    "open": "打开",
+    "coach": "教练",
+    "conversationOf": "{date} 的对话",
+    "confirmTitle": "打开这段对话？",
+    "confirmBody": "{name} 会看到您打开过。一般来说，摘要主题已足够用来关心对方。",
+    "confirmOpen": "打开并记录",
+    "cancel": "取消",
+    "detailFailed": "无法打开对话详情。"
   },
   "proposed": {
     "title": "提议的学习内容",
@@ -975,5 +1007,137 @@
     "selfRating": "你的自评",
     "seenAtLegend": "观察到（观察记录）",
     "aim": "目标：第 {level} 级"
+  },
+  "onboarding": {
+    "stepOf": "第 {n} 步，共 {total} 步",
+    "slideOf": "{n} / {total}",
+    "back": "返回",
+    "continue": "继续",
+    "saveFailed": "未能保存，请再试一次。",
+    "languageTitle": "{name}，欢迎使用 Tend",
+    "languageBody": "您想使用哪种语言？",
+    "languageLater": "您可以随时在“偏好设置”中更改。",
+    "sizeTitle": "选择舒适的字体大小",
+    "sizeBody": "选择在这个屏幕上最容易阅读的大小。",
+    "sizeSample": "观察到第 2 级 · 下一步：尝试第 3 级。您的成长笔记会是这个样子。",
+    "introTitle": "成长，而不是评分",
+    "introBody": "用一分钟了解 Tend 如何运作。",
+    "skipIntro": "跳过介绍",
+    "slides": {
+      "growth": {
+        "title": "观察是为了帮助您成长",
+        "body": "Tend 用于专业发展，不用于考核。没有分数、平均值，也不会与同事比较。您会看到某项做法在哪个层级被观察到，以及下一步可以尝试什么。"
+      },
+      "focus": {
+        "title": "由您选择重点",
+        "body": "每次观察前，您可以从自己的目标中选择想获得反馈的方面。"
+      },
+      "reflect": {
+        "title": "您先反思",
+        "body": "AI 协助园长撰写笔记，园长会在您看到之前检查并批准每一句话。阅读之前，您先分享自己的感受，然后表示同意或补充说明。"
+      },
+      "next": {
+        "title": "一个属于您的下一步",
+        "body": "每次观察都会以一个实用的下一步结束，还有明天就能尝试的建议，以及随时可以请教的教练。"
+      }
+    },
+    "roleTitle": "这是您吗？",
+    "roleBody": "您将以{role}身份加入 Tend。",
+    "roleBodyCentre": "您将以{role}身份加入 Tend，所属中心：{centre}。",
+    "roleWrong": "信息不对？请联系您的 Tend 管理员更改。您仍可以继续。",
+    "roleConfirm": "是的，是我",
+    "noticeTitle": "Tend 如何使用 AI 和您的资料",
+    "noticeUpdatedTitle": "Tend 使用 AI 和资料的方式已更新",
+    "noticeBody": "开始之前请先阅读以下内容。",
+    "notice": {
+      "purpose": "Tend 使用 AI 转录观察笔记、将其对应到优质教学工具（QTT），并起草成长笔记和指导建议。仅用于专业发展，不用于考核。",
+      "gate": "所有由 AI 撰写的内容，都必须经园长检查并批准后，才会发送给教师。",
+      "private": "私人反思绝不会给园长看。园长只看到教练对话的主题；如查看更多细节，会被记录。",
+      "access": "您可以在“偏好设置”中查看谁查阅过您的记录。",
+      "children": "照片上传前，儿童的脸部会先在设备上模糊处理；成长笔记中的儿童名字会被替换为“儿童 A”。",
+      "storage": "您的资料储存在新加坡。"
+    },
+    "noticeAck": "我已阅读 Tend 如何使用 AI 和我的资料。",
+    "finish": "开始使用 Tend"
+  },
+  "tour": {
+    "take": "导览",
+    "stepOf": "导览 · {n} / {total}",
+    "next": "下一步",
+    "back": "返回",
+    "skip": "跳过导览",
+    "finish": "知道了",
+    "educator": {
+      "home": {
+        "title": "首页",
+        "body": "园长发来的新成长笔记会出现在这里，还有今天的“明天试试”建议。"
+      },
+      "growth": {
+        "title": "我的成长",
+        "body": "您的计划：最多 3 个目标、每个目标最近被观察到的层级，以及相关证据。"
+      },
+      "reflect": {
+        "title": "反思",
+        "body": "记录一堂课的感受。由您决定每条记录是私人还是分享；私人记录绝不会给园长看。"
+      },
+      "coach": {
+        "title": "教练",
+        "body": "随时用文字或语音请教。回答会参考您自己的目标和已批准的笔记。"
+      },
+      "learn": {
+        "title": "学习",
+        "body": "每个目标的成长途径：可观摩的同事、内部活动和课程，并说明适合您的原因。"
+      }
+    },
+    "leader": {
+      "today": {
+        "title": "今天",
+        "body": "需要您处理的事项：待审阅的草稿、待进行的回顾面谈、逾期的观察、新分享的反思和待认可的计划项目。"
+      },
+      "observe": {
+        "title": "观察",
+        "body": "安排观察、阅读观察前简报，然后一键记录：口述、笔记、照片和★时刻。"
+      },
+      "reviews": {
+        "title": "审阅",
+        "body": "对照证据检查 AI 草稿。在您批准并分享之前，任何内容都不会发送给教师。"
+      },
+      "educators": {
+        "title": "教师",
+        "body": "在一页中查看每位教师的计划、证据时间线和长期成长。"
+      },
+      "insights": {
+        "title": "中心洞察",
+        "body": "全中心共同的成长领域和盲点，以及学习小组组建工具。"
+      }
+    },
+    "hq": {
+      "network": {
+        "title": "网络",
+        "body": "跨中心的成长领域。少于 5 人的小组会被隐藏。"
+      },
+      "registry": {
+        "title": "框架库",
+        "body": "Tend 使用的 QTT 指标、技能和价值观，以版本化数据储存。"
+      },
+      "programmes": {
+        "title": "课程项目",
+        "body": "课程目录：检查新课程及其关联的指标。"
+      }
+    },
+    "admin": {
+      "admin": {
+        "title": "管理",
+        "body": "创建帐户、重设密码并查看审计日志。"
+      },
+      "registry": {
+        "title": "框架库",
+        "body": "Tend 使用的 QTT 指标、技能和价值观，以版本化数据储存。"
+      },
+      "programmes": {
+        "title": "课程项目",
+        "body": "课程目录：检查新课程及其关联的指标。"
+      }
+    }
   }
 }

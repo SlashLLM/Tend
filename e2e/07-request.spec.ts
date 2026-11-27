@@ -32,9 +32,10 @@ test.describe('Educator asks, leader decides', () => {
   });
 
   test('Sandra can decline a request, and the educator can then ask again and withdraw', async ({ page }) => {
-    await signInAs(page, 'meiling');
-    await page.getByRole('button', { name: 'Request an observation' }).click();
-    await expect(page.getByRole('heading', { name: 'Your leader has your request' })).toBeVisible();
+    // Mdm Lee uses the Chinese interface (her profile language).
+    await signInAs(page, 'meiling', 'zh');
+    await page.getByRole('button', { name: '请求观察' }).click();
+    await expect(page.getByRole('heading', { name: '你的领导已收到你的请求' })).toBeVisible();
 
     await signInAs(page, 'sandra');
     await page.getByRole('link', { name: /Lee Mei Ling.*Asked to be observed/ }).click();
@@ -43,9 +44,9 @@ test.describe('Educator asks, leader decides', () => {
     await page.goto('/today');
     await expect(page.getByRole('link', { name: /Lee Mei Ling.*Asked to be observed/ })).toHaveCount(0);
 
-    await signInAs(page, 'meiling');
-    await page.getByRole('button', { name: 'Request an observation' }).click();
-    await page.getByRole('button', { name: 'Withdraw request' }).click();
-    await expect(page.getByRole('heading', { name: 'Ask your leader to observe you' })).toBeVisible();
+    await signInAs(page, 'meiling', 'zh');
+    await page.getByRole('button', { name: '请求观察' }).click();
+    await page.getByRole('button', { name: '撤回请求' }).click();
+    await expect(page.getByRole('heading', { name: '请你的领导来观察你' })).toBeVisible();
   });
 });

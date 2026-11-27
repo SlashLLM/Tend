@@ -1,6 +1,7 @@
 import { ArrowRight, Mic } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { EmptyState } from '@/components/tend/empty-state';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
 import { dateline } from '@/lib/format';
@@ -38,8 +39,8 @@ export default async function ObserveIndex({ searchParams }: { searchParams: Pro
       <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
         <section aria-labelledby="upcoming">
           <SectionTitle id="upcoming" count={(upcoming ?? []).length}>{t('upcoming')}</SectionTitle>
-          <ul className="tend-card divide-y">
-            {(upcoming ?? []).length === 0 && <li className="p-4 text-sm text-muted-foreground">{t('nothing')}</li>}
+          {(upcoming ?? []).length === 0 && <EmptyState message={t('nothing')} actionLabel={t('nothingAction')} href="#educator" />}
+          <ul className="tend-card divide-y empty:hidden">
             {(upcoming ?? []).map((o) => (
               <li key={o.id}>
                 <Link href={`/observe/${o.id}`} className="tend-row group">

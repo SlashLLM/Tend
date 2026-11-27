@@ -46,15 +46,17 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
       supabase.from('tag').select('id, evidence_unit_id, level, valence, confidence, state, source, reason, indicator:indicator_id(code, name)').eq('observation_id', id).order('created_at'),
       supabase.from('narrative').select('content, author, version').eq('observation_id', id).order('version', { ascending: false }).limit(1).single(),
       supabase.from('coaching_card').select('id, title, body').eq('observation_id', id).eq('status', 'draft'),
-      supabase.from('capture_item').select('id, kind, t_offset_ms, storage_path').eq('observation_id', id).in('kind', ['photo', 'audio_chunk']).order('t_offset_ms'),
+      supabase.from('capture_item').select('id, kind, t_offset_ms, storage_path').eq('observation_id', id).in('kind', ['photo', 'video', 'audio_chunk']).order('t_offset_ms'),
       supabase.from('indicator').select('id, code, name, framework_version!inner(status)').in('domain_code', ['1', '2', '3']).eq('framework_version.status', 'active').order('code'),
       supabase.from('idp_goal').select('id, indicator:indicator_id(code, name), idp!inner(educator_id, status)').eq('idp.educator_id', o.educator_id).eq('idp.status', 'active'),
     ]);
     const audio = (items ?? []).filter((i) => i.kind === 'audio_chunk' && i.storage_path);
     const photoSet = new Set((items ?? []).filter((i) => i.kind === 'photo' && i.storage_path).map((i) => i.id));
+    const videoSet = new Set((items ?? []).filter((i) => i.kind === 'video' && i.storage_path).map((i) => i.id));
     const reviewUnits: ReviewUnit[] = (units ?? []).map((u) => ({
       id: u.id, idx: u.idx, text: u.text, start_ms: u.start_ms, end_ms: u.end_ms,
       photos: (u.capture_item_ids ?? []).filter((x: string) => photoSet.has(x)),
+      videos: (u.capture_item_ids ?? []).filter((x: string) => videoSet.has(x)),
       audioId: [...audio].reverse().find((a) => a.t_offset_ms <= u.start_ms + 5000)?.id ?? audio[0]?.id ?? null,
     }));
     const reviewTags: ReviewTag[] = ((tags ?? []) as unknown as { id: string; evidence_unit_id: string | null; level: number; valence: 'glow' | 'grow'; confidence: number; state: string; source: string; reason: string | null; indicator: { code: string; name: string } }[]).map((t) => ({

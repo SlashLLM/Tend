@@ -18,7 +18,7 @@ export function segmentOffline(items: CaptureItem[], { maxChars = 220 } = {}): E
   const kinds = new Map(items.map((i) => [i.id, i.kind]));
   const pieces = timeline(items).flatMap((p) => p.text.split(SENTENCE).map((s, k) => ({ ...p, text: s.trim(), first: k === 0 })).filter((s) => s.text.length > 0));
   const moments = items.filter((i) => i.kind === 'moment').map((i) => i.t_offset_ms);
-  const photos = items.filter((i) => i.kind === 'photo');
+  const photos = items.filter((i) => i.kind === 'photo' || i.kind === 'video'); // still and moving images
 
   const units: EvidenceUnit[] = [];
   let cur: { texts: string[]; ids: Set<string>; start: number; end: number } | null = null;

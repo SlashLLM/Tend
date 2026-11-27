@@ -20,6 +20,9 @@ export default defineConfig({
           environment: 'jsdom',
           include: ['components/**/*.test.tsx', 'app/**/*.test.tsx'],
           setupFiles: ['./test/setup-dom.ts'],
+          // next-intl's navigation imports `next/navigation` without an extension, which Node's ESM
+          // resolver rejects; letting Vite bundle it resolves the import (components use i18n <Link>).
+          server: { deps: { inline: ['next-intl'] } },
         },
       },
     ],

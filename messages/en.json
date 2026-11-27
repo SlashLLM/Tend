@@ -150,7 +150,8 @@
     "review": "Review",
     "settings": "Settings",
     "today": "Today",
-    "changePassword": "Change password"
+    "changePassword": "Change password",
+    "onboarding": "Welcome"
   },
   "noAccess": {
     "title": "No access yet",
@@ -283,7 +284,7 @@
   },
   "growth": {
     "title": "My Growth",
-    "subtitle": "Your plan, your evidence, your next steps. Every level is a step, never a score.",
+    "subtitle": "Your plan, your evidence, your next steps. Every level is a step forward, not a grade.",
     "startTitle": "Start with your needs analysis",
     "startBody": "About 12–15 minutes of real classroom situations and a few quick self-ratings. It saves as you go, and it is about growth — never appraisal.",
     "startCta": "Start my needs analysis",
@@ -372,7 +373,7 @@
     "dateline": "Reflection journal",
     "title": "Reflect",
     "subtitle": "Private by default. Private entries are never shown to your Centre Leader or HQ.",
-    "empty": "Your reflections will appear here.",
+    "empty": "Nothing here yet. Your first reflection can be a single sentence.",
     "private": "Private",
     "sharedWithLeader": "Shared with your leader",
     "savedShared": "Saved and shared with your leader",
@@ -381,12 +382,13 @@
     "placeholder": "What did you notice today?",
     "share": "Share with my Centre Leader",
     "delete": "Delete reflection",
-    "deleted": "Deleted"
+    "deleted": "Deleted",
+    "emptyAction": "Write a reflection"
   },
   "learn": {
     "dateline": "Pathways",
     "title": "Learn",
-    "subtitle": "Ranked for your goals — a colleague first, then in-house, micro-learning and courses. Every option says why.",
+    "subtitle": "Picked for your goals — a colleague first, then in-house, micro-learning and courses. Every option says why.",
     "cpd": "CPD this year: <b>{n} of 20 recommended hours</b>",
     "noPlan": "Confirm a plan in My Growth to see learning matched to your goals.",
     "for": "For",
@@ -406,7 +408,8 @@
     "addedPeer": "Added. Once your leader endorses it, ask your colleague from My Growth.",
     "added": "Added — waiting for your leader to endorse",
     "addFailed": "Could not add",
-    "add": "Add to my plan"
+    "add": "Add to my plan",
+    "noPlanAction": "Go to My Growth"
   },
   "pathway": {
     "reason": {
@@ -440,7 +443,11 @@
     "timeSaved": "Time saved this term",
     "hours": "hours",
     "perWriteUp": "About <b>{min} min</b> per write-up, down from ~90.",
-    "allMetrics": "All Sandbox metrics →"
+    "allMetrics": "All Sandbox metrics →",
+    "toEndorse": "{n, plural, one {# learning item} other {# learning items}} added to their plan",
+    "endorse": "Endorse",
+    "newReflections": "Shared {n, plural, one {a reflection} other {# reflections}} this week",
+    "read": "Read"
   },
   "reviewsList": {
     "title": "Reviews",
@@ -453,7 +460,7 @@
     "title": "Observe",
     "subtitle": "Short, focused micro-observations. The educator chooses the focus; you capture, Tend drafts.",
     "upcoming": "Upcoming and in progress",
-    "nothing": "Nothing scheduled yet.",
+    "nothing": "Nothing scheduled yet. A 10-minute visit is enough to start.",
     "capturingNow": "capturing now",
     "focusChosen": "focus chosen",
     "waitingFocus": "waiting for focus",
@@ -466,7 +473,8 @@
     "notYet": "not yet observed",
     "lastSeen": "last seen at Level {level}, {weeks, plural, one {# week} other {# weeks}} ago",
     "noGoals": "No plan goals yet — capture what you see.",
-    "lookFor": "Look for"
+    "lookFor": "Look for",
+    "nothingAction": "Schedule an observation"
   },
   "schedule": {
     "defaultTitle": "Story time",
@@ -519,7 +527,16 @@
     "recordDictation": "Record dictation",
     "markMoment": "Mark a moment",
     "drafting": "Saving and drafting…",
-    "end": "End observation"
+    "end": "End observation",
+    "endQueued": "No signal. Everything is saved on this phone. Tend will upload it and finish the observation as soon as you are back online. You can leave this screen open.",
+    "addVideo": "Add a short video (up to {s} seconds)",
+    "videoBlurring": "Blurring faces in the video… {pct}%",
+    "videoBlurred": "Video · faces blurred on this phone",
+    "videoBlurredAll": "Video · whole picture blurred (face detection unavailable)",
+    "videoSaved": "Video saved, faces blurred",
+    "videoTooLong": "Please keep videos to {s} seconds or less.",
+    "videoFailed": "This video could not be read. Try a photo or a note instead.",
+    "endWaiting": "Waiting for signal…"
   },
   "reviewPage": {
     "back": "Reviews",
@@ -616,7 +633,8 @@
     "chooseIndicator": "Indicator…",
     "level": "Level",
     "glowOrGrow": "Glow or Grow",
-    "add": "Add"
+    "add": "Add",
+    "videoAlt": "Short video, faces blurred"
   },
   "pipeline": {
     "transcribe": "Transcribing",
@@ -670,7 +688,9 @@
     "strengths": "Strengths:",
     "growing": "Growing:",
     "reflects": "“Reflects my growth areas”: {answer}",
-    "timeline": "Observation timeline"
+    "timeline": "Observation timeline",
+    "sharedReflections": "Shared reflections",
+    "noSharedReflections": "{name} hasn’t shared any journal entries. Private entries are never shown here."
   },
   "digest": {
     "title": "Coach themes",
@@ -679,7 +699,19 @@
     "askedAbout": "Asked about: {list}",
     "banner": "Educators see a banner that you can see themes from their chats.",
     "goalTheme": "Goal {code}",
-    "wellbeing": "Wellbeing — check in kindly"
+    "wellbeing": "Wellbeing — check in kindly",
+    "details": "Conversation details",
+    "detailsLogged": "Opening a conversation is logged, and {name} can see it under “Who accessed your records”.",
+    "noThreads": "No coach conversations yet.",
+    "messages": "{n, plural, one {# message} other {# messages}}",
+    "open": "Open",
+    "coach": "Coach",
+    "conversationOf": "Conversation of {date}",
+    "confirmTitle": "Open this conversation?",
+    "confirmBody": "{name} will see that you opened it. The digest themes are usually enough for a check-in.",
+    "confirmOpen": "Open and log it",
+    "cancel": "Cancel",
+    "detailFailed": "Could not open the conversation details."
   },
   "proposed": {
     "title": "Proposed learning",
@@ -697,7 +729,7 @@
   },
   "insights": {
     "title": "Centre Insights",
-    "subtitle": "Where the centre is growing together — built only from approved evidence. Levels, never scores.",
+    "subtitle": "Where the centre is growing together — built only from approved evidence. Levels to grow through, not grades.",
     "backAll": "Back to all subdomains",
     "byIndicator": "{code} {name} · by indicator",
     "heatmap": "Heatmap · educators × subdomains",
@@ -803,7 +835,7 @@
     "title": "Programmes",
     "subtitle": "Early-childhood courses from the SkillsFuture course directory, plus your in-house learning. New courses get AI-suggested framework skills; approve them here before they are recommended to educators.",
     "lastSynced": "Last synced {date}: {fetched} courses in the feed, {inserted} new, {tagged} tagged.",
-    "lastFailed": "Last sync failed on {date}: {error}",
+    "lastFailed": "Last sync did not finish on {date}: {error}",
     "unknownError": "unknown error",
     "running": "A sync is running…",
     "notSynced": "Not synced yet. The catalogue refreshes automatically on the 1st of each month, or press Sync now.",
@@ -835,7 +867,7 @@
     "syncing": "Syncing from SkillsFuture… this can take a minute.",
     "synced": "Synced: {fetched} courses in the feed, {inserted} new, {tagged} tagged.",
     "stillToTag": " {n} still to tag.",
-    "syncFailed": "Sync failed",
+    "syncFailed": "Sync did not finish",
     "syncNow": "Sync now",
     "saving": "Saving",
     "approvedOk": "Approved: now recommended in Learn",
@@ -975,5 +1007,137 @@
     "selfRating": "Your self-rating",
     "seenAtLegend": "Seen at (observations)",
     "aim": "Aim: Level {level}"
+  },
+  "onboarding": {
+    "stepOf": "Step {n} of {total}",
+    "slideOf": "{n} of {total}",
+    "back": "Back",
+    "continue": "Continue",
+    "saveFailed": "Could not save. Please try again.",
+    "languageTitle": "Welcome to Tend, {name}",
+    "languageBody": "Which language would you like to use?",
+    "languageLater": "You can change this any time in Preferences.",
+    "sizeTitle": "Choose a comfortable text size",
+    "sizeBody": "Pick the size that is easiest to read on this screen.",
+    "sizeSample": "Seen at Level 2 · next: try Level 3. This is how your growth notes will look.",
+    "introTitle": "Growth, not grading",
+    "introBody": "One minute on how Tend works.",
+    "skipIntro": "Skip intro",
+    "slides": {
+      "growth": {
+        "title": "Observations help you grow",
+        "body": "Tend is for professional development, not appraisal. There are no marks, averages or comparisons with colleagues. You see where a practice was seen and what to try next."
+      },
+      "focus": {
+        "title": "You choose the focus",
+        "body": "Before each observation you pick what you would like feedback on, from your own goals."
+      },
+      "reflect": {
+        "title": "You reflect first",
+        "body": "AI helps your Centre Leader write notes, and your leader checks and approves every word before you see it. You share how it went before you read them, then agree or add context."
+      },
+      "next": {
+        "title": "One next step you own",
+        "body": "Every observation ends with one practical step, tips you can try tomorrow and a coach you can ask any time."
+      }
+    },
+    "roleTitle": "Is this you?",
+    "roleBody": "You are joining Tend as {role}.",
+    "roleBodyCentre": "You are joining Tend as {role} at {centre}.",
+    "roleWrong": "Not right? Please ask your Tend admin to change it. You can still continue.",
+    "roleConfirm": "Yes, that’s me",
+    "noticeTitle": "How Tend uses AI and your data",
+    "noticeUpdatedTitle": "We updated how Tend uses AI and your data",
+    "noticeBody": "Please read this before you start.",
+    "notice": {
+      "purpose": "Tend uses AI to transcribe observation notes, link them to the Quality Teaching Tool and draft growth notes and coaching tips. It is for professional development only, not for appraisal.",
+      "gate": "Nothing written by AI reaches an educator until a Centre Leader has checked and approved it.",
+      "private": "Private reflections are never shown to leaders. Leaders see only themes from coach chats, and if they open more detail it is logged.",
+      "access": "You can see who opened your records under Preferences.",
+      "children": "Children’s faces are blurred on the device before a photo is uploaded, and children’s names are replaced with “Child A” in growth notes.",
+      "storage": "Your data is stored in Singapore."
+    },
+    "noticeAck": "I have read how Tend uses AI and my data.",
+    "finish": "Start using Tend"
+  },
+  "tour": {
+    "take": "Take the tour",
+    "stepOf": "Tour · {n} of {total}",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip tour",
+    "finish": "Got it",
+    "educator": {
+      "home": {
+        "title": "Home",
+        "body": "New growth notes from your Centre Leader appear here, with today’s “Try tomorrow” tip."
+      },
+      "growth": {
+        "title": "My Growth",
+        "body": "Your plan: up to 3 goals, the level each was last seen at, and the evidence behind it."
+      },
+      "reflect": {
+        "title": "Reflect",
+        "body": "Jot down how a lesson went. You decide if an entry is private or shared; private entries are never shown to leaders."
+      },
+      "coach": {
+        "title": "Coach",
+        "body": "Ask for ideas any time, by text or voice. Answers draw on your own goals and approved notes."
+      },
+      "learn": {
+        "title": "Learn",
+        "body": "Ways to grow on each goal: a colleague to watch, internal sessions and courses, each with the reason it fits."
+      }
+    },
+    "leader": {
+      "today": {
+        "title": "Today",
+        "body": "What needs you: drafts to review, debriefs due, overdue observations, new shared reflections and plan items to endorse."
+      },
+      "observe": {
+        "title": "Observe",
+        "body": "Schedule an observation, read the pre-brief, then capture with one tap: dictation, notes, photos and ★ moments."
+      },
+      "reviews": {
+        "title": "Reviews",
+        "body": "Check the AI draft beside its evidence. Nothing reaches the educator until you approve and share it."
+      },
+      "educators": {
+        "title": "Educators",
+        "body": "Each educator’s plan, evidence timeline and growth over time on one page."
+      },
+      "insights": {
+        "title": "Centre Insights",
+        "body": "Shared growth areas and blind spots across your centre, and a builder for learning groups."
+      }
+    },
+    "hq": {
+      "network": {
+        "title": "Network",
+        "body": "Growth areas across centres. Groups smaller than 5 people are hidden."
+      },
+      "registry": {
+        "title": "Framework Registry",
+        "body": "The QTT indicators, skills and values Tend uses, stored as versioned data."
+      },
+      "programmes": {
+        "title": "Programmes",
+        "body": "The course catalogue: check new courses and the indicators they are linked to."
+      }
+    },
+    "admin": {
+      "admin": {
+        "title": "Admin",
+        "body": "Create accounts, reset passwords and see the audit log."
+      },
+      "registry": {
+        "title": "Framework Registry",
+        "body": "The QTT indicators, skills and values Tend uses, stored as versioned data."
+      },
+      "programmes": {
+        "title": "Programmes",
+        "body": "The course catalogue: check new courses and the indicators they are linked to."
+      }
+    }
   }
 }

@@ -40,19 +40,30 @@ export type PipelineDeps = {
   gateway: Gateway | null;
   setStep: (s: Step) => Promise<void> | void;
   newId: () => string;
+  /** Optional second-pass transcription (needs the STT key); returns the items with better transcripts. */
+  retranscribe?: (items: CaptureItem[]) => Promise<CaptureItem[]>;
 };
 
 export async function runPipeline(input: PipelineInput, deps: PipelineDeps): Promise<PipelineOutput> {
   const gw = deps.gateway;
   const ids = { orgId: input.orgId, observationId: input.observationId };
 
-  // 1 · transcribe — chunk transcripts already stored at capture time; notes are typed/dictated.
+  // 1 · transcribe — live clip transcripts were stored at capture time; with an STT key every clip is
+  //     re-transcribed with the more accurate model (never fatal: a clip keeps its live text).
   await deps.setStep('transcribe');
+  let captured = input.items;
+  if (deps.retranscribe) {
+    try {
+      captured = await deps.retranscribe(input.items);
+    } catch {
+      captured = input.items;
+    }
+  }
 
   // 2 · redact every piece of text before any model sees it
   await deps.setStep('redact');
   const redact = makeRedactor(input.roster);
-  const items = input.items.map((i) => ({ ...i, text: i.text ? redact(i.text) : i.text, transcript: i.transcript ? redact(i.transcript) : i.transcript }));
+  const items = captured.map((i) => ({ ...i, text: i.text ? redact(i.text) : i.text, transcript: i.transcript ? redact(i.transcript) : i.transcript }));
 
   // 3 · segment
   await deps.setStep('segment');

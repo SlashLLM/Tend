@@ -52,7 +52,7 @@ test.describe.serial('Hero journey · Sandra observes Aisha @mobile', () => {
     await expect(body).not.toContainText('Arjun');
     await expect(body).toContainText('Child A');
     // every draft sentence carries at least one evidence chip
-    const sentences = page.getByRole('textbox', { name: /(glow|grow|next) sentence/ });
+    const sentences = page.getByRole('textbox', { name: /(glow|grow|next step) sentence/i });
     const n = await sentences.count();
     expect(n).toBeGreaterThanOrEqual(2);
     // tag controls exist and confidence is shown
@@ -77,8 +77,11 @@ test.describe.serial('Hero journey · Sandra observes Aisha @mobile', () => {
     await signInAs(aisha, 'aisha');
     await expect(aisha.getByText(/New growth notes · K1 story time/)).toHaveCount(0);
     const id = obsUrl.split('/').pop();
-    const res = await aisha.goto(`/feedback/${id}`);
-    expect(res?.status()).toBe(404);
+    // The page streams (loading.tsx), so the HTTP status can already be 200 when notFound() runs;
+    // what matters is that she gets the not-found page and none of the draft.
+    await aisha.goto(`/feedback/${id}`);
+    await expect(aisha.getByText('This page could not be found.')).toBeVisible();
+    await expect(aisha.locator('body')).not.toContainText(/Glow|Drafted|greets the children/i);
     await aisha.close();
 
     await signInAs(page, 'sandra');

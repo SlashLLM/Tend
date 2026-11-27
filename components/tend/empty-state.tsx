@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -17,7 +17,12 @@ export function EmptyState({ message, actionLabel, href, onAction, icon, classNa
     <div className={cn('flex flex-col items-center gap-4 rounded-xl border border-dashed bg-card/50 px-6 py-10 text-center', className)}>
       {icon && <div aria-hidden className="text-muted-foreground">{icon}</div>}
       <p className="max-w-sm text-muted-foreground">{message}</p>
-      {href ? (
+      {href?.startsWith('#') ? (
+        // Same-page target (e.g. the form right below): a plain anchor, no locale prefix.
+        <Button asChild className="min-h-11">
+          <a href={href}>{actionLabel}</a>
+        </Button>
+      ) : href ? (
         <Button asChild className="min-h-11">
           <Link href={href}>{actionLabel}</Link>
         </Button>

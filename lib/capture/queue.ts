@@ -14,26 +14,34 @@ export type QueuedItem = {
   attempts: number;
 };
 
+// Shared with the service worker (public/sw.js), which drains the same queue in the background:
+// keep the name, version and stores in step with it.
 const DB = 'tend-capture';
+const DB_VERSION = 2;
 const STORE = 'queue';
+/** "End this capture once everything above is uploaded" (tapped End with no signal). */
+const ENDS = 'ends';
+/** Background Sync tag the service worker listens for. */
+export const SYNC_TAG = 'tend-capture';
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB, 1);
+    const req = indexedDB.open(DB, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
       if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'key' }).createIndex('obsId', 'obsId');
+      if (!db.objectStoreNames.contains(ENDS)) db.createObjectStore(ENDS, { keyPath: 'obsId' });
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
 }
 
-async function tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+async function tx<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>, store = STORE): Promise<T> {
   const db = await open();
   return new Promise((resolve, reject) => {
-    const t = db.transaction(STORE, mode);
-    const r = fn(t.objectStore(STORE));
+    const t = db.transaction(store, mode);
+    const r = fn(t.objectStore(store));
     r.onsuccess = () => resolve(r.result);
     r.onerror = () => reject(r.error);
   });
@@ -43,6 +51,38 @@ export const keyOf = (obsId: string, kind: string, seq: number) => `${obsId}:${k
 
 export async function enqueue(item: Omit<QueuedItem, 'key' | 'attempts'>) {
   await tx('readwrite', (s) => s.put({ ...item, key: keyOf(item.obsId, item.kind, item.seq), attempts: 0 }));
+  void requestBackgroundSync();
+}
+
+/**
+ * Ask the service worker to upload the queue even if this tab closes (Background Sync where the
+ * browser has it), and nudge it to try right now (every browser with a service worker, incl. iOS).
+ */
+export async function requestBackgroundSync() {
+  try {
+    if (!('serviceWorker' in navigator)) return;
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) return;
+    const sync = (reg as ServiceWorkerRegistration & { sync?: { register(tag: string): Promise<void> } }).sync;
+    await sync?.register(SYNC_TAG).catch(() => {});
+    if (navigator.onLine) reg.active?.postMessage({ type: 'tend:drain' });
+  } catch {
+    /* the page's own retry loop still runs */
+  }
+}
+
+/** Tapped End with no signal: the service worker ends the capture once every item is uploaded. */
+export async function requestEnd(obsId: string) {
+  await tx('readwrite', (s) => s.put({ obsId, at: Date.now() }), ENDS);
+  void requestBackgroundSync();
+}
+
+export async function endRequested(obsId: string): Promise<boolean> {
+  return !!(await tx<{ obsId: string } | undefined>('readonly', (s) => s.get(obsId), ENDS));
+}
+
+export async function cancelEnd(obsId: string) {
+  await tx('readwrite', (s) => s.delete(obsId), ENDS);
 }
 
 export async function pending(obsId: string): Promise<QueuedItem[]> {

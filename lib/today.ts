@@ -46,3 +46,19 @@ export function thisWeek(rows: QueueObs[], now: Date): QueueObs[] {
     })
     .sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at));
 }
+
+/** Shared reflections count as "new" for this long (there is no per-leader read marker yet). */
+export const NEW_REFLECTION_DAYS = 7;
+
+export type PerEducator = { educator_id: string; name: string; count: number };
+
+/** One queue row per educator, e.g. "Aisha · 2 learning items to endorse". Largest first, then by name. */
+export function perEducator(rows: { educator_id: string; name: string }[]): PerEducator[] {
+  const by = new Map<string, PerEducator>();
+  for (const r of rows) {
+    const cur = by.get(r.educator_id);
+    if (cur) cur.count += 1;
+    else by.set(r.educator_id, { educator_id: r.educator_id, name: r.name, count: 1 });
+  }
+  return [...by.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}

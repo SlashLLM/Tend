@@ -31,7 +31,7 @@ export function JournalForm() {
         });
       }}
     >
-      <Textarea aria-label={t('newLabel')} value={text} onChange={(e) => setText(e.target.value)} placeholder={t('placeholder')} className="min-h-24" maxLength={4000} />
+      <Textarea id="journal-text" aria-label={t('newLabel')} value={text} onChange={(e) => setText(e.target.value)} placeholder={t('placeholder')} className="min-h-24" maxLength={4000} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="flex min-h-11 items-center gap-2 text-sm">
           <Switch checked={shared} onCheckedChange={setShared} aria-label={t('share')} />

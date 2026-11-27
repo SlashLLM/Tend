@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, NotebookPen, Sparkles } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { areaName, indicatorName } from '@/lib/i18n/content';
@@ -32,12 +32,14 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
   const format = await getFormatter();
   const { data: person } = await supabase.from('app_user').select('id, full_name, profile:educator_profile(years_experience, title:occupational_title_id(name))').eq('id', id).maybeSingle();
   if (!person) notFound();
-  const [plans, lna, { data: obs }, { data: indicators }, { data: tried }] = await Promise.all([
+  const [plans, lna, { data: obs }, { data: indicators }, { data: tried }, { data: shared }] = await Promise.all([
     loadPlans(supabase, id, locale),
     loadLnaState(supabase, id),
     supabase.from('observation').select('id, title, status, scheduled_at').eq('educator_id', id).order('scheduled_at', { ascending: false }).limit(12),
     supabase.from('indicator').select('code, name, framework_version!inner(status)').in('domain_code', ['1', '2', '3']).eq('framework_version.status', 'active').order('code'),
     supabase.from('strategy_attempt').select('id, tried_on').eq('educator_id', id).order('tried_on', { ascending: false }).limit(50),
+    // Journal entries the educator chose to share (private ones are never readable by leaders: RLS).
+    supabase.from('reflection').select('id, body, created_at').eq('educator_id', id).eq('visibility', 'shared').is('observation_id', null).order('created_at', { ascending: false }).limit(5),
   ]);
   const { data: suggestions } = plans.active
     ? await supabase.from('idp_suggestion').select('id, kind, payload, goal:idp_goal_id(indicator:indicator_id(code, name), current_level, target_level)').eq('status', 'pending').eq('idp_id', plans.active.id)
@@ -120,7 +122,22 @@ export default async function Educator360({ params }: { params: Promise<{ id: st
             </section>
           )}
           {plans.active && <ProposedActions idpId={plans.active.id} />}
-          <CoachDigest educatorId={id} />
+          <section className="tend-card p-5" aria-labelledby="shared-reflections">
+            <SectionTitle id="shared-reflections" count={(shared ?? []).length}><NotebookPen className="mr-1.5 inline size-4" aria-hidden />{t('sharedReflections')}</SectionTitle>
+            {(shared ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t('noSharedReflections', { name: person.full_name.split(' ')[0] })}</p>
+            ) : (
+              <ul className="grid gap-3">
+                {(shared ?? []).map((r) => (
+                  <li key={r.id} className="grid gap-0.5 text-sm">
+                    <time dateTime={r.created_at} className="text-xs tabular-nums text-muted-foreground">{format.dateTime(new Date(r.created_at), { day: 'numeric', month: 'short' })}</time>
+                    <p className="whitespace-pre-wrap">{r.body}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <CoachDigest educatorId={id} educatorFirstName={person.full_name.split(' ')[0]} />
           <section className="tend-card p-5" aria-labelledby="timeline">
             <SectionTitle id="timeline">{t('timeline')}</SectionTitle>
             <ol className="grid gap-2">

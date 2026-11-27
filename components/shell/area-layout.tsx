@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { requireArea } from '@/lib/auth/session';
 import { primaryArea, type Area } from '@/lib/auth/roles';
 import { toLocale } from '@/i18n/routing';
+import { parseTourState, tourAutoStep } from '@/lib/tours';
 import { AppShell } from './app-shell';
 import { LocaleSync } from './locale-sync';
 
@@ -12,7 +13,7 @@ export async function AreaLayout({ area, locale, children }: { area: Area; local
   // Admins may open HQ pages (e.g. /registry); keep their own menu instead of switching to HQ's.
   const navArea: Area = area === 'hq' && primaryArea(session.memberships) === 'admin' ? 'admin' : area;
   return (
-    <AppShell area={navArea} userName={session.profile.full_name} centreName={session.centreName}>
+    <AppShell area={navArea} userName={session.profile.full_name} centreName={session.centreName} tourAutoStep={tourAutoStep(parseTourState(session.profile.tour_state), navArea)}>
       <LocaleSync preferred={toLocale(session.profile.locale)} />
       {children}
     </AppShell>

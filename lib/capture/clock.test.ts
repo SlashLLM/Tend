@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deviceStart, elapsedSince } from './clock';
+import { deviceStart, elapsedSince, resumeStart } from './clock';
 
 describe('capture clock', () => {
   it('offsets do not depend on how far the device clock is off', () => {
@@ -19,5 +19,14 @@ describe('capture clock', () => {
     expect(elapsedSince(deviceStart(-1_500, 10_000), 10_000)).toBe(0); // server clock skew can't make it negative
     expect(elapsedSince(1_000, 500)).toBe(0);
     expect(elapsedSince(null)).toBe(0);
+  });
+
+  it('an offline reload of a stale cached page keeps the remembered (earlier) start', () => {
+    const remembered = 1_000_000;
+    const staleDerived = 1_600_000; // cached copy thinks capture began 10 min later
+    expect(resumeStart(staleDerived, remembered)).toBe(remembered);
+    expect(resumeStart(staleDerived, null)).toBe(staleDerived);
+    expect(resumeStart(staleDerived, Number.NaN)).toBe(staleDerived);
+    expect(resumeStart(900_000, remembered)).toBe(900_000); // a fresh server value that is earlier wins
   });
 });

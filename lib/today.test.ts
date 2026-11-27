@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildTodayQueue, thisWeek, type QueueObs } from './today';
+import { buildTodayQueue, perEducator, thisWeek, type QueueObs } from './today';
 
 const now = new Date('2026-11-06T02:00:00Z');
 const o = (id: string, status: string, scheduled: string, extra: Partial<QueueObs> = {}): QueueObs => ({
@@ -46,5 +46,23 @@ describe('thisWeek', () => {
       o('draft', 'ai_draft', '2026-11-07T02:00:00Z'),
     ];
     expect(thisWeek(rows, now).map((r) => r.id)).toEqual(['tomorrow', 'in-2-days']);
+  });
+});
+
+describe('perEducator', () => {
+  it('groups by educator, most items first, then by name', () => {
+    expect(perEducator([])).toEqual([]);
+    expect(
+      perEducator([
+        { educator_id: 'r', name: 'Ravi' },
+        { educator_id: 'a', name: 'Aisha' },
+        { educator_id: 'f', name: 'Farah' },
+        { educator_id: 'a', name: 'Aisha' },
+      ]),
+    ).toEqual([
+      { educator_id: 'a', name: 'Aisha', count: 2 },
+      { educator_id: 'f', name: 'Farah', count: 1 },
+      { educator_id: 'r', name: 'Ravi', count: 1 },
+    ]);
   });
 });

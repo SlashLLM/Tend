@@ -113,7 +113,7 @@ export async function regenerate(obsId: string) {
   if (!o || !['ai_draft', 'in_review'].includes(o.status)) throw new Error('Only a draft can be regenerated');
   await admin.from('observation').update({ status: 'processing', pipeline_step: 'queued' }).eq('id', obsId);
   after(async () => {
-    await processObservation(createAdminClient(), obsId);
+    await processObservation(createAdminClient(), obsId, { retranscribe: false });
   });
   revalidatePath('/', 'layout');
 }

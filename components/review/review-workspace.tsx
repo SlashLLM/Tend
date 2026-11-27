@@ -16,7 +16,7 @@ import { rewrite, toneFlags } from '@/lib/pipeline/tone';
 import type { NarrativeContent, Sentence } from '@/lib/pipeline/types';
 import { addTag, approveAndShare, beginReview, regenerate, reviewTag, setAside } from '@/app/actions/review';
 
-export type ReviewUnit = { id: string; idx: number; text: string; start_ms: number; end_ms: number; photos: string[]; audioId: string | null };
+export type ReviewUnit = { id: string; idx: number; text: string; start_ms: number; end_ms: number; photos: string[]; videos?: string[]; audioId: string | null };
 export type ReviewTag = { id: string; unitId: string | null; code: string; name: string; level: number; valence: 'glow' | 'grow'; confidence: number; state: string; source: string; reason: string | null };
 export type ReviewCard = { id: string; title: string; body: Record<string, string> };
 
@@ -143,11 +143,14 @@ export function ReviewWorkspace(p: Props) {
                 ) : (
                   <p className="text-sm leading-relaxed">{text}</p>
                 )}
-                {u.photos.length > 0 && (
-                  <div className="flex gap-2">
+                {(u.photos.length > 0 || (u.videos?.length ?? 0) > 0) && (
+                  <div className="flex flex-wrap gap-2">
                     {u.photos.map((ph) => (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img key={ph} src={`/api/media/${ph}`} alt={t('photoAlt')} className="h-20 w-28 rounded-md object-cover" />
+                    ))}
+                    {(u.videos ?? []).map((v) => (
+                      <video key={v} src={`/api/media/${v}`} controls muted playsInline preload="metadata" aria-label={t('videoAlt')} className="h-20 w-36 rounded-md bg-muted object-cover" />
                     ))}
                   </div>
                 )}

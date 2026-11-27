@@ -2,10 +2,11 @@
  * On-device face blur (PRD M4.8). Runs BEFORE upload, so raw faces never leave the phone.
  * Privacy-first fallback: if the face detector cannot load, the whole photo is blurred.
  */
-type Box = { x: number; y: number; w: number; h: number };
+export type Box = { x: number; y: number; w: number; h: number };
 let detectorPromise: Promise<{ detect: (img: HTMLCanvasElement) => Box[] } | null> | null = null;
 
-async function detector() {
+/** The on-device face detector (MediaPipe BlazeFace), or null if it can't load (→ blur everything). */
+export async function detector() {
   detectorPromise ??= (async () => {
     try {
       const { FaceDetector, FilesetResolver } = await import('@mediapipe/tasks-vision');
@@ -56,31 +57,40 @@ export async function blurFaces(file: Blob, maxSide = 1600): Promise<BlurResult>
   let faces = 0;
   if (!det) {
     mode = 'whole';
-    ctx.filter = 'blur(28px)';
-    ctx.drawImage(canvas, 0, 0);
-    ctx.filter = 'none';
+    blurWhole(ctx, canvas);
   } else {
     const boxes = det.detect(canvas).map((b) => padBox(b, W, H));
     faces = boxes.length;
-    for (const b of boxes) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(b.x, b.y, b.w, b.h);
-      ctx.clip();
-      ctx.filter = `blur(${Math.max(12, Math.round(b.w / 6))}px)`;
-      ctx.drawImage(canvas, 0, 0);
-      ctx.restore();
-      // second pass: pixelate for robustness against de-blurring
-      const px = Math.max(6, Math.round(b.w / 12));
-      const small = document.createElement('canvas');
-      small.width = Math.max(1, Math.round(b.w / px));
-      small.height = Math.max(1, Math.round(b.h / px));
-      small.getContext('2d')!.drawImage(canvas, b.x, b.y, b.w, b.h, 0, 0, small.width, small.height);
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(small, 0, 0, small.width, small.height, b.x, b.y, b.w, b.h);
-      ctx.imageSmoothingEnabled = true;
-    }
+    blurBoxes(ctx, canvas, boxes);
   }
   const blob = await new Promise<Blob>((res) => canvas.toBlob((b) => res(b!), 'image/jpeg', 0.85));
   return { blob, faces, mode };
+}
+
+/** Privacy fallback: blur the whole frame. */
+export function blurWhole(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+  ctx.filter = 'blur(28px)';
+  ctx.drawImage(canvas, 0, 0);
+  ctx.filter = 'none';
+}
+
+/** Blur, then pixelate, each box in place (pixelating guards against de-blurring). */
+export function blurBoxes(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, boxes: Box[]) {
+  for (const b of boxes) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(b.x, b.y, b.w, b.h);
+    ctx.clip();
+    ctx.filter = `blur(${Math.max(12, Math.round(b.w / 6))}px)`;
+    ctx.drawImage(canvas, 0, 0);
+    ctx.restore();
+    const px = Math.max(6, Math.round(b.w / 12));
+    const small = document.createElement('canvas');
+    small.width = Math.max(1, Math.round(b.w / px));
+    small.height = Math.max(1, Math.round(b.h / px));
+    small.getContext('2d')!.drawImage(canvas, b.x, b.y, b.w, b.h, 0, 0, small.width, small.height);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(small, 0, 0, small.width, small.height, b.x, b.y, b.w, b.h);
+    ctx.imageSmoothingEnabled = true;
+  }
 }

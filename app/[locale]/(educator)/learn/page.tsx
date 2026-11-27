@@ -1,6 +1,7 @@
 import { ExternalLink, GraduationCap, Users } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { IndicatorTag } from '@/components/tend/indicator-tag';
+import { EmptyState } from '@/components/tend/empty-state';
 import { PageHeader, SectionTitle } from '@/components/tend/page-header';
 import { getSession } from '@/lib/auth/session';
 import { loadPlans } from '@/lib/data/growth';
@@ -50,7 +51,7 @@ export default async function LearnPage({ searchParams }: { searchParams: Promis
     <div className="mx-auto max-w-4xl">
       <PageHeader dateline={t('dateline')} title={t('title')} subtitle={t('subtitle')} />
       <p className="-mt-3 mb-6 text-sm text-muted-foreground">{t.rich('cpd', { n: cpd, b: (c) => <span className="font-medium text-foreground">{c}</span> })}</p>
-      {sections.length === 0 && <p className="tend-card p-5 text-muted-foreground">{t('noPlan')}</p>}
+      {sections.length === 0 && <EmptyState message={t('noPlan')} actionLabel={t('noPlanAction')} href="/growth" />}
       <div className="grid gap-10">
         {sections.map(({ g, ranked }) => (
           <section key={g.id} aria-labelledby={`p-${g.id}`}>

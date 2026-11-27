@@ -33,7 +33,7 @@ test.describe.serial('Sign-in · email and password', () => {
     await axe(page);
     await page.getByRole('button', { name: 'Done' }).click();
     await expect(page.getByLabel('Temporary password')).toHaveCount(0);
-    await expect(page.getByRole('cell', { name, exact: true })).toBeVisible();
+    await expect(page.getByRole('cell').getByText(name, { exact: true })).toBeVisible(); // the Person cell holds name + email
   });
 
   test('a wrong password is refused with one neutral message @mobile', async ({ browser }) => {
@@ -75,7 +75,27 @@ test.describe.serial('Sign-in · email and password', () => {
     await page.locator('#password').fill(mine);
     await page.locator('#confirm').fill(mine);
     await page.getByRole('button', { name: 'Save password' }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 20_000 });
+
+    // then first-login onboarding (PRD M1): language → text size → intro → role → AI notice
+    await expect(page).toHaveURL(/\/onboarding$/, { timeout: 20_000 });
+    await page.goto('/home');
+    await expect(page).toHaveURL(/\/onboarding$/); // cannot skip it either
+    await expect(page.getByRole('heading', { name: 'Welcome to Tend, Pat' })).toBeVisible();
+    await axe(page);
+    await page.getByRole('button', { name: 'English' }).click();
+    await page.getByRole('radio', { name: '115%' }).click();
+    await page.getByRole('button', { name: 'Continue' }).click();
+    await expect(page.getByRole('heading', { name: 'Growth, not grading' })).toBeVisible();
+    await page.getByRole('button', { name: 'Skip intro' }).click();
+    await expect(page.getByText('You are joining Tend as Educator at Tampines.')).toBeVisible();
+    await page.getByRole('button', { name: 'Yes, that’s me' }).click();
+    const start = page.getByRole('button', { name: 'Start using Tend' });
+    await expect(start).toBeDisabled();
+    await axe(page);
+    await page.getByLabel('I have read how Tend uses AI and my data.').check();
+    await start.click();
+    await expect(page).toHaveURL(/\/growth\/needs-analysis$/, { timeout: 20_000 });
+    await expect(page.locator('html')).toHaveAttribute('style', /--text-scale:\s*115/);
   });
 
   test('the new password works; the temporary one no longer does', async ({ browser }) => {
@@ -130,7 +150,7 @@ test.describe.serial('Sign-in · email and password', () => {
     expect(temp2).not.toBe(temp);
     await expect(page.getByRole('button', { name: `Reset password for ${name}` })).toHaveCount(0); // the row now shows the password instead
     await page.goto('/admin');
-    await expect(page.getByText(/password_reset app_user · about Pat Password/).first()).toBeVisible();
+    await expect(page.getByText(/password reset · account · about Pat Password/).first()).toBeVisible();
 
     const user = await freshPage(browser);
     await signInWithPassword(user, mine2);
@@ -161,10 +181,19 @@ test.describe.serial('Sign-in · email and password', () => {
   });
 
   // Not @mobile: needs the account created by the earlier (desktop-only) steps.
-  test('signing in from the Malay page lands on the Malay home', async ({ browser }) => {
+  // The language saved in the profile wins over the sign-in page's (login/actions.ts preferredLocale).
+  test('the language saved in Preferences wins at sign-in: Malay profile → Malay home', async ({ browser }) => {
     const page = await freshPage(browser);
-    await signInWithPassword(page, mine, '/ms/login');
-    await expect(page).toHaveURL(/\/ms\/home$/, { timeout: 20_000 });
-    await expect(page.getByRole('navigation', { name: 'Navigasi utama' }).first()).toBeVisible();
+    await signInWithPassword(page, mine);
+    await expect(page).toHaveURL(/\/home$/, { timeout: 20_000 });
+    await page.goto('/preferences');
+    await page.getByRole('button', { name: 'Bahasa Melayu' }).click();
+    await page.getByRole('button', { name: 'Save preferences' }).click();
+    await expect(page).toHaveURL(/\/ms\/preferences$/, { timeout: 20_000 });
+
+    const again = await freshPage(browser);
+    await signInWithPassword(again, mine, '/login'); // English sign-in page
+    await expect(again).toHaveURL(/\/ms\/home$/, { timeout: 20_000 });
+    await expect(again.getByRole('navigation', { name: 'Navigasi utama' }).first()).toBeVisible();
   });
 });
