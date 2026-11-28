@@ -95,8 +95,8 @@ export default async function HomePage() {
 
   return (
     <>
-      <PageHeader title={t('home.greeting', { name: firstName(session.profile.full_name) })} subtitle={summary}
-        className="relative md:mb-10 md:[&_h1]:text-[2.5rem]"
+      <PageHeader title={t('home.greeting', { name: firstName(session.profile.full_name).replace(/ /g, '\u00a0') /* keep a two-part given name on one line */ })} subtitle={summary}
+        className="relative pr-0 md:mb-10 md:[&_h1]:text-[2.5rem] max-md:[&_h1]:pr-24"
         actions={<Link href="/preferences" className="absolute right-0 top-0 inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground md:hidden">{t('nav.preferences')}</Link>} />
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-12">

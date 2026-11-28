@@ -45,13 +45,13 @@ export function Postmark({ at, className }: { at: string; className?: string }) 
   const parts = new Intl.DateTimeFormat(LOCALE_META[toLocale(locale)].intl, { hour: 'numeric', minute: '2-digit', timeZone: TZ }).formatToParts(d);
   const clock = { time: parts.filter((x) => x.type !== 'dayPeriod').map((x) => x.value).join('').trim(), period: parts.find((x) => x.type === 'dayPeriod')?.value ?? '' };
   const full = f({ weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' });
-  const small = 'text-[0.6rem] font-semibold uppercase tracking-[0.08em] sm:text-[0.65rem]';
+  const small = 'text-[0.55rem] font-semibold uppercase tracking-[0.06em] sm:text-[0.6rem]';
   return (
     <time
       dateTime={at}
       title={full}
       className={cn(
-        'tend-postmark pointer-events-none grid size-14 shrink-0 select-none place-content-center rounded-full border-2 border-dashed border-input text-center font-heading leading-none text-muted-foreground sm:size-[4.25rem]',
+        'tend-postmark pointer-events-none grid size-[3.75rem] shrink-0 select-none place-content-center rounded-full border-2 border-dashed border-input text-center font-heading leading-none text-muted-foreground sm:size-[4.75rem]',
         className,
       )}
     >
@@ -59,13 +59,13 @@ export function Postmark({ at, className }: { at: string; className?: string }) 
       {today ? (
         <>
           <span aria-hidden className={small}>{t('today')}</span>
-          <span aria-hidden className="text-sm font-bold tabular-nums text-foreground sm:text-lg">{clock.time}</span>
+          <span aria-hidden className="my-px text-[0.8rem] font-bold tabular-nums text-foreground sm:text-base">{clock.time}</span>
           {clock.period && <span aria-hidden className={small}>{clock.period}</span>}
         </>
       ) : (
         <>
           <span aria-hidden className={small}>{f({ weekday: 'short' })}</span>
-          <span aria-hidden className="text-lg font-bold tabular-nums text-foreground sm:text-2xl">{f({ day: 'numeric' })}</span>
+          <span aria-hidden className="text-base font-bold tabular-nums text-foreground sm:text-xl">{f({ day: 'numeric' })}</span>
           <span aria-hidden className={small}>{f({ month: 'short' })}</span>
         </>
       )}
@@ -117,7 +117,7 @@ export function Letter({ sender, kind, at, unread, index = 0, as: Tag = 'article
           </span>
         )}
         <span className="font-semibold text-foreground">{name}</span>
-        <span className="whitespace-nowrap text-muted-foreground"><span aria-hidden>· </span>{kind}</span>
+        <span className="basis-full text-muted-foreground sm:basis-auto sm:whitespace-nowrap"><span aria-hidden className="hidden sm:inline">· </span>{kind}</span>
       </p>
       <div className="col-span-2 mt-3 grid min-w-0 content-start gap-2 sm:col-span-1 sm:col-start-2 sm:mt-1">
         {children}

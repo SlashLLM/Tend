@@ -207,7 +207,7 @@
 @media (min-width: 640px) {
   /* The postmark is pinned to the header; the first heading stays clear of it, the body runs full width. */
   .tend-letter[data-postmark] h2,
-  .tend-letter[data-postmark] h2 + p { padding-right: 5rem; }
+  .tend-letter[data-postmark] h2 + p { padding-right: 5.5rem; }
 }
 /* Transform only: letters are fully legible from the first frame (contrast never dips mid-animation). */
 @keyframes tend-arrive {

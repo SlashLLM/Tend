@@ -1,6 +1,7 @@
 'use client';
 import { CheckCircle2, Lightbulb, Loader2 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { sgDate } from '@/lib/format';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ export function TryTomorrowCard({ card, compact = false, triedOn = null, bare = 
   // Starts from the saved attempt, so the card still shows "tried" after a refresh.
   const [done, setDone] = useState(triedOn !== null);
   const [justLogged, setJustLogged] = useState(false);
-  const format = useFormatter();
+  const locale = useLocale();
   const [note, setNote] = useState('');
   const [showNote, setShowNote] = useState(false);
   const t = useTranslations('card');
@@ -50,7 +51,7 @@ export function TryTomorrowCard({ card, compact = false, triedOn = null, bare = 
         <div className="grid gap-2">
           <p role="status" className="flex items-center gap-2 font-medium text-success">
             <CheckCircle2 className="size-5" aria-hidden />
-            {justLogged || !triedOn ? t('logged') : t('triedOn', { date: format.dateTime(new Date(`${triedOn}T00:00:00+08:00`), { day: 'numeric', month: 'short' }) })}
+            {justLogged || !triedOn ? t('logged') : t('triedOn', { date: sgDate(new Date(`${triedOn}T00:00:00+08:00`), locale, { day: 'numeric', month: 'short' }) })}
           </p>
           <Button variant="ghost" className={cn('min-h-11 justify-self-start', bare && '-ml-3')} onClick={() => { setDone(false); setNote(''); setShowNote(false); }}>{t('triedAgain')}</Button>
         </div>
