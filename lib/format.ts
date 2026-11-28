@@ -15,3 +15,20 @@ export function firstName(full: string) {
   if (parts.length === 3 && /^(Lee|Tan|Lim|Ong|Chen|Zhang|Wong|Teo|Koh|Goh|Ho|Chua|Yeo|Tay)$/.test(parts[0])) return `${parts[1]} ${parts[2]}`;
   return parts[0];
 }
+
+/** Format a date in Singapore time with the locale's Intl tag (en-SG gives day-month order, matching the dateline). */
+export function sgDate(d: Date, locale: string, opts: Intl.DateTimeFormatOptions) {
+  return d.toLocaleString(LOCALE_META[toLocale(locale)].intl, { ...opts, timeZone: 'Asia/Singapore' });
+}
+
+/** ISO instant → "YYYY-MM-DDTHH:mm" in Singapore time, for <input type="datetime-local">. */
+export function toSgInput(iso: string | null) {
+  if (!iso) return '';
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Singapore', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+
+/** "YYYY-MM-DDTHH:mm" read as Singapore time → ISO instant. */
+export function fromSgInput(v: string) {
+  return new Date(`${v}:00+08:00`).toISOString();
+}
