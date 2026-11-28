@@ -129,6 +129,9 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
   }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
   /* Grid items must be allowed to shrink below their content, or long option text widens phones. */
   .grid > * { min-width: 0; }
   select { max-width: 100%; min-width: 0; text-overflow: ellipsis; }
@@ -181,4 +184,35 @@
 /* Heatmap pattern: colour is never the only signal (WCAG) */
 .tend-stripes {
   background-image: repeating-linear-gradient(135deg, color-mix(in oklab, var(--amber) 35%, transparent) 0 2px, transparent 2px 7px);
+}
+
+/* ── Home letterbox: letters arrive in a short stagger and their postmarks stamp down. ── */
+.tend-letter {
+  box-shadow: 0 1px 2px rgb(29 36 32 / 0.04), 0 10px 28px -16px rgb(29 36 32 / 0.18);
+  animation: tend-arrive 640ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 150ms;
+}
+.tend-letter-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgb(29 36 32 / 0.05), 0 18px 36px -18px rgb(29 36 32 / 0.28);
+}
+.tend-letter .tend-postmark {
+  transform: rotate(-7deg);
+  animation: tend-stamp 480ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms + 280ms);
+}
+.tend-letter[data-unread] .tend-postmark { border-color: var(--primary); color: var(--primary); }
+.tend-letter[data-unread] .tend-postmark > span:not(.sr-only) { color: var(--primary); }
+@media (min-width: 640px) {
+  /* The postmark is pinned to the header; the first heading stays clear of it, the body runs full width. */
+  .tend-letter[data-postmark] h2,
+  .tend-letter[data-postmark] h2 + p { padding-right: 5rem; }
+}
+/* Transform only: letters are fully legible from the first frame (contrast never dips mid-animation). */
+@keyframes tend-arrive {
+  from { transform: translateY(14px); }
+}
+@keyframes tend-stamp {
+  from { transform: rotate(-22deg) scale(1.35); }
 }
